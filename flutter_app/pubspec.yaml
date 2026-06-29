@@ -1,0 +1,21 @@
+name: sunrise_messenger
+description: Sunrise — minimalist liquid-glass messenger for mobile and desktop.
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  web_socket_channel: ^2.4.5   # Sunrise/Tinode WebSocket transport
+  crypto: ^3.0.3               # PKCE code challenge for SSO
+  url_launcher: ^6.2.5         # open the SSO provider in the system browser
+
+dev_dependencies:
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true

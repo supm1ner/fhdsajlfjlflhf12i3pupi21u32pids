@@ -25,6 +25,12 @@ export function baseUrl() {
   return (SECURE ? 'https://' : 'http://') + HOST;
 }
 
+// b64 encodes a (possibly unicode) string to base64. The login secret is decoded by the
+// server as a []byte (standard base64), so credentials must be base64-encoded before sending.
+function b64(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
+
 export function connect() {
   return new Promise((resolve, reject) => {
     const c = getClient();
@@ -46,15 +52,17 @@ function persistToken(c) {
 }
 
 export function login(login, password) {
-  return getClient().login('basic', `${login}:${password}`, true).then((ctrl) => {
+  // Secret must be base64-encoded "login:password" (server decodes it as []byte).
+  return getClient().login('basic', b64(`${login}:${password}`), true).then((ctrl) => {
     persistToken(getClient());
     return ctrl;
   });
 }
 
 // loginWithToken authenticates using an external OIDC ID token (from the SSO provider).
+// The JWT is base64-encoded so the server decodes the secret []byte back to the raw token.
 export function loginWithToken(idToken) {
-  return getClient().login('oidc', idToken, true).then((ctrl) => {
+  return getClient().login('oidc', b64(idToken), true).then((ctrl) => {
     persistToken(getClient());
     return ctrl;
   });
@@ -80,7 +88,7 @@ export async function loginWithSavedToken() {
 
 export function createAccount(login, password, name, email) {
   const c = getClient();
-  const secret = btoa(`${login}:${password}`);
+  const secret = b64(`${login}:${password}`);
   const desc = { public: { fn: name } };
   const cred = email ? [{ meth: 'email', val: email }] : undefined;
   return c.createAccount('basic', secret, true, desc, undefined, cred);

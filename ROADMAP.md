@@ -204,6 +204,16 @@ scopes `openid profile email`). См. `sso/docs/RUNBOOK.md`.
 - [x] WebRTC аудио/видео поверх сигналинга `calls.go`: исходящие/входящие, offer/answer/ICE,
       mute/видео-тоггл, hang-up, UI входящего вызова и активного звонка.
 
+**M6 — Нативные приложения (Flutter)** *(каркас готов)*
+- [x] Flutter-клиент для мобайл+десктоп (`flutter_app/`): один Dart-клиент протокола Sunrise по
+      WebSocket, вход (basic/token/SSO через PKCE), живой список контактов, беседа (история +
+      realtime + typing/read), рендер сообщений. Liquid-glass дизайн, адаптивный master-detail.
+- [ ] Звонки (`flutter_webrtc`), запись медиа/кружков (`record`/`image_picker`), деплой-сборки.
+- [ ] Полноценный SSO-redirect (deep links / `flutter_web_auth_2`).
+
+> Примечание: при сверке с JS SDK выявлен и исправлен баг M1 — секрет в `{login}` должен быть
+> **base64** (сервер декодирует `[]byte`); веб-клиент теперь кодирует basic/oidc/createAccount.
+
 **post-MVP** — каналы, боты, секретные чаты (E2E), стикеры.
 
 ---
