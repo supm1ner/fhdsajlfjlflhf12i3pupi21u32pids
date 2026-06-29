@@ -2,8 +2,7 @@
   import { appState } from './lib/stores.svelte.js';
   import Login from './views/Login.svelte';
   import Register from './views/Register.svelte';
-  import ChatList from './views/ChatList.svelte';
-  import ChatView from './views/ChatView.svelte';
+  import Messenger from './views/Messenger.svelte';
   import Settings from './views/Settings.svelte';
 </script>
 
@@ -11,10 +10,8 @@
   <Login />
 {:else if appState.view === 'register'}
   <Register />
-{:else if appState.view === 'chats'}
-  <ChatList />
-{:else if appState.view === 'chat'}
-  <ChatView />
+{:else if appState.view === 'app' || appState.view === 'chats' || appState.view === 'chat'}
+  <Messenger />
 {:else if appState.view === 'settings'}
   <Settings />
 {/if}

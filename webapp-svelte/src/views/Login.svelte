@@ -12,16 +12,12 @@
   let error = $state('');
   let loading = $state(false);
 
-  // Establish the messenger session and load topics after any successful authentication.
+  // Establish the messenger session after any successful authentication.
   async function enterApp(displayName) {
     const c = getClient();
-    appState.user = { id: c.myUID, name: displayName };
-    appState.chats = [];
-    const topics = c.getTopics();
-    if (topics) {
-      await Promise.all(Object.keys(topics).map(t => c.subscribe(t).catch(() => null)));
-    }
-    appState.view = 'chats';
+    appState.user = { id: c.getCurrentUserID?.() || '', name: displayName };
+    appState.connected = true;
+    appState.view = 'app';
   }
 
   // If we returned from the SSO provider, finish the OIDC flow and sign in.

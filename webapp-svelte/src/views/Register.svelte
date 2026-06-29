@@ -1,6 +1,6 @@
 <script>
   import { appState } from '../lib/stores.svelte.js';
-  import { connect, createAccount, login } from '../lib/tinode.js';
+  import { connect, createAccount, login, myUID } from '../lib/tinode.js';
   import GlassPanel from '../lib/components/GlassPanel.svelte';
   import Input from '../lib/components/Input.svelte';
   import Button from '../lib/components/Button.svelte';
@@ -19,8 +19,9 @@
       await connect();
       await createAccount(loginVal, password, displayName, email || undefined);
       await login(loginVal, password);
-      appState.user = { id: '', name: displayName };
-      appState.view = 'chats';
+      appState.user = { id: myUID(), name: displayName };
+      appState.connected = true;
+      appState.view = 'app';
     } catch (e) {
       error = e?.message || 'Registration failed';
     } finally { loading = false; }
