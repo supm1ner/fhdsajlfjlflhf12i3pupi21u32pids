@@ -28,6 +28,12 @@ export function login(login, password) {
   return getClient().login('basic', `${login}:${password}`, true);
 }
 
+// loginWithToken authenticates using an external OIDC ID token (from the SSO provider).
+// The backend validates the token via the 'oidc' auth scheme.
+export function loginWithToken(idToken) {
+  return getClient().login('oidc', idToken, true);
+}
+
 export function createAccount(login, password, name, email) {
   const c = getClient();
   const secret = btoa(`${login}:${password}`);

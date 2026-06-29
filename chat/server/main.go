@@ -30,6 +30,7 @@ import (
 	_ "sunrise/chat/server/auth/anon"
 	_ "sunrise/chat/server/auth/basic"
 	_ "sunrise/chat/server/auth/code"
+	_ "sunrise/chat/server/auth/oidc"
 	_ "sunrise/chat/server/auth/rest"
 	_ "sunrise/chat/server/auth/token"
 	"sunrise/chat/server/store/types"
