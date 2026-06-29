@@ -1,0 +1,16 @@
+# Normalize line endings to LF for all text; keep tooling consistent across OSes.
+* text=auto eol=lf
+
+# Explicitly binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.thumbnail binary
+
+# Generated / vendored — collapse in diffs
+backend/docs/** linguist-generated=true
+frontend/package-lock.json linguist-generated=true

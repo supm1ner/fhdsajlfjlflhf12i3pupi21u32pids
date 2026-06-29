@@ -1,0 +1,9 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+/build/
+/dist/
+/sunrise_grpc/GIT_VERSION
+*.egg-info/

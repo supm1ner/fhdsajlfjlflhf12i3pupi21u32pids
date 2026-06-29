@@ -1,0 +1,33 @@
+# Keep the backend build context lean and secret-free.
+# Only Go sources, go.mod/go.sum, migrations, and (optionally) committed docs
+# are needed by the builder; everything below is excluded.
+
+# VCS / tooling
+.git
+.gitignore
+.github
+.golangci.yml
+
+# Build artifacts / binaries
+bin/
+cotton-id
+*.exe
+*.exe~
+*.test
+*.out
+coverage.out
+coverage.html
+
+# Editor / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Secrets / local env (never bake into an image)
+.env
+.env.*
+
+# The Dockerfile itself doesn't need to be in the context.
+Dockerfile
+.dockerignore

@@ -1,0 +1,23 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# cotton-id — Grafana dashboard provider.
+#
+# Tells Grafana to load every dashboard JSON it finds under the mounted path on
+# boot and keep watching it. The JSON files live in deploy/grafana/dashboards
+# and are mounted read-only into the container at the `path` below.
+# ─────────────────────────────────────────────────────────────────────────────
+
+apiVersion: 1
+
+providers:
+  - name: cotton-id
+    orgId: 1
+    folder: cotton-id
+    type: file
+    disableDeletion: false
+    # Re-read the JSON every 30s so edits to the file on disk show up without a
+    # Grafana restart (handy in dev; harmless in prod since the mount is read-only).
+    updateIntervalSeconds: 30
+    allowUiUpdates: false
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: false

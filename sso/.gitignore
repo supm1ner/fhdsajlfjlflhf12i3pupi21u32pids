@@ -1,0 +1,39 @@
+# ---- Secrets / env ----
+.env
+.env.*
+!.env.example
+deploy/.env
+*.local
+
+# ---- Go ----
+/backend/bin/
+/backend/cotton-id
+*.exe
+*.exe~
+*.test
+*.out
+coverage.out
+coverage.html
+
+# ---- Node / frontend ----
+node_modules/
+frontend/dist/
+frontend/coverage/
+*.tsbuildinfo
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---- Docker / runtime data ----
+/deploy/data/
+*.pid
+
+# ---- Editor / OS ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# ---- Claude / OpenSpec runtime ----
+.claude/worktrees/

@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sunrise_grpc"
+description = "Sunrise gRPC bindings."
+authors = [
+    {name = "Sunrise Authors", email = "info@sunrise.co"},
+]
+license = "Apache-2.0"
+readme = "README.md"
+keywords = ["chat", "messaging", "messenger", "im", "sunrise"]
+classifiers = [
+    "Programming Language :: Python :: 2",
+    "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: OS Independent",
+    "Topic :: Communications :: Chat",
+    "Intended Audience :: Developers",
+]
+dependencies = [
+    "protobuf>=3.6.1",
+    "grpcio>=1.19.0",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://sunrise/chat"
+Repository = "https://sunrise/chat"
+Issues = "https://sunrise/chat/issues"
+
+[tool.setuptools]
+packages = ["sunrise_grpc"]
+
+[tool.setuptools.package-data]
+"*" = ["GIT_VERSION", "*.pyi"]
+
+# Alternative version handling if you want to keep reading from GIT_VERSION file
+[tool.setuptools.dynamic]
+version = {file = "sunrise_grpc/GIT_VERSION"}

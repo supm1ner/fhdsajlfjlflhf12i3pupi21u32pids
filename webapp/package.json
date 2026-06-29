@@ -1,0 +1,104 @@
+{
+  "name": "sunrise-webapp",
+  "description": "Sunrise messenger for the web",
+  "version": "0.25.2",
+  "repository": {
+    "type": "git",
+    "url": "git+https://sunrise/webapp.git"
+  },
+  "scripts": {
+    "start": "echo 'Read installation instructions'",
+    "build": "npm run vers && npm run build:css && npm run extract && npm run build:i18n && npm run build:prod && npm run build:dev",
+    "clean": "rm umd/* && rm css/base.min.css && rm src/i18n.min/*",
+    "build:css": "postcss css/base.css > css/base.min.css",
+    "build:dev": "webpack --mode development",
+    "build:prod": "webpack --mode production",
+    "build:i18n": "node scripts/i18n.js",
+    "i18n:missing": "node scripts/i18n.js missing",
+    "i18n:obsolete": "node scripts/i18n.js obsolete",
+    "vers": "node scripts/gen-version.js",
+    "extract": "formatjs extract \"src/**/*.{js,jsx}\" --out-file src/i18n/ex/base-en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
+    "compile": "formatjs compile",
+    "test": "jest"
+  },
+  "browserslist": [
+    "defaults"
+  ],
+  "files": [
+    "umd/*.js",
+    "umd/*.map",
+    "audio/*.m4a",
+    "css/base.css",
+    "css/base.min.css",
+    "img/*.png",
+    "img/*.svg",
+    "img/*.jpeg",
+    "img/bkg/*.jpg",
+    "img/bkg/*.png",
+    "img/bkg/*.json",
+    "index-dev.html",
+    "index.html",
+    "manifest.json",
+    "service-worker.js",
+    "version.js"
+  ],
+  "keywords": [
+    "chat",
+    "instant-messenger",
+    "message",
+    "messenger",
+    "react",
+    "web"
+  ],
+  "locales": [
+    "ar",
+    "de",
+    "en",
+    "es",
+    "fr",
+    "it",
+    "ko",
+    "ro",
+    "ru",
+    "th",
+    "uk",
+    "vi",
+    "zh",
+    "zh-TW"
+  ],
+  "main": "umd/index.prod.js",
+  "bugs": {
+    "url": "https://sunrise/webapp/issues"
+  },
+  "homepage": "https://sunrise/chat",
+  "email": "info@sunrise.co",
+  "author": "Sunrise Authors <info@sunrise.co>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "firebase": "^11.0.0",
+    "libphonenumber-js": "^1.10.40",
+    "qrcodejs": "^1.0.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "react-intl": "^7.0.0",
+    "tinode-sdk": "github:tinode/tinode-js#v0.25.2",
+    "webm-duration-fix": "^1.0.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.22.10",
+    "@babel/preset-env": "^7.22.10",
+    "@babel/preset-react": "^7.22.5",
+    "@formatjs/cli": "^6.1.3",
+    "babel-loader": "^10.0.0",
+    "babel-plugin-formatjs": "^10.5.3",
+    "browserslist": "^4.21.10",
+    "copy-webpack-plugin": "^13.0.0",
+    "cssnano": "^7.0.6",
+    "glob": "^13.0.0",
+    "jest": "^30.0.0",
+    "postcss": "^8.4.27",
+    "postcss-cli": "^11.0.0",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^6.0.0"
+  }
+}

@@ -1,0 +1,89 @@
+const TerserPlugin = require('terser-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
+const path = require('path');
+
+module.exports = (env, argv) => {
+  const mode = argv.mode === 'production' ? 'prod' : 'dev';
+  const maxAssetSize = mode === 'prod' ? 360000 : 1512000;
+  return {
+    entry: {
+      index: path.resolve(__dirname, 'src/index.js'),
+    },
+    devtool: 'source-map',
+    module: {
+      rules: [
+        {
+          test: /\.jsx?$/,
+          use: [
+            'babel-loader',
+          ],
+          exclude: /node_modules/,
+        },
+      ],
+    },
+    output: {
+      path: path.resolve(__dirname, 'umd'),
+      filename: `[name].${mode}.js`,
+      publicPath: '/umd/'
+    },
+    optimization: {
+      minimize: (mode === 'prod'),
+      minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            ecma: undefined,
+            warnings: false,
+            parse: {},
+            compress: {},
+            format: {
+              comments: false,
+            },
+            mangle: true, // Note `mangle.properties` is `false` by default.
+            module: false,
+            output: null,
+            toplevel: false,
+            nameCache: null,
+            ie8: false,
+            keep_classnames: undefined,
+            keep_fnames: false,
+            safari10: false,
+          },
+          extractComments: false,
+        })
+      ]
+    },
+    performance: {
+      maxEntrypointSize: maxAssetSize,
+      maxAssetSize: maxAssetSize,
+      assetFilter: function(assetFilename) {
+        // Exclude all sourcemaps
+        if (/\.map$/.test(assetFilename)) {
+          return false;
+        }
+        return true;
+      },
+    },
+    plugins: [
+      new CopyPlugin({
+        patterns: [
+          { from: `node_modules/tinode-sdk/umd/tinode.${mode}.js`, to: `sunrise.${mode}.js` },
+          { from: `node_modules/tinode-sdk/umd/tinode.${mode}.js.map`, to: `sunrise.${mode}.js.map` },
+        ],
+      }),
+    ],
+    resolve: {
+      alias: {
+        'sunrise-sdk': 'tinode-sdk',
+      },
+    },
+    externals: {
+      'livekit-client': 'LivekitClient',
+      'qrcodejs': 'QRCode',
+      'react': 'React',
+      'react-dom': 'ReactDOM',
+      'react-intl': 'ReactIntl',
+      'sunrise-sdk': 'tinode',
+      'tinode-sdk': 'tinode',
+    },
+  };
+}

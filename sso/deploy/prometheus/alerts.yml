@@ -1,0 +1,106 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# cotton-id — Prometheus alert rules (loaded by prometheus.yml `rule_files`).
+#
+# Rules fire over the metrics the backend exposes at /metrics:
+#   http_request_duration_seconds{route,method,status}  — request latency histogram
+#   cotton_login_attempts_total{result=success|failure|locked}
+#   cotton_signup_attempts_total{result=success|failure}
+#   cotton_consent_decisions_total{decision=accept|reject}
+#   up{job="cotton-id-backend"}                          — scrape liveness (synthetic)
+#
+# Thresholds are conservative starting points for a single-tenant IdP; tune them
+# to your real traffic. `for:` requires the condition to hold continuously before
+# the alert fires, which suppresses transient blips.
+# ─────────────────────────────────────────────────────────────────────────────
+
+groups:
+  # ───────────────────────────────────────────────────────────────────────────
+  # HTTP error budget — sustained 5xx responses point at a backend fault
+  # (DB/Hydra outage, panic, bad deploy) rather than client error.
+  # ───────────────────────────────────────────────────────────────────────────
+  - name: cotton-id-http
+    rules:
+      - alert: HighHTTP5xxRate
+        # Fraction of requests answered with a 5xx over the last 5 minutes.
+        # `status=~"5.."` matches the histogram's status label (e.g. "500","503").
+        # Guard the denominator with `> 0` so an idle backend never divides by zero.
+        expr: |
+          (
+            sum(rate(http_request_duration_seconds_count{status=~"5.."}[5m]))
+            /
+            sum(rate(http_request_duration_seconds_count[5m]))
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          service: cotton-id-backend
+        annotations:
+          summary: "Elevated HTTP 5xx rate on cotton-id backend"
+          description: >-
+            More than 5% of HTTP requests have returned 5xx over the last 5m
+            (current value {{ $value | humanizePercentage }}). Check the backend
+            logs, the /healthz dependency report, and Hydra/Postgres availability.
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Authentication abuse — a spike in failed/locked logins suggests credential
+  # stuffing or a brute-force attempt against the password endpoint.
+  # ───────────────────────────────────────────────────────────────────────────
+  - name: cotton-id-auth
+    rules:
+      - alert: AuthFailureSpike
+        # Fraction of login attempts that failed or triggered lockout over 5m.
+        # `result=~"failure|locked"` covers both rejected credentials and the
+        # incremental-backoff lockout. Denominator guarded against divide-by-zero.
+        expr: |
+          (
+            sum(rate(cotton_login_attempts_total{result=~"failure|locked"}[5m]))
+            /
+            sum(rate(cotton_login_attempts_total[5m]))
+          ) > 0.5
+        for: 10m
+        labels:
+          severity: warning
+          service: cotton-id-backend
+        annotations:
+          summary: "Authentication-failure spike on cotton-id"
+          description: >-
+            Over 50% of login attempts have failed or been locked out over the
+            last 5m ({{ $value | humanizePercentage }} of attempts). Possible
+            credential stuffing or brute force — review the audit Journal and
+            consider tightening rate limits.
+
+      - alert: LoginLockoutSurge
+        # Absolute rate of lockouts — a secondary, throughput-based signal that
+        # complements the ratio alert (catches abuse even amid heavy legit traffic).
+        expr: sum(rate(cotton_login_attempts_total{result="locked"}[5m])) > 0.2
+        for: 10m
+        labels:
+          severity: warning
+          service: cotton-id-backend
+        annotations:
+          summary: "Sustained account lockouts on cotton-id"
+          description: >-
+            Accounts are being locked out at {{ $value | printf "%.2f" }}/s over
+            the last 5m, indicating repeated failed logins. Investigate the
+            targeted accounts and source IPs in the audit Journal.
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Dependency liveness — the backend scrape target being down means Prometheus
+  # cannot reach /metrics: the backend is unreachable, crashed, or not scheduled.
+  # ───────────────────────────────────────────────────────────────────────────
+  - name: cotton-id-availability
+    rules:
+      - alert: TargetDown
+        # `up` is the synthetic per-target health sample Prometheus writes after
+        # each scrape: 1 = scrape succeeded, 0 = failed. Scope to the backend job.
+        expr: up{job="cotton-id-backend"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: cotton-id-backend
+        annotations:
+          summary: "cotton-id backend scrape target is down"
+          description: >-
+            Prometheus has failed to scrape the cotton-id backend
+            (instance {{ $labels.instance }}) for over 2m. The backend is
+            unreachable or not serving /metrics — check the container and /healthz.

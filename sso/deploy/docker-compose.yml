@@ -1,0 +1,350 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# cotton-id — Docker Compose orchestration (Change 1: walking skeleton)
+#
+# Brings up the full stack with one command (`make up` / `docker compose up`):
+#   postgres      — PostgreSQL 16; hosts BOTH the cotton-id and the Hydra DBs.
+#   hydra-migrate — one-shot: `hydra migrate sql` against the hydra DB.
+#   hydra         — Ory Hydra v2.2.0 OIDC engine (public 4444, admin 4445).
+#   backend       — cotton-id Go backend; migrates then serves on :8080.
+#   frontend      — nginx serving the SPA + reverse-proxying the backend (:3000).
+#   seed          — dev-only one-shot: demo admin user + demo RP client.
+#   prometheus    — optional metrics scraper (:9090), `observability` profile.
+#
+# Startup order (contract §3, design.md D10) is enforced via healthchecks and
+# depends_on conditions: postgres healthy → hydra migrated → hydra healthy →
+# backend (migrates, then serves) healthy → frontend; seed waits on backend.
+#
+# Secrets come from deploy/.env — copy deploy/.env.example → deploy/.env first.
+# NOTHING secret is committed here. Secret vars (POSTGRES_PASSWORD, ADMIN_API_KEY,
+# HYDRA_SYSTEM_SECRET, HYDRA_COOKIE_SECRET) use ${VAR:?...} and have NO default, so
+# the stack fails fast rather than running with a publicly-known secret. Non-secret
+# vars keep safe ${VAR:-default} dev defaults.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: cotton-id
+
+# ---- Reusable anchors --------------------------------------------------------
+x-restart: &restart_policy
+  restart: unless-stopped
+
+services:
+  # ───────────────────────────────────────────────────────────────────────────
+  # PostgreSQL 16 — single instance, two databases (cottonid + hydra).
+  # The init scripts (mounted read-only) create the `hydra` database and the
+  # citext/pgcrypto extensions on first boot of an empty volume (contract §4).
+  # ───────────────────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    <<: *restart_policy
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cotton}
+      # Required — no working default. Copy deploy/.env.example → deploy/.env.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/.env}
+      POSTGRES_DB: ${POSTGRES_DB:-cottonid}
+      # Make initdb deterministic across hosts.
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # *.sql here runs once, in lexical order, against POSTGRES_DB on first init.
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      # pg_isready ships in the image; gate dependents on real readiness.
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cotton} -d ${POSTGRES_DB:-cottonid}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - internal
+    # Postgres is internal-only by default. Uncomment to expose for local psql.
+    # ports:
+    #   - "5432:5432"
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Hydra schema migration — one-shot. Runs to completion, then exits 0; the
+  # `hydra` service waits for `service_completed_successfully`.
+  # ───────────────────────────────────────────────────────────────────────────
+  hydra-migrate:
+    image: oryd/hydra:v2.2.0
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # DSN points at the SEPARATE hydra database (contract §4).
+      DSN: ${HYDRA_DSN:-postgres://${POSTGRES_USER:-cotton}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/.env}@postgres:5432/hydra?sslmode=disable&max_conns=8&max_idle_conns=4}
+    # `migrate sql -e --yes` reads the DSN from env and applies Hydra's schema.
+    command: migrate sql -e --yes
+    restart: "no"
+    networks:
+      - internal
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Ory Hydra — the OAuth2/OIDC protocol engine. No user store, no UI: it
+  # delegates login/consent/logout to the cotton-id backend (design.md D1).
+  # ───────────────────────────────────────────────────────────────────────────
+  hydra:
+    image: oryd/hydra:v2.2.0
+    <<: *restart_policy
+    depends_on:
+      postgres:
+        condition: service_healthy
+      hydra-migrate:
+        condition: service_completed_successfully
+    # --dev is required for the local http:// issuer (Hydra refuses http without
+    # it). It relaxes PKCE enforcement locally; production runs with TLS + no dev.
+    command: serve all --config /etc/config/hydra/hydra.yml --dev
+    environment:
+      # DSN + URLs override the literals in hydra.yml so one config serves all
+      # environments. Ory env mapping: dotted path → UPPER_SNAKE.
+      DSN: ${HYDRA_DSN:-postgres://${POSTGRES_USER:-cotton}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/.env}@postgres:5432/hydra?sslmode=disable&max_conns=8&max_idle_conns=4}
+      URLS_SELF_ISSUER: ${HYDRA_INTERNAL_URL:-http://hydra:4444}
+      URLS_SELF_PUBLIC: ${HYDRA_PUBLIC_URL:-http://localhost:4444}
+      # Login/consent/logout are served by the backend at its PUBLIC base URL so
+      # the user's browser can reach them (contract §3 handshake).
+      URLS_LOGIN: ${PUBLIC_BASE_URL:-http://localhost:8080}/oauth/login
+      URLS_CONSENT: ${PUBLIC_BASE_URL:-http://localhost:8080}/oauth/consent
+      URLS_LOGOUT: ${PUBLIC_BASE_URL:-http://localhost:8080}/oauth/logout
+      URLS_POST_LOGOUT_REDIRECT: ${FRONTEND_BASE_URL:-http://localhost:3000}/
+      # Secrets — REQUIRED, never committed (contract §8). No working default, so a
+      # deployment that forgets to set them fails fast instead of running with a
+      # publicly-known secret. Copy deploy/.env.example → deploy/.env for dev.
+      SECRETS_SYSTEM: ${HYDRA_SYSTEM_SECRET:?set HYDRA_SYSTEM_SECRET in deploy/.env}
+      SECRETS_COOKIE: ${HYDRA_COOKIE_SECRET:?set HYDRA_COOKIE_SECRET in deploy/.env}
+      # CORS origins for the public API (SPA + backend dev origins).
+      SERVE_PUBLIC_CORS_ALLOWED_ORIGINS: ${HYDRA_CORS_ORIGINS:-http://localhost:3000,http://localhost:8080}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    volumes:
+      - ./hydra/hydra.yml:/etc/config/hydra/hydra.yml:ro
+    ports:
+      - "${HYDRA_PUBLIC_PORT:-4444}:4444" # public OIDC endpoints
+      - "${HYDRA_ADMIN_PORT:-4445}:4445" # admin API (dev convenience; keep off public nets in prod)
+    healthcheck:
+      # alpine-based image → busybox wget. Admin readiness reflects DB + config.
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:4445/health/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    networks:
+      - internal
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # cotton-id backend — Go service. Applies embedded migrations to the cottonid
+  # DB on boot (D10), then serves the API/OIDC/ops surface on :8080.
+  # ───────────────────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    image: cotton-id-backend:dev
+    <<: *restart_policy
+    depends_on:
+      postgres:
+        condition: service_healthy
+      hydra:
+        condition: service_healthy
+    environment:
+      COTTON_ENV: ${COTTON_ENV:-development}
+      HTTP_ADDR: ${HTTP_ADDR:-:8080}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8080}
+      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-http://localhost:3000}
+      DATABASE_URL: ${DATABASE_URL:-postgres://${POSTGRES_USER:-cotton}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/.env}@postgres:5432/cottonid?sslmode=disable}
+      # Admin API is internal; public URL is what the browser/RP uses.
+      HYDRA_ADMIN_URL: ${HYDRA_ADMIN_URL:-http://hydra:4445}
+      HYDRA_PUBLIC_URL: ${HYDRA_PUBLIC_URL:-http://localhost:4444}
+      SESSION_COOKIE_NAME: ${SESSION_COOKIE_NAME:-cid_session}
+      CSRF_COOKIE_NAME: ${CSRF_COOKIE_NAME:-cid_csrf}
+      ADMIN_API_KEY: ${ADMIN_API_KEY:?set ADMIN_API_KEY in deploy/.env (32+ random chars)}
+      SESSION_TTL_HOURS: ${SESSION_TTL_HOURS:-24}
+      SESSION_REMEMBER_DAYS: ${SESSION_REMEMBER_DAYS:-30}
+      PASSWORD_RESET_TTL_MINUTES: ${PASSWORD_RESET_TTL_MINUTES:-30}
+      RATE_LIMIT_RPS: ${RATE_LIMIT_RPS:-5}
+      RATE_LIMIT_BURST: ${RATE_LIMIT_BURST:-10}
+      LOGIN_LOCKOUT_THRESHOLD: ${LOGIN_LOCKOUT_THRESHOLD:-5}
+      # Trusted reverse-proxy CIDRs whose X-Forwarded-For is honored. Empty = the
+      # backend uses the direct peer IP (fail-safe). Set this to your proxy's
+      # network when running cotton-id behind one.
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES:-}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      # Social-login OAuth app credentials. Empty = that provider is disabled
+      # (button hidden, start/callback return "provider not enabled"). The
+      # redirect URI to register is PUBLIC_BASE_URL + /api/v1/auth/social/<p>/callback.
+      # See docs/SOCIAL_LOGIN.md. NEVER put real secrets here — set them in deploy/.env.
+      SOCIAL_GOOGLE_CLIENT_ID: ${SOCIAL_GOOGLE_CLIENT_ID:-}
+      SOCIAL_GOOGLE_CLIENT_SECRET: ${SOCIAL_GOOGLE_CLIENT_SECRET:-}
+      SOCIAL_GITHUB_CLIENT_ID: ${SOCIAL_GITHUB_CLIENT_ID:-}
+      SOCIAL_GITHUB_CLIENT_SECRET: ${SOCIAL_GITHUB_CLIENT_SECRET:-}
+      SOCIAL_VK_CLIENT_ID: ${SOCIAL_VK_CLIENT_ID:-}
+      SOCIAL_VK_CLIENT_SECRET: ${SOCIAL_VK_CLIENT_SECRET:-}
+      SOCIAL_YANDEX_CLIENT_ID: ${SOCIAL_YANDEX_CLIENT_ID:-}
+      SOCIAL_YANDEX_CLIENT_SECRET: ${SOCIAL_YANDEX_CLIENT_SECRET:-}
+      # Passkey (WebAuthn) relying-party config. The RP ID must be a registrable
+      # suffix of every allowed origin; dev defaults match the local SPA. In
+      # production set RP_ID to your real domain and RP_ORIGINS to its https
+      # origin(s) — a mismatch breaks every ceremony. See docs/PASSKEYS.md.
+      WEBAUTHN_RP_ID: ${WEBAUTHN_RP_ID:-localhost}
+      WEBAUTHN_RP_DISPLAY_NAME: ${WEBAUTHN_RP_DISPLAY_NAME:-cotton-id}
+      WEBAUTHN_RP_ORIGINS: ${WEBAUTHN_RP_ORIGINS:-http://localhost:3000}
+      # Account self-service: hard caps on profile-image uploads (avatar + banner),
+      # in KB. Images are bounded blobs in Postgres; the cap blunts decompression/
+      # abuse. Not secrets — safe dev defaults. See docs/ACCOUNT.md.
+      ACCOUNT_AVATAR_MAX_KB: ${ACCOUNT_AVATAR_MAX_KB:-512}
+      ACCOUNT_BANNER_MAX_KB: ${ACCOUNT_BANNER_MAX_KB:-1024}
+      # Email (SMTP) delivery for transactional mail (password reset, login
+      # notifications, admin "message user"). When SMTP_HOST is EMPTY (the
+      # default) the backend uses the dev LogMailer — mail is logged, not sent —
+      # so local dev needs no mail server. Set these to enable real delivery.
+      # Sends are best-effort: a delivery failure is logged and NEVER blocks the
+      # user action. See docs/RUNBOOK.md.
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-true}
+      # Shared signing key for the OAuth (cid_oauth) and passkey (cid_wa)
+      # ceremony-state cookies. EMPTY (the default) = a per-process random key
+      # (single instance only). Set a 32+ byte random value (e.g. openssl rand
+      # -hex 32) so all backend replicas agree and a ceremony begun on one
+      # instance can finish on another. Required for multi-replica deployments.
+      OAUTH_STATE_KEY: ${OAUTH_STATE_KEY:-}
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    healthcheck:
+      # /healthz reports backend + dependency health (contract §3 Ops). The
+      # alpine runtime ships busybox wget; --spider exits non-zero on >=400.
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8080/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - internal
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # cotton-id frontend — nginx serving the built SPA and reverse-proxying the
+  # backend prefixes so the browser sees one same-origin host (contract §7).
+  # ───────────────────────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    image: cotton-id-frontend:dev
+    <<: *restart_policy
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost/ || exit 1"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    networks:
+      - internal
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Dev seed — one-shot (profile: dev). Seeds a demo admin user and registers a
+  # demo relying-party client once the backend is healthy. NEVER enabled in prod.
+  # ───────────────────────────────────────────────────────────────────────────
+  seed:
+    image: alpine:3.20
+    profiles: ["dev"]
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgres://${POSTGRES_USER:-cotton}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/.env}@postgres:5432/cottonid?sslmode=disable}
+      BACKEND_INTERNAL_URL: http://backend:8080
+      ADMIN_API_KEY: ${ADMIN_API_KEY:?set ADMIN_API_KEY in deploy/.env (32+ random chars)}
+      DEMO_CLIENT_NAME: ${DEMO_CLIENT_NAME:-Demo Relying Party}
+      DEMO_CLIENT_TYPE: ${DEMO_CLIENT_TYPE:-public}
+      DEMO_CLIENT_REDIRECT_URI: ${DEMO_CLIENT_REDIRECT_URI:-http://localhost:3000/callback}
+    volumes:
+      - ./seed:/seed:ro
+    entrypoint: ["/bin/sh", "/seed/seed.sh"]
+    restart: "no"
+    networks:
+      - internal
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Prometheus — optional (profile: observability). Scrapes backend /metrics.
+  # ───────────────────────────────────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    profiles: ["observability"]
+    <<: *restart_policy
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      # Alert rules referenced by prometheus.yml `rule_files: [alerts.yml]` — the
+      # path is relative to the config dir, so mount it alongside the config.
+      - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - promdata:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    networks:
+      - internal
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Grafana — optional (profile: observability). Auto-provisions the Prometheus
+  # datasource and the cotton-id dashboard from deploy/grafana/, so the stack
+  # comes up with working dashboards and no click-ops. The admin password is
+  # REQUIRED when this profile is used (no insecure default) — set
+  # GRAFANA_ADMIN_PASSWORD in deploy/.env. Reachable at http://localhost:3001.
+  # ───────────────────────────────────────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:11.1.0
+    profiles: ["observability"]
+    <<: *restart_policy
+    depends_on:
+      prometheus:
+        condition: service_started
+    environment:
+      # Admin login. User defaults to "admin"; the password is required so the
+      # observability profile never boots with Grafana's well-known default.
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?set GRAFANA_ADMIN_PASSWORD in deploy/.env to use the observability profile}
+      # Internal dashboards only — no public sign-up, no anonymous access.
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+    volumes:
+      # Provisioning (datasource + dashboard provider) and the dashboard JSON,
+      # mounted read-only. Grafana reads these on boot (see deploy/grafana/).
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafanadata:/var/lib/grafana
+    ports:
+      # 3001 on the host to avoid colliding with the frontend on 3000; 3000 in
+      # the container is Grafana's default port.
+      - "${GRAFANA_PORT:-3001}:3000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:3000/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - internal
+
+# ---- Named volumes -----------------------------------------------------------
+volumes:
+  pgdata:
+  promdata:
+  grafanadata:
+
+# ---- Networks ----------------------------------------------------------------
+# Single internal bridge; services reach each other by service name via Docker
+# DNS. Only the ports explicitly published above are reachable from the host.
+networks:
+  internal:
+    driver: bridge

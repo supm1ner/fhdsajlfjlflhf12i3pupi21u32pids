@@ -1,0 +1,111 @@
+# Reference configuration for a simple Sunrise server.
+# Includes:
+# * Mysql database
+# * Sunrise server
+# * Sunrise exporters
+
+version: '3.8'
+
+# Base Sunrise template.
+x-sunrise:
+  &sunrise-base
+  depends_on:
+    - db
+  image: sunrise/sunrise:latest
+  restart: always
+
+x-sunrise-env-vars: &sunrise-env-vars
+  "STORE_USE_ADAPTER": "mysql"
+  "PPROF_URL": "/pprof"
+  # You can provide your own sunrise config by setting EXT_CONFIG env var and binding your configuration file to
+  # "EXT_CONFIG": "/etc/sunrise/sunrise.conf"
+  "WAIT_FOR": "mysql:3306"
+  # Push notifications.
+  # Modify as appropriate.
+  # Sunrise Push Gateway configuration.
+  "TNPG_PUSH_ENABLED": "false"
+  # "TNPG_USER": "<user name>"
+  # "TNPG_AUTH_TOKEN": "<token>"
+  # FCM specific server configuration.
+  "FCM_PUSH_ENABLED": "false"
+  # "FCM_CRED_FILE": "<path to FCM credentials file>"
+  # "FCM_INCLUDE_ANDROID_NOTIFICATION": false
+  #
+  # FCM Web client configuration.
+  "FCM_API_KEY": "AIzaSyD6X4ULR-RUsobvs1zZ2bHdJuPz39q2tbQ"
+  "FCM_APP_ID": "1:114126160546:web:aca6ea2981feb81fb44dfb"
+  "FCM_PROJECT_ID": "sunrise-1000"
+  "FCM_SENDER_ID": 114126160546
+  "FCM_VAPID_KEY": "BOgQVPOMzIMXUpsYGpbVkZoEBc0ifKY_f2kSU5DNDGYI6i6CoKqqxDd7w7PJ3FaGRBgVGJffldETumOx831jl58"
+  "FCM_MEASUREMENT_ID": "G-WNJDQR34L3"
+  # iOS app universal links configuration.
+  # "IOS_UNIV_LINKS_APP_ID": "<ios universal links app id>"
+  # Video calls
+  "WEBRTC_ENABLED": "false"
+  # "ICE_SERVERS_FILE": "<path to ICE servers config>"
+
+x-exporter-env-vars: &exporter-env-vars
+  "SUNRISE_ADDR": "http://sunrise.host:6060/stats/expvar/"
+  # InfluxDB configation:
+  "SERVE_FOR": "influxdb"
+  "INFLUXDB_VERSION": 1.7
+  "INFLUXDB_ORGANIZATION": "<your organization>"
+  "INFLUXDB_PUSH_INTERVAL": 30
+  "INFLUXDB_PUSH_ADDRESS": "https://mon.sunrise.co/intake"
+  "INFLUXDB_AUTH_TOKEN": "<auth token>"
+  # Prometheus configuration:
+  # "SERVE_FOR": "prometheus"
+  # "PROM_NAMESPACE": "sunrise"
+  # "PROM_METRICS_PATH": "/metrics"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    # Use your own volume.
+    # volumes:
+    #   - <mysql directory in your file system>:/var/lib/mysql
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
+    security_opt:
+      - seccomp=unconfined
+
+  # Sunrise.
+  sunrise-0:
+    << : *sunrise-base
+    container_name: sunrise-0
+    hostname: sunrise-0
+    # You can mount your volumes as necessary:
+    # volumes:
+    #   # E.g. external config (assuming EXT_CONFIG is set).
+    #   - <path to your sunrise.conf>:/etc/sunrise/sunrise.conf
+    #   # Logs directory.
+    #   - <path to your sunrise-0 logs directory>:/var/log
+    ports:
+      - "6060:6060"
+    environment:
+      << : *sunrise-env-vars
+      "RESET_DB": ${RESET_DB:-false}
+      "UPGRADE_DB": ${UPGRADE_DB:-false}
+
+  # Monitoring.
+  # Exporters are paired with sunrise instances.
+  exporter-0:
+    container_name: exporter-0
+    hostname: exporter-0
+    depends_on:
+      - sunrise-0
+    image: sunrise/exporter:latest
+    restart: always
+    ports:
+      - "6222:6222"
+    links:
+      - sunrise-0:sunrise.host
+    environment:
+      << : *exporter-env-vars
+      "WAIT_FOR": "sunrise-0:6060"

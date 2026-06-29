@@ -1,0 +1,17781 @@
+/******/ (function() { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./img/bkg/index.json":
+/*!****************************!*\
+  !*** ./img/bkg/index.json ***!
+  \****************************/
+/***/ (function(module) {
+
+"use strict";
+module.exports = /*#__PURE__*/JSON.parse('{"patt":[{"name":"a00.png","size":200},{"name":"a01.jpg","size":384},{"name":"a02.jpg","size":384},{"name":"a03.jpg","size":384},{"name":"a04.png","size":400},{"name":"a05.jpg","size":400},{"name":"a06.jpg","size":256},{"name":"a07.jpg","size":384},{"name":"a08.jpg","size":384},{"name":"a09.jpg","size":400},{"name":"a10.jpg","size":256},{"name":"a11.png","size":200}],"img":[{"name":"w01.jpg","pr":"p01.jpg"},{"name":"w02.jpg","pr":"p02.jpg"},{"name":"w03.jpg","pr":"p03.jpg"},{"name":"w04.jpg","pr":"p04.jpg"},{"name":"w05.jpg","pr":"p05.jpg"},{"name":"w06.jpg","pr":"p06.jpg"},{"name":"w07.jpg","pr":"p07.jpg"},{"name":"w08.jpg","pr":"p08.jpg"},{"name":"w09.jpg","pr":"p09.jpg"},{"name":"w10.jpg","pr":"p10.jpg"},{"name":"w11.jpg","pr":"p11.jpg"},{"name":"w12.jpg","pr":"p12.jpg"},{"name":"w13.jpg","pr":"p13.jpg"},{"name":"w14.jpg","pr":"p14.jpg"},{"name":"w15.jpg","pr":"p15.jpg"},{"name":"w16.jpg","pr":"p16.jpg"},{"name":"w17.jpg","pr":"p17.jpg"},{"name":"w18.jpg","pr":"p18.jpg"},{"name":"w19.jpg","pr":"p19.jpg"},{"name":"w20.jpg","pr":"p20.jpg"},{"name":"w21.jpg","pr":"p21.jpg"},{"name":"w22.jpg","pr":"p22.jpg"},{"name":"w23.jpg","pr":"p23.jpg"},{"name":"w24.jpg","pr":"p24.jpg"}]}');
+
+/***/ }),
+
+/***/ "./node_modules/@firebase/app/dist/esm/index.esm2017.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/@firebase/app/dist/esm/index.esm2017.js ***!
+  \**************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FirebaseError: function() { return /* reexport safe */ _firebase_util__WEBPACK_IMPORTED_MODULE_2__.FirebaseError; },
+/* harmony export */   SDK_VERSION: function() { return /* binding */ SDK_VERSION; },
+/* harmony export */   _DEFAULT_ENTRY_NAME: function() { return /* binding */ DEFAULT_ENTRY_NAME; },
+/* harmony export */   _addComponent: function() { return /* binding */ _addComponent; },
+/* harmony export */   _addOrOverwriteComponent: function() { return /* binding */ _addOrOverwriteComponent; },
+/* harmony export */   _apps: function() { return /* binding */ _apps; },
+/* harmony export */   _clearComponents: function() { return /* binding */ _clearComponents; },
+/* harmony export */   _components: function() { return /* binding */ _components; },
+/* harmony export */   _getProvider: function() { return /* binding */ _getProvider; },
+/* harmony export */   _isFirebaseApp: function() { return /* binding */ _isFirebaseApp; },
+/* harmony export */   _isFirebaseServerApp: function() { return /* binding */ _isFirebaseServerApp; },
+/* harmony export */   _registerComponent: function() { return /* binding */ _registerComponent; },
+/* harmony export */   _removeServiceInstance: function() { return /* binding */ _removeServiceInstance; },
+/* harmony export */   _serverApps: function() { return /* binding */ _serverApps; },
+/* harmony export */   deleteApp: function() { return /* binding */ deleteApp; },
+/* harmony export */   getApp: function() { return /* binding */ getApp; },
+/* harmony export */   getApps: function() { return /* binding */ getApps; },
+/* harmony export */   initializeApp: function() { return /* binding */ initializeApp; },
+/* harmony export */   initializeServerApp: function() { return /* binding */ initializeServerApp; },
+/* harmony export */   onLog: function() { return /* binding */ onLog; },
+/* harmony export */   registerVersion: function() { return /* binding */ registerVersion; },
+/* harmony export */   setLogLevel: function() { return /* binding */ setLogLevel; }
+/* harmony export */ });
+/* harmony import */ var _firebase_component__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @firebase/component */ "./node_modules/@firebase/component/dist/esm/index.esm2017.js");
+/* harmony import */ var _firebase_logger__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @firebase/logger */ "./node_modules/@firebase/logger/dist/esm/index.esm2017.js");
+/* harmony import */ var _firebase_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @firebase/util */ "./node_modules/@firebase/util/dist/index.esm2017.js");
+/* harmony import */ var idb__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! idb */ "./node_modules/idb/build/index.js");
+
+
+
+
+
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+class PlatformLoggerServiceImpl {
+    constructor(container) {
+        this.container = container;
+    }
+    // In initial implementation, this will be called by installations on
+    // auth token refresh, and installations will send this string.
+    getPlatformInfoString() {
+        const providers = this.container.getProviders();
+        // Loop through providers and get library/version pairs from any that are
+        // version components.
+        return providers
+            .map(provider => {
+            if (isVersionServiceProvider(provider)) {
+                const service = provider.getImmediate();
+                return `${service.library}/${service.version}`;
+            }
+            else {
+                return null;
+            }
+        })
+            .filter(logString => logString)
+            .join(' ');
+    }
+}
+/**
+ *
+ * @param provider check if this provider provides a VersionService
+ *
+ * NOTE: Using Provider<'app-version'> is a hack to indicate that the provider
+ * provides VersionService. The provider is not necessarily a 'app-version'
+ * provider.
+ */
+function isVersionServiceProvider(provider) {
+    const component = provider.getComponent();
+    return (component === null || component === void 0 ? void 0 : component.type) === "VERSION" /* ComponentType.VERSION */;
+}
+
+const name$q = "@firebase/app";
+const version$1 = "0.13.2";
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const logger = new _firebase_logger__WEBPACK_IMPORTED_MODULE_1__.Logger('@firebase/app');
+
+const name$p = "@firebase/app-compat";
+
+const name$o = "@firebase/analytics-compat";
+
+const name$n = "@firebase/analytics";
+
+const name$m = "@firebase/app-check-compat";
+
+const name$l = "@firebase/app-check";
+
+const name$k = "@firebase/auth";
+
+const name$j = "@firebase/auth-compat";
+
+const name$i = "@firebase/database";
+
+const name$h = "@firebase/data-connect";
+
+const name$g = "@firebase/database-compat";
+
+const name$f = "@firebase/functions";
+
+const name$e = "@firebase/functions-compat";
+
+const name$d = "@firebase/installations";
+
+const name$c = "@firebase/installations-compat";
+
+const name$b = "@firebase/messaging";
+
+const name$a = "@firebase/messaging-compat";
+
+const name$9 = "@firebase/performance";
+
+const name$8 = "@firebase/performance-compat";
+
+const name$7 = "@firebase/remote-config";
+
+const name$6 = "@firebase/remote-config-compat";
+
+const name$5 = "@firebase/storage";
+
+const name$4 = "@firebase/storage-compat";
+
+const name$3 = "@firebase/firestore";
+
+const name$2 = "@firebase/ai";
+
+const name$1 = "@firebase/firestore-compat";
+
+const name = "firebase";
+const version = "11.10.0";
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * The default app name
+ *
+ * @internal
+ */
+const DEFAULT_ENTRY_NAME = '[DEFAULT]';
+const PLATFORM_LOG_STRING = {
+    [name$q]: 'fire-core',
+    [name$p]: 'fire-core-compat',
+    [name$n]: 'fire-analytics',
+    [name$o]: 'fire-analytics-compat',
+    [name$l]: 'fire-app-check',
+    [name$m]: 'fire-app-check-compat',
+    [name$k]: 'fire-auth',
+    [name$j]: 'fire-auth-compat',
+    [name$i]: 'fire-rtdb',
+    [name$h]: 'fire-data-connect',
+    [name$g]: 'fire-rtdb-compat',
+    [name$f]: 'fire-fn',
+    [name$e]: 'fire-fn-compat',
+    [name$d]: 'fire-iid',
+    [name$c]: 'fire-iid-compat',
+    [name$b]: 'fire-fcm',
+    [name$a]: 'fire-fcm-compat',
+    [name$9]: 'fire-perf',
+    [name$8]: 'fire-perf-compat',
+    [name$7]: 'fire-rc',
+    [name$6]: 'fire-rc-compat',
+    [name$5]: 'fire-gcs',
+    [name$4]: 'fire-gcs-compat',
+    [name$3]: 'fire-fst',
+    [name$1]: 'fire-fst-compat',
+    [name$2]: 'fire-vertex',
+    'fire-js': 'fire-js', // Platform identifier for JS SDK.
+    [name]: 'fire-js-all'
+};
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * @internal
+ */
+const _apps = new Map();
+/**
+ * @internal
+ */
+const _serverApps = new Map();
+/**
+ * Registered components.
+ *
+ * @internal
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const _components = new Map();
+/**
+ * @param component - the component being added to this app's container
+ *
+ * @internal
+ */
+function _addComponent(app, component) {
+    try {
+        app.container.addComponent(component);
+    }
+    catch (e) {
+        logger.debug(`Component ${component.name} failed to register with FirebaseApp ${app.name}`, e);
+    }
+}
+/**
+ *
+ * @internal
+ */
+function _addOrOverwriteComponent(app, component) {
+    app.container.addOrOverwriteComponent(component);
+}
+/**
+ *
+ * @param component - the component to register
+ * @returns whether or not the component is registered successfully
+ *
+ * @internal
+ */
+function _registerComponent(component) {
+    const componentName = component.name;
+    if (_components.has(componentName)) {
+        logger.debug(`There were multiple attempts to register component ${componentName}.`);
+        return false;
+    }
+    _components.set(componentName, component);
+    // add the component to existing app instances
+    for (const app of _apps.values()) {
+        _addComponent(app, component);
+    }
+    for (const serverApp of _serverApps.values()) {
+        _addComponent(serverApp, component);
+    }
+    return true;
+}
+/**
+ *
+ * @param app - FirebaseApp instance
+ * @param name - service name
+ *
+ * @returns the provider for the service with the matching name
+ *
+ * @internal
+ */
+function _getProvider(app, name) {
+    const heartbeatController = app.container
+        .getProvider('heartbeat')
+        .getImmediate({ optional: true });
+    if (heartbeatController) {
+        void heartbeatController.triggerHeartbeat();
+    }
+    return app.container.getProvider(name);
+}
+/**
+ *
+ * @param app - FirebaseApp instance
+ * @param name - service name
+ * @param instanceIdentifier - service instance identifier in case the service supports multiple instances
+ *
+ * @internal
+ */
+function _removeServiceInstance(app, name, instanceIdentifier = DEFAULT_ENTRY_NAME) {
+    _getProvider(app, name).clearInstance(instanceIdentifier);
+}
+/**
+ *
+ * @param obj - an object of type FirebaseApp or FirebaseOptions.
+ *
+ * @returns true if the provide object is of type FirebaseApp.
+ *
+ * @internal
+ */
+function _isFirebaseApp(obj) {
+    return obj.options !== undefined;
+}
+/**
+ *
+ * @param obj - an object of type FirebaseApp.
+ *
+ * @returns true if the provided object is of type FirebaseServerAppImpl.
+ *
+ * @internal
+ */
+function _isFirebaseServerApp(obj) {
+    if (obj === null || obj === undefined) {
+        return false;
+    }
+    return obj.settings !== undefined;
+}
+/**
+ * Test only
+ *
+ * @internal
+ */
+function _clearComponents() {
+    _components.clear();
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const ERRORS = {
+    ["no-app" /* AppError.NO_APP */]: "No Firebase App '{$appName}' has been created - " +
+        'call initializeApp() first',
+    ["bad-app-name" /* AppError.BAD_APP_NAME */]: "Illegal App name: '{$appName}'",
+    ["duplicate-app" /* AppError.DUPLICATE_APP */]: "Firebase App named '{$appName}' already exists with different options or config",
+    ["app-deleted" /* AppError.APP_DELETED */]: "Firebase App named '{$appName}' already deleted",
+    ["server-app-deleted" /* AppError.SERVER_APP_DELETED */]: 'Firebase Server App has been deleted',
+    ["no-options" /* AppError.NO_OPTIONS */]: 'Need to provide options, when not being deployed to hosting via source.',
+    ["invalid-app-argument" /* AppError.INVALID_APP_ARGUMENT */]: 'firebase.{$appName}() takes either no argument or a ' +
+        'Firebase App instance.',
+    ["invalid-log-argument" /* AppError.INVALID_LOG_ARGUMENT */]: 'First argument to `onLog` must be null or a function.',
+    ["idb-open" /* AppError.IDB_OPEN */]: 'Error thrown when opening IndexedDB. Original error: {$originalErrorMessage}.',
+    ["idb-get" /* AppError.IDB_GET */]: 'Error thrown when reading from IndexedDB. Original error: {$originalErrorMessage}.',
+    ["idb-set" /* AppError.IDB_WRITE */]: 'Error thrown when writing to IndexedDB. Original error: {$originalErrorMessage}.',
+    ["idb-delete" /* AppError.IDB_DELETE */]: 'Error thrown when deleting from IndexedDB. Original error: {$originalErrorMessage}.',
+    ["finalization-registry-not-supported" /* AppError.FINALIZATION_REGISTRY_NOT_SUPPORTED */]: 'FirebaseServerApp deleteOnDeref field defined but the JS runtime does not support FinalizationRegistry.',
+    ["invalid-server-app-environment" /* AppError.INVALID_SERVER_APP_ENVIRONMENT */]: 'FirebaseServerApp is not for use in browser environments.'
+};
+const ERROR_FACTORY = new _firebase_util__WEBPACK_IMPORTED_MODULE_2__.ErrorFactory('app', 'Firebase', ERRORS);
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+class FirebaseAppImpl {
+    constructor(options, config, container) {
+        this._isDeleted = false;
+        this._options = Object.assign({}, options);
+        this._config = Object.assign({}, config);
+        this._name = config.name;
+        this._automaticDataCollectionEnabled =
+            config.automaticDataCollectionEnabled;
+        this._container = container;
+        this.container.addComponent(new _firebase_component__WEBPACK_IMPORTED_MODULE_0__.Component('app', () => this, "PUBLIC" /* ComponentType.PUBLIC */));
+    }
+    get automaticDataCollectionEnabled() {
+        this.checkDestroyed();
+        return this._automaticDataCollectionEnabled;
+    }
+    set automaticDataCollectionEnabled(val) {
+        this.checkDestroyed();
+        this._automaticDataCollectionEnabled = val;
+    }
+    get name() {
+        this.checkDestroyed();
+        return this._name;
+    }
+    get options() {
+        this.checkDestroyed();
+        return this._options;
+    }
+    get config() {
+        this.checkDestroyed();
+        return this._config;
+    }
+    get container() {
+        return this._container;
+    }
+    get isDeleted() {
+        return this._isDeleted;
+    }
+    set isDeleted(val) {
+        this._isDeleted = val;
+    }
+    /**
+     * This function will throw an Error if the App has already been deleted -
+     * use before performing API actions on the App.
+     */
+    checkDestroyed() {
+        if (this.isDeleted) {
+            throw ERROR_FACTORY.create("app-deleted" /* AppError.APP_DELETED */, { appName: this._name });
+        }
+    }
+}
+
+/**
+ * @license
+ * Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+// Parse the token and check to see if the `exp` claim is in the future.
+// Reports an error to the console if the token or claim could not be parsed, or if `exp` is in
+// the past.
+function validateTokenTTL(base64Token, tokenName) {
+    const secondPart = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_2__.base64Decode)(base64Token.split('.')[1]);
+    if (secondPart === null) {
+        console.error(`FirebaseServerApp ${tokenName} is invalid: second part could not be parsed.`);
+        return;
+    }
+    const expClaim = JSON.parse(secondPart).exp;
+    if (expClaim === undefined) {
+        console.error(`FirebaseServerApp ${tokenName} is invalid: expiration claim could not be parsed`);
+        return;
+    }
+    const exp = JSON.parse(secondPart).exp * 1000;
+    const now = new Date().getTime();
+    const diff = exp - now;
+    if (diff <= 0) {
+        console.error(`FirebaseServerApp ${tokenName} is invalid: the token has expired.`);
+    }
+}
+class FirebaseServerAppImpl extends FirebaseAppImpl {
+    constructor(options, serverConfig, name, container) {
+        // Build configuration parameters for the FirebaseAppImpl base class.
+        const automaticDataCollectionEnabled = serverConfig.automaticDataCollectionEnabled !== undefined
+            ? serverConfig.automaticDataCollectionEnabled
+            : true;
+        // Create the FirebaseAppSettings object for the FirebaseAppImp constructor.
+        const config = {
+            name,
+            automaticDataCollectionEnabled
+        };
+        if (options.apiKey !== undefined) {
+            // Construct the parent FirebaseAppImp object.
+            super(options, config, container);
+        }
+        else {
+            const appImpl = options;
+            super(appImpl.options, config, container);
+        }
+        // Now construct the data for the FirebaseServerAppImpl.
+        this._serverConfig = Object.assign({ automaticDataCollectionEnabled }, serverConfig);
+        // Ensure that the current time is within the `authIdtoken` window of validity.
+        if (this._serverConfig.authIdToken) {
+            validateTokenTTL(this._serverConfig.authIdToken, 'authIdToken');
+        }
+        // Ensure that the current time is within the `appCheckToken` window of validity.
+        if (this._serverConfig.appCheckToken) {
+            validateTokenTTL(this._serverConfig.appCheckToken, 'appCheckToken');
+        }
+        this._finalizationRegistry = null;
+        if (typeof FinalizationRegistry !== 'undefined') {
+            this._finalizationRegistry = new FinalizationRegistry(() => {
+                this.automaticCleanup();
+            });
+        }
+        this._refCount = 0;
+        this.incRefCount(this._serverConfig.releaseOnDeref);
+        // Do not retain a hard reference to the dref object, otherwise the FinalizationRegistry
+        // will never trigger.
+        this._serverConfig.releaseOnDeref = undefined;
+        serverConfig.releaseOnDeref = undefined;
+        registerVersion(name$q, version$1, 'serverapp');
+    }
+    toJSON() {
+        return undefined;
+    }
+    get refCount() {
+        return this._refCount;
+    }
+    // Increment the reference count of this server app. If an object is provided, register it
+    // with the finalization registry.
+    incRefCount(obj) {
+        if (this.isDeleted) {
+            return;
+        }
+        this._refCount++;
+        if (obj !== undefined && this._finalizationRegistry !== null) {
+            this._finalizationRegistry.register(obj, this);
+        }
+    }
+    // Decrement the reference count.
+    decRefCount() {
+        if (this.isDeleted) {
+            return 0;
+        }
+        return --this._refCount;
+    }
+    // Invoked by the FinalizationRegistry callback to note that this app should go through its
+    // reference counts and delete itself if no reference count remain. The coordinating logic that
+    // handles this is in deleteApp(...).
+    automaticCleanup() {
+        void deleteApp(this);
+    }
+    get settings() {
+        this.checkDestroyed();
+        return this._serverConfig;
+    }
+    /**
+     * This function will throw an Error if the App has already been deleted -
+     * use before performing API actions on the App.
+     */
+    checkDestroyed() {
+        if (this.isDeleted) {
+            throw ERROR_FACTORY.create("server-app-deleted" /* AppError.SERVER_APP_DELETED */);
+        }
+    }
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * The current SDK version.
+ *
+ * @public
+ */
+const SDK_VERSION = version;
+function initializeApp(_options, rawConfig = {}) {
+    let options = _options;
+    if (typeof rawConfig !== 'object') {
+        const name = rawConfig;
+        rawConfig = { name };
+    }
+    const config = Object.assign({ name: DEFAULT_ENTRY_NAME, automaticDataCollectionEnabled: true }, rawConfig);
+    const name = config.name;
+    if (typeof name !== 'string' || !name) {
+        throw ERROR_FACTORY.create("bad-app-name" /* AppError.BAD_APP_NAME */, {
+            appName: String(name)
+        });
+    }
+    options || (options = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_2__.getDefaultAppConfig)());
+    if (!options) {
+        throw ERROR_FACTORY.create("no-options" /* AppError.NO_OPTIONS */);
+    }
+    const existingApp = _apps.get(name);
+    if (existingApp) {
+        // return the existing app if options and config deep equal the ones in the existing app.
+        if ((0,_firebase_util__WEBPACK_IMPORTED_MODULE_2__.deepEqual)(options, existingApp.options) &&
+            (0,_firebase_util__WEBPACK_IMPORTED_MODULE_2__.deepEqual)(config, existingApp.config)) {
+            return existingApp;
+        }
+        else {
+            throw ERROR_FACTORY.create("duplicate-app" /* AppError.DUPLICATE_APP */, { appName: name });
+        }
+    }
+    const container = new _firebase_component__WEBPACK_IMPORTED_MODULE_0__.ComponentContainer(name);
+    for (const component of _components.values()) {
+        container.addComponent(component);
+    }
+    const newApp = new FirebaseAppImpl(options, config, container);
+    _apps.set(name, newApp);
+    return newApp;
+}
+function initializeServerApp(_options, _serverAppConfig) {
+    if ((0,_firebase_util__WEBPACK_IMPORTED_MODULE_2__.isBrowser)() && !(0,_firebase_util__WEBPACK_IMPORTED_MODULE_2__.isWebWorker)()) {
+        // FirebaseServerApp isn't designed to be run in browsers.
+        throw ERROR_FACTORY.create("invalid-server-app-environment" /* AppError.INVALID_SERVER_APP_ENVIRONMENT */);
+    }
+    if (_serverAppConfig.automaticDataCollectionEnabled === undefined) {
+        _serverAppConfig.automaticDataCollectionEnabled = true;
+    }
+    let appOptions;
+    if (_isFirebaseApp(_options)) {
+        appOptions = _options.options;
+    }
+    else {
+        appOptions = _options;
+    }
+    // Build an app name based on a hash of the configuration options.
+    const nameObj = Object.assign(Object.assign({}, _serverAppConfig), appOptions);
+    // However, Do not mangle the name based on releaseOnDeref, since it will vary between the
+    // construction of FirebaseServerApp instances. For example, if the object is the request headers.
+    if (nameObj.releaseOnDeref !== undefined) {
+        delete nameObj.releaseOnDeref;
+    }
+    const hashCode = (s) => {
+        return [...s].reduce((hash, c) => (Math.imul(31, hash) + c.charCodeAt(0)) | 0, 0);
+    };
+    if (_serverAppConfig.releaseOnDeref !== undefined) {
+        if (typeof FinalizationRegistry === 'undefined') {
+            throw ERROR_FACTORY.create("finalization-registry-not-supported" /* AppError.FINALIZATION_REGISTRY_NOT_SUPPORTED */, {});
+        }
+    }
+    const nameString = '' + hashCode(JSON.stringify(nameObj));
+    const existingApp = _serverApps.get(nameString);
+    if (existingApp) {
+        existingApp.incRefCount(_serverAppConfig.releaseOnDeref);
+        return existingApp;
+    }
+    const container = new _firebase_component__WEBPACK_IMPORTED_MODULE_0__.ComponentContainer(nameString);
+    for (const component of _components.values()) {
+        container.addComponent(component);
+    }
+    const newApp = new FirebaseServerAppImpl(appOptions, _serverAppConfig, nameString, container);
+    _serverApps.set(nameString, newApp);
+    return newApp;
+}
+/**
+ * Retrieves a {@link @firebase/app#FirebaseApp} instance.
+ *
+ * When called with no arguments, the default app is returned. When an app name
+ * is provided, the app corresponding to that name is returned.
+ *
+ * An exception is thrown if the app being retrieved has not yet been
+ * initialized.
+ *
+ * @example
+ * ```javascript
+ * // Return the default app
+ * const app = getApp();
+ * ```
+ *
+ * @example
+ * ```javascript
+ * // Return a named app
+ * const otherApp = getApp("otherApp");
+ * ```
+ *
+ * @param name - Optional name of the app to return. If no name is
+ *   provided, the default is `"[DEFAULT]"`.
+ *
+ * @returns The app corresponding to the provided app name.
+ *   If no app name is provided, the default app is returned.
+ *
+ * @public
+ */
+function getApp(name = DEFAULT_ENTRY_NAME) {
+    const app = _apps.get(name);
+    if (!app && name === DEFAULT_ENTRY_NAME && (0,_firebase_util__WEBPACK_IMPORTED_MODULE_2__.getDefaultAppConfig)()) {
+        return initializeApp();
+    }
+    if (!app) {
+        throw ERROR_FACTORY.create("no-app" /* AppError.NO_APP */, { appName: name });
+    }
+    return app;
+}
+/**
+ * A (read-only) array of all initialized apps.
+ * @public
+ */
+function getApps() {
+    return Array.from(_apps.values());
+}
+/**
+ * Renders this app unusable and frees the resources of all associated
+ * services.
+ *
+ * @example
+ * ```javascript
+ * deleteApp(app)
+ *   .then(function() {
+ *     console.log("App deleted successfully");
+ *   })
+ *   .catch(function(error) {
+ *     console.log("Error deleting app:", error);
+ *   });
+ * ```
+ *
+ * @public
+ */
+async function deleteApp(app) {
+    let cleanupProviders = false;
+    const name = app.name;
+    if (_apps.has(name)) {
+        cleanupProviders = true;
+        _apps.delete(name);
+    }
+    else if (_serverApps.has(name)) {
+        const firebaseServerApp = app;
+        if (firebaseServerApp.decRefCount() <= 0) {
+            _serverApps.delete(name);
+            cleanupProviders = true;
+        }
+    }
+    if (cleanupProviders) {
+        await Promise.all(app.container
+            .getProviders()
+            .map(provider => provider.delete()));
+        app.isDeleted = true;
+    }
+}
+/**
+ * Registers a library's name and version for platform logging purposes.
+ * @param library - Name of 1p or 3p library (e.g. firestore, angularfire)
+ * @param version - Current version of that library.
+ * @param variant - Bundle variant, e.g., node, rn, etc.
+ *
+ * @public
+ */
+function registerVersion(libraryKeyOrName, version, variant) {
+    var _a;
+    // TODO: We can use this check to whitelist strings when/if we set up
+    // a good whitelist system.
+    let library = (_a = PLATFORM_LOG_STRING[libraryKeyOrName]) !== null && _a !== void 0 ? _a : libraryKeyOrName;
+    if (variant) {
+        library += `-${variant}`;
+    }
+    const libraryMismatch = library.match(/\s|\//);
+    const versionMismatch = version.match(/\s|\//);
+    if (libraryMismatch || versionMismatch) {
+        const warning = [
+            `Unable to register library "${library}" with version "${version}":`
+        ];
+        if (libraryMismatch) {
+            warning.push(`library name "${library}" contains illegal characters (whitespace or "/")`);
+        }
+        if (libraryMismatch && versionMismatch) {
+            warning.push('and');
+        }
+        if (versionMismatch) {
+            warning.push(`version name "${version}" contains illegal characters (whitespace or "/")`);
+        }
+        logger.warn(warning.join(' '));
+        return;
+    }
+    _registerComponent(new _firebase_component__WEBPACK_IMPORTED_MODULE_0__.Component(`${library}-version`, () => ({ library, version }), "VERSION" /* ComponentType.VERSION */));
+}
+/**
+ * Sets log handler for all Firebase SDKs.
+ * @param logCallback - An optional custom log handler that executes user code whenever
+ * the Firebase SDK makes a logging call.
+ *
+ * @public
+ */
+function onLog(logCallback, options) {
+    if (logCallback !== null && typeof logCallback !== 'function') {
+        throw ERROR_FACTORY.create("invalid-log-argument" /* AppError.INVALID_LOG_ARGUMENT */);
+    }
+    (0,_firebase_logger__WEBPACK_IMPORTED_MODULE_1__.setUserLogHandler)(logCallback, options);
+}
+/**
+ * Sets log level for all Firebase SDKs.
+ *
+ * All of the log types above the current log level are captured (i.e. if
+ * you set the log level to `info`, errors are logged, but `debug` and
+ * `verbose` logs are not).
+ *
+ * @public
+ */
+function setLogLevel(logLevel) {
+    (0,_firebase_logger__WEBPACK_IMPORTED_MODULE_1__.setLogLevel)(logLevel);
+}
+
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const DB_NAME = 'firebase-heartbeat-database';
+const DB_VERSION = 1;
+const STORE_NAME = 'firebase-heartbeat-store';
+let dbPromise = null;
+function getDbPromise() {
+    if (!dbPromise) {
+        dbPromise = (0,idb__WEBPACK_IMPORTED_MODULE_3__.openDB)(DB_NAME, DB_VERSION, {
+            upgrade: (db, oldVersion) => {
+                // We don't use 'break' in this switch statement, the fall-through
+                // behavior is what we want, because if there are multiple versions between
+                // the old version and the current version, we want ALL the migrations
+                // that correspond to those versions to run, not only the last one.
+                // eslint-disable-next-line default-case
+                switch (oldVersion) {
+                    case 0:
+                        try {
+                            db.createObjectStore(STORE_NAME);
+                        }
+                        catch (e) {
+                            // Safari/iOS browsers throw occasional exceptions on
+                            // db.createObjectStore() that may be a bug. Avoid blocking
+                            // the rest of the app functionality.
+                            console.warn(e);
+                        }
+                }
+            }
+        }).catch(e => {
+            throw ERROR_FACTORY.create("idb-open" /* AppError.IDB_OPEN */, {
+                originalErrorMessage: e.message
+            });
+        });
+    }
+    return dbPromise;
+}
+async function readHeartbeatsFromIndexedDB(app) {
+    try {
+        const db = await getDbPromise();
+        const tx = db.transaction(STORE_NAME);
+        const result = await tx.objectStore(STORE_NAME).get(computeKey(app));
+        // We already have the value but tx.done can throw,
+        // so we need to await it here to catch errors
+        await tx.done;
+        return result;
+    }
+    catch (e) {
+        if (e instanceof _firebase_util__WEBPACK_IMPORTED_MODULE_2__.FirebaseError) {
+            logger.warn(e.message);
+        }
+        else {
+            const idbGetError = ERROR_FACTORY.create("idb-get" /* AppError.IDB_GET */, {
+                originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
+            });
+            logger.warn(idbGetError.message);
+        }
+    }
+}
+async function writeHeartbeatsToIndexedDB(app, heartbeatObject) {
+    try {
+        const db = await getDbPromise();
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const objectStore = tx.objectStore(STORE_NAME);
+        await objectStore.put(heartbeatObject, computeKey(app));
+        await tx.done;
+    }
+    catch (e) {
+        if (e instanceof _firebase_util__WEBPACK_IMPORTED_MODULE_2__.FirebaseError) {
+            logger.warn(e.message);
+        }
+        else {
+            const idbGetError = ERROR_FACTORY.create("idb-set" /* AppError.IDB_WRITE */, {
+                originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
+            });
+            logger.warn(idbGetError.message);
+        }
+    }
+}
+function computeKey(app) {
+    return `${app.name}!${app.options.appId}`;
+}
+
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const MAX_HEADER_BYTES = 1024;
+const MAX_NUM_STORED_HEARTBEATS = 30;
+class HeartbeatServiceImpl {
+    constructor(container) {
+        this.container = container;
+        /**
+         * In-memory cache for heartbeats, used by getHeartbeatsHeader() to generate
+         * the header string.
+         * Stores one record per date. This will be consolidated into the standard
+         * format of one record per user agent string before being sent as a header.
+         * Populated from indexedDB when the controller is instantiated and should
+         * be kept in sync with indexedDB.
+         * Leave public for easier testing.
+         */
+        this._heartbeatsCache = null;
+        const app = this.container.getProvider('app').getImmediate();
+        this._storage = new HeartbeatStorageImpl(app);
+        this._heartbeatsCachePromise = this._storage.read().then(result => {
+            this._heartbeatsCache = result;
+            return result;
+        });
+    }
+    /**
+     * Called to report a heartbeat. The function will generate
+     * a HeartbeatsByUserAgent object, update heartbeatsCache, and persist it
+     * to IndexedDB.
+     * Note that we only store one heartbeat per day. So if a heartbeat for today is
+     * already logged, subsequent calls to this function in the same day will be ignored.
+     */
+    async triggerHeartbeat() {
+        var _a, _b;
+        try {
+            const platformLogger = this.container
+                .getProvider('platform-logger')
+                .getImmediate();
+            // This is the "Firebase user agent" string from the platform logger
+            // service, not the browser user agent.
+            const agent = platformLogger.getPlatformInfoString();
+            const date = getUTCDateString();
+            if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null) {
+                this._heartbeatsCache = await this._heartbeatsCachePromise;
+                // If we failed to construct a heartbeats cache, then return immediately.
+                if (((_b = this._heartbeatsCache) === null || _b === void 0 ? void 0 : _b.heartbeats) == null) {
+                    return;
+                }
+            }
+            // Do not store a heartbeat if one is already stored for this day
+            // or if a header has already been sent today.
+            if (this._heartbeatsCache.lastSentHeartbeatDate === date ||
+                this._heartbeatsCache.heartbeats.some(singleDateHeartbeat => singleDateHeartbeat.date === date)) {
+                return;
+            }
+            else {
+                // There is no entry for this date. Create one.
+                this._heartbeatsCache.heartbeats.push({ date, agent });
+                // If the number of stored heartbeats exceeds the maximum number of stored heartbeats, remove the heartbeat with the earliest date.
+                // Since this is executed each time a heartbeat is pushed, the limit can only be exceeded by one, so only one needs to be removed.
+                if (this._heartbeatsCache.heartbeats.length > MAX_NUM_STORED_HEARTBEATS) {
+                    const earliestHeartbeatIdx = getEarliestHeartbeatIdx(this._heartbeatsCache.heartbeats);
+                    this._heartbeatsCache.heartbeats.splice(earliestHeartbeatIdx, 1);
+                }
+            }
+            return this._storage.overwrite(this._heartbeatsCache);
+        }
+        catch (e) {
+            logger.warn(e);
+        }
+    }
+    /**
+     * Returns a base64 encoded string which can be attached to the heartbeat-specific header directly.
+     * It also clears all heartbeats from memory as well as in IndexedDB.
+     *
+     * NOTE: Consuming product SDKs should not send the header if this method
+     * returns an empty string.
+     */
+    async getHeartbeatsHeader() {
+        var _a;
+        try {
+            if (this._heartbeatsCache === null) {
+                await this._heartbeatsCachePromise;
+            }
+            // If it's still null or the array is empty, there is no data to send.
+            if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null ||
+                this._heartbeatsCache.heartbeats.length === 0) {
+                return '';
+            }
+            const date = getUTCDateString();
+            // Extract as many heartbeats from the cache as will fit under the size limit.
+            const { heartbeatsToSend, unsentEntries } = extractHeartbeatsForHeader(this._heartbeatsCache.heartbeats);
+            const headerString = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_2__.base64urlEncodeWithoutPadding)(JSON.stringify({ version: 2, heartbeats: heartbeatsToSend }));
+            // Store last sent date to prevent another being logged/sent for the same day.
+            this._heartbeatsCache.lastSentHeartbeatDate = date;
+            if (unsentEntries.length > 0) {
+                // Store any unsent entries if they exist.
+                this._heartbeatsCache.heartbeats = unsentEntries;
+                // This seems more likely than emptying the array (below) to lead to some odd state
+                // since the cache isn't empty and this will be called again on the next request,
+                // and is probably safest if we await it.
+                await this._storage.overwrite(this._heartbeatsCache);
+            }
+            else {
+                this._heartbeatsCache.heartbeats = [];
+                // Do not wait for this, to reduce latency.
+                void this._storage.overwrite(this._heartbeatsCache);
+            }
+            return headerString;
+        }
+        catch (e) {
+            logger.warn(e);
+            return '';
+        }
+    }
+}
+function getUTCDateString() {
+    const today = new Date();
+    // Returns date format 'YYYY-MM-DD'
+    return today.toISOString().substring(0, 10);
+}
+function extractHeartbeatsForHeader(heartbeatsCache, maxSize = MAX_HEADER_BYTES) {
+    // Heartbeats grouped by user agent in the standard format to be sent in
+    // the header.
+    const heartbeatsToSend = [];
+    // Single date format heartbeats that are not sent.
+    let unsentEntries = heartbeatsCache.slice();
+    for (const singleDateHeartbeat of heartbeatsCache) {
+        // Look for an existing entry with the same user agent.
+        const heartbeatEntry = heartbeatsToSend.find(hb => hb.agent === singleDateHeartbeat.agent);
+        if (!heartbeatEntry) {
+            // If no entry for this user agent exists, create one.
+            heartbeatsToSend.push({
+                agent: singleDateHeartbeat.agent,
+                dates: [singleDateHeartbeat.date]
+            });
+            if (countBytes(heartbeatsToSend) > maxSize) {
+                // If the header would exceed max size, remove the added heartbeat
+                // entry and stop adding to the header.
+                heartbeatsToSend.pop();
+                break;
+            }
+        }
+        else {
+            heartbeatEntry.dates.push(singleDateHeartbeat.date);
+            // If the header would exceed max size, remove the added date
+            // and stop adding to the header.
+            if (countBytes(heartbeatsToSend) > maxSize) {
+                heartbeatEntry.dates.pop();
+                break;
+            }
+        }
+        // Pop unsent entry from queue. (Skipped if adding the entry exceeded
+        // quota and the loop breaks early.)
+        unsentEntries = unsentEntries.slice(1);
+    }
+    return {
+        heartbeatsToSend,
+        unsentEntries
+    };
+}
+class HeartbeatStorageImpl {
+    constructor(app) {
+        this.app = app;
+        this._canUseIndexedDBPromise = this.runIndexedDBEnvironmentCheck();
+    }
+    async runIndexedDBEnvironmentCheck() {
+        if (!(0,_firebase_util__WEBPACK_IMPORTED_MODULE_2__.isIndexedDBAvailable)()) {
+            return false;
+        }
+        else {
+            return (0,_firebase_util__WEBPACK_IMPORTED_MODULE_2__.validateIndexedDBOpenable)()
+                .then(() => true)
+                .catch(() => false);
+        }
+    }
+    /**
+     * Read all heartbeats.
+     */
+    async read() {
+        const canUseIndexedDB = await this._canUseIndexedDBPromise;
+        if (!canUseIndexedDB) {
+            return { heartbeats: [] };
+        }
+        else {
+            const idbHeartbeatObject = await readHeartbeatsFromIndexedDB(this.app);
+            if (idbHeartbeatObject === null || idbHeartbeatObject === void 0 ? void 0 : idbHeartbeatObject.heartbeats) {
+                return idbHeartbeatObject;
+            }
+            else {
+                return { heartbeats: [] };
+            }
+        }
+    }
+    // overwrite the storage with the provided heartbeats
+    async overwrite(heartbeatsObject) {
+        var _a;
+        const canUseIndexedDB = await this._canUseIndexedDBPromise;
+        if (!canUseIndexedDB) {
+            return;
+        }
+        else {
+            const existingHeartbeatsObject = await this.read();
+            return writeHeartbeatsToIndexedDB(this.app, {
+                lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
+                heartbeats: heartbeatsObject.heartbeats
+            });
+        }
+    }
+    // add heartbeats
+    async add(heartbeatsObject) {
+        var _a;
+        const canUseIndexedDB = await this._canUseIndexedDBPromise;
+        if (!canUseIndexedDB) {
+            return;
+        }
+        else {
+            const existingHeartbeatsObject = await this.read();
+            return writeHeartbeatsToIndexedDB(this.app, {
+                lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
+                heartbeats: [
+                    ...existingHeartbeatsObject.heartbeats,
+                    ...heartbeatsObject.heartbeats
+                ]
+            });
+        }
+    }
+}
+/**
+ * Calculate bytes of a HeartbeatsByUserAgent array after being wrapped
+ * in a platform logging header JSON object, stringified, and converted
+ * to base 64.
+ */
+function countBytes(heartbeatsCache) {
+    // base64 has a restricted set of characters, all of which should be 1 byte.
+    return (0,_firebase_util__WEBPACK_IMPORTED_MODULE_2__.base64urlEncodeWithoutPadding)(
+    // heartbeatsCache wrapper properties
+    JSON.stringify({ version: 2, heartbeats: heartbeatsCache })).length;
+}
+/**
+ * Returns the index of the heartbeat with the earliest date.
+ * If the heartbeats array is empty, -1 is returned.
+ */
+function getEarliestHeartbeatIdx(heartbeats) {
+    if (heartbeats.length === 0) {
+        return -1;
+    }
+    let earliestHeartbeatIdx = 0;
+    let earliestHeartbeatDate = heartbeats[0].date;
+    for (let i = 1; i < heartbeats.length; i++) {
+        if (heartbeats[i].date < earliestHeartbeatDate) {
+            earliestHeartbeatDate = heartbeats[i].date;
+            earliestHeartbeatIdx = i;
+        }
+    }
+    return earliestHeartbeatIdx;
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function registerCoreComponents(variant) {
+    _registerComponent(new _firebase_component__WEBPACK_IMPORTED_MODULE_0__.Component('platform-logger', container => new PlatformLoggerServiceImpl(container), "PRIVATE" /* ComponentType.PRIVATE */));
+    _registerComponent(new _firebase_component__WEBPACK_IMPORTED_MODULE_0__.Component('heartbeat', container => new HeartbeatServiceImpl(container), "PRIVATE" /* ComponentType.PRIVATE */));
+    // Register `app` package.
+    registerVersion(name$q, version$1, variant);
+    // BUILD_TARGET will be replaced by values like esm2017, cjs2017, etc during the compilation
+    registerVersion(name$q, version$1, 'esm2017');
+    // Register platform SDK identifier (no version).
+    registerVersion('fire-js', '');
+}
+
+/**
+ * Firebase App
+ *
+ * @remarks This package coordinates the communication between the different Firebase components
+ * @packageDocumentation
+ */
+registerCoreComponents('');
+
+
+//# sourceMappingURL=index.esm2017.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@firebase/component/dist/esm/index.esm2017.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@firebase/component/dist/esm/index.esm2017.js ***!
+  \********************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Component: function() { return /* binding */ Component; },
+/* harmony export */   ComponentContainer: function() { return /* binding */ ComponentContainer; },
+/* harmony export */   Provider: function() { return /* binding */ Provider; }
+/* harmony export */ });
+/* harmony import */ var _firebase_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @firebase/util */ "./node_modules/@firebase/util/dist/index.esm2017.js");
+
+
+/**
+ * Component for service name T, e.g. `auth`, `auth-internal`
+ */
+class Component {
+    /**
+     *
+     * @param name The public service name, e.g. app, auth, firestore, database
+     * @param instanceFactory Service factory responsible for creating the public interface
+     * @param type whether the service provided by the component is public or private
+     */
+    constructor(name, instanceFactory, type) {
+        this.name = name;
+        this.instanceFactory = instanceFactory;
+        this.type = type;
+        this.multipleInstances = false;
+        /**
+         * Properties to be added to the service namespace
+         */
+        this.serviceProps = {};
+        this.instantiationMode = "LAZY" /* InstantiationMode.LAZY */;
+        this.onInstanceCreated = null;
+    }
+    setInstantiationMode(mode) {
+        this.instantiationMode = mode;
+        return this;
+    }
+    setMultipleInstances(multipleInstances) {
+        this.multipleInstances = multipleInstances;
+        return this;
+    }
+    setServiceProps(props) {
+        this.serviceProps = props;
+        return this;
+    }
+    setInstanceCreatedCallback(callback) {
+        this.onInstanceCreated = callback;
+        return this;
+    }
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const DEFAULT_ENTRY_NAME = '[DEFAULT]';
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Provider for instance for service name T, e.g. 'auth', 'auth-internal'
+ * NameServiceMapping[T] is an alias for the type of the instance
+ */
+class Provider {
+    constructor(name, container) {
+        this.name = name;
+        this.container = container;
+        this.component = null;
+        this.instances = new Map();
+        this.instancesDeferred = new Map();
+        this.instancesOptions = new Map();
+        this.onInitCallbacks = new Map();
+    }
+    /**
+     * @param identifier A provider can provide multiple instances of a service
+     * if this.component.multipleInstances is true.
+     */
+    get(identifier) {
+        // if multipleInstances is not supported, use the default name
+        const normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
+        if (!this.instancesDeferred.has(normalizedIdentifier)) {
+            const deferred = new _firebase_util__WEBPACK_IMPORTED_MODULE_0__.Deferred();
+            this.instancesDeferred.set(normalizedIdentifier, deferred);
+            if (this.isInitialized(normalizedIdentifier) ||
+                this.shouldAutoInitialize()) {
+                // initialize the service if it can be auto-initialized
+                try {
+                    const instance = this.getOrInitializeService({
+                        instanceIdentifier: normalizedIdentifier
+                    });
+                    if (instance) {
+                        deferred.resolve(instance);
+                    }
+                }
+                catch (e) {
+                    // when the instance factory throws an exception during get(), it should not cause
+                    // a fatal error. We just return the unresolved promise in this case.
+                }
+            }
+        }
+        return this.instancesDeferred.get(normalizedIdentifier).promise;
+    }
+    getImmediate(options) {
+        var _a;
+        // if multipleInstances is not supported, use the default name
+        const normalizedIdentifier = this.normalizeInstanceIdentifier(options === null || options === void 0 ? void 0 : options.identifier);
+        const optional = (_a = options === null || options === void 0 ? void 0 : options.optional) !== null && _a !== void 0 ? _a : false;
+        if (this.isInitialized(normalizedIdentifier) ||
+            this.shouldAutoInitialize()) {
+            try {
+                return this.getOrInitializeService({
+                    instanceIdentifier: normalizedIdentifier
+                });
+            }
+            catch (e) {
+                if (optional) {
+                    return null;
+                }
+                else {
+                    throw e;
+                }
+            }
+        }
+        else {
+            // In case a component is not initialized and should/cannot be auto-initialized at the moment, return null if the optional flag is set, or throw
+            if (optional) {
+                return null;
+            }
+            else {
+                throw Error(`Service ${this.name} is not available`);
+            }
+        }
+    }
+    getComponent() {
+        return this.component;
+    }
+    setComponent(component) {
+        if (component.name !== this.name) {
+            throw Error(`Mismatching Component ${component.name} for Provider ${this.name}.`);
+        }
+        if (this.component) {
+            throw Error(`Component for ${this.name} has already been provided`);
+        }
+        this.component = component;
+        // return early without attempting to initialize the component if the component requires explicit initialization (calling `Provider.initialize()`)
+        if (!this.shouldAutoInitialize()) {
+            return;
+        }
+        // if the service is eager, initialize the default instance
+        if (isComponentEager(component)) {
+            try {
+                this.getOrInitializeService({ instanceIdentifier: DEFAULT_ENTRY_NAME });
+            }
+            catch (e) {
+                // when the instance factory for an eager Component throws an exception during the eager
+                // initialization, it should not cause a fatal error.
+                // TODO: Investigate if we need to make it configurable, because some component may want to cause
+                // a fatal error in this case?
+            }
+        }
+        // Create service instances for the pending promises and resolve them
+        // NOTE: if this.multipleInstances is false, only the default instance will be created
+        // and all promises with resolve with it regardless of the identifier.
+        for (const [instanceIdentifier, instanceDeferred] of this.instancesDeferred.entries()) {
+            const normalizedIdentifier = this.normalizeInstanceIdentifier(instanceIdentifier);
+            try {
+                // `getOrInitializeService()` should always return a valid instance since a component is guaranteed. use ! to make typescript happy.
+                const instance = this.getOrInitializeService({
+                    instanceIdentifier: normalizedIdentifier
+                });
+                instanceDeferred.resolve(instance);
+            }
+            catch (e) {
+                // when the instance factory throws an exception, it should not cause
+                // a fatal error. We just leave the promise unresolved.
+            }
+        }
+    }
+    clearInstance(identifier = DEFAULT_ENTRY_NAME) {
+        this.instancesDeferred.delete(identifier);
+        this.instancesOptions.delete(identifier);
+        this.instances.delete(identifier);
+    }
+    // app.delete() will call this method on every provider to delete the services
+    // TODO: should we mark the provider as deleted?
+    async delete() {
+        const services = Array.from(this.instances.values());
+        await Promise.all([
+            ...services
+                .filter(service => 'INTERNAL' in service) // legacy services
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .map(service => service.INTERNAL.delete()),
+            ...services
+                .filter(service => '_delete' in service) // modularized services
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .map(service => service._delete())
+        ]);
+    }
+    isComponentSet() {
+        return this.component != null;
+    }
+    isInitialized(identifier = DEFAULT_ENTRY_NAME) {
+        return this.instances.has(identifier);
+    }
+    getOptions(identifier = DEFAULT_ENTRY_NAME) {
+        return this.instancesOptions.get(identifier) || {};
+    }
+    initialize(opts = {}) {
+        const { options = {} } = opts;
+        const normalizedIdentifier = this.normalizeInstanceIdentifier(opts.instanceIdentifier);
+        if (this.isInitialized(normalizedIdentifier)) {
+            throw Error(`${this.name}(${normalizedIdentifier}) has already been initialized`);
+        }
+        if (!this.isComponentSet()) {
+            throw Error(`Component ${this.name} has not been registered yet`);
+        }
+        const instance = this.getOrInitializeService({
+            instanceIdentifier: normalizedIdentifier,
+            options
+        });
+        // resolve any pending promise waiting for the service instance
+        for (const [instanceIdentifier, instanceDeferred] of this.instancesDeferred.entries()) {
+            const normalizedDeferredIdentifier = this.normalizeInstanceIdentifier(instanceIdentifier);
+            if (normalizedIdentifier === normalizedDeferredIdentifier) {
+                instanceDeferred.resolve(instance);
+            }
+        }
+        return instance;
+    }
+    /**
+     *
+     * @param callback - a function that will be invoked  after the provider has been initialized by calling provider.initialize().
+     * The function is invoked SYNCHRONOUSLY, so it should not execute any longrunning tasks in order to not block the program.
+     *
+     * @param identifier An optional instance identifier
+     * @returns a function to unregister the callback
+     */
+    onInit(callback, identifier) {
+        var _a;
+        const normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
+        const existingCallbacks = (_a = this.onInitCallbacks.get(normalizedIdentifier)) !== null && _a !== void 0 ? _a : new Set();
+        existingCallbacks.add(callback);
+        this.onInitCallbacks.set(normalizedIdentifier, existingCallbacks);
+        const existingInstance = this.instances.get(normalizedIdentifier);
+        if (existingInstance) {
+            callback(existingInstance, normalizedIdentifier);
+        }
+        return () => {
+            existingCallbacks.delete(callback);
+        };
+    }
+    /**
+     * Invoke onInit callbacks synchronously
+     * @param instance the service instance`
+     */
+    invokeOnInitCallbacks(instance, identifier) {
+        const callbacks = this.onInitCallbacks.get(identifier);
+        if (!callbacks) {
+            return;
+        }
+        for (const callback of callbacks) {
+            try {
+                callback(instance, identifier);
+            }
+            catch (_a) {
+                // ignore errors in the onInit callback
+            }
+        }
+    }
+    getOrInitializeService({ instanceIdentifier, options = {} }) {
+        let instance = this.instances.get(instanceIdentifier);
+        if (!instance && this.component) {
+            instance = this.component.instanceFactory(this.container, {
+                instanceIdentifier: normalizeIdentifierForFactory(instanceIdentifier),
+                options
+            });
+            this.instances.set(instanceIdentifier, instance);
+            this.instancesOptions.set(instanceIdentifier, options);
+            /**
+             * Invoke onInit listeners.
+             * Note this.component.onInstanceCreated is different, which is used by the component creator,
+             * while onInit listeners are registered by consumers of the provider.
+             */
+            this.invokeOnInitCallbacks(instance, instanceIdentifier);
+            /**
+             * Order is important
+             * onInstanceCreated() should be called after this.instances.set(instanceIdentifier, instance); which
+             * makes `isInitialized()` return true.
+             */
+            if (this.component.onInstanceCreated) {
+                try {
+                    this.component.onInstanceCreated(this.container, instanceIdentifier, instance);
+                }
+                catch (_a) {
+                    // ignore errors in the onInstanceCreatedCallback
+                }
+            }
+        }
+        return instance || null;
+    }
+    normalizeInstanceIdentifier(identifier = DEFAULT_ENTRY_NAME) {
+        if (this.component) {
+            return this.component.multipleInstances ? identifier : DEFAULT_ENTRY_NAME;
+        }
+        else {
+            return identifier; // assume multiple instances are supported before the component is provided.
+        }
+    }
+    shouldAutoInitialize() {
+        return (!!this.component &&
+            this.component.instantiationMode !== "EXPLICIT" /* InstantiationMode.EXPLICIT */);
+    }
+}
+// undefined should be passed to the service factory for the default instance
+function normalizeIdentifierForFactory(identifier) {
+    return identifier === DEFAULT_ENTRY_NAME ? undefined : identifier;
+}
+function isComponentEager(component) {
+    return component.instantiationMode === "EAGER" /* InstantiationMode.EAGER */;
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * ComponentContainer that provides Providers for service name T, e.g. `auth`, `auth-internal`
+ */
+class ComponentContainer {
+    constructor(name) {
+        this.name = name;
+        this.providers = new Map();
+    }
+    /**
+     *
+     * @param component Component being added
+     * @param overwrite When a component with the same name has already been registered,
+     * if overwrite is true: overwrite the existing component with the new component and create a new
+     * provider with the new component. It can be useful in tests where you want to use different mocks
+     * for different tests.
+     * if overwrite is false: throw an exception
+     */
+    addComponent(component) {
+        const provider = this.getProvider(component.name);
+        if (provider.isComponentSet()) {
+            throw new Error(`Component ${component.name} has already been registered with ${this.name}`);
+        }
+        provider.setComponent(component);
+    }
+    addOrOverwriteComponent(component) {
+        const provider = this.getProvider(component.name);
+        if (provider.isComponentSet()) {
+            // delete the existing provider from the container, so we can register the new component
+            this.providers.delete(component.name);
+        }
+        this.addComponent(component);
+    }
+    /**
+     * getProvider provides a type safe interface where it can only be called with a field name
+     * present in NameServiceMapping interface.
+     *
+     * Firebase SDKs providing services should extend NameServiceMapping interface to register
+     * themselves.
+     */
+    getProvider(name) {
+        if (this.providers.has(name)) {
+            return this.providers.get(name);
+        }
+        // create a Provider for a service that hasn't registered with Firebase
+        const provider = new Provider(name, this);
+        this.providers.set(name, provider);
+        return provider;
+    }
+    getProviders() {
+        return Array.from(this.providers.values());
+    }
+}
+
+
+//# sourceMappingURL=index.esm2017.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@firebase/installations/dist/esm/index.esm2017.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/@firebase/installations/dist/esm/index.esm2017.js ***!
+  \************************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   deleteInstallations: function() { return /* binding */ deleteInstallations; },
+/* harmony export */   getId: function() { return /* binding */ getId; },
+/* harmony export */   getInstallations: function() { return /* binding */ getInstallations; },
+/* harmony export */   getToken: function() { return /* binding */ getToken; },
+/* harmony export */   onIdChange: function() { return /* binding */ onIdChange; }
+/* harmony export */ });
+/* harmony import */ var _firebase_app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @firebase/app */ "./node_modules/@firebase/app/dist/esm/index.esm2017.js");
+/* harmony import */ var _firebase_component__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @firebase/component */ "./node_modules/@firebase/component/dist/esm/index.esm2017.js");
+/* harmony import */ var _firebase_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @firebase/util */ "./node_modules/@firebase/util/dist/index.esm2017.js");
+/* harmony import */ var idb__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! idb */ "./node_modules/idb/build/index.js");
+
+
+
+
+
+const name = "@firebase/installations";
+const version = "0.6.18";
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const PENDING_TIMEOUT_MS = 10000;
+const PACKAGE_VERSION = `w:${version}`;
+const INTERNAL_AUTH_VERSION = 'FIS_v2';
+const INSTALLATIONS_API_URL = 'https://firebaseinstallations.googleapis.com/v1';
+const TOKEN_EXPIRATION_BUFFER = 60 * 60 * 1000; // One hour
+const SERVICE = 'installations';
+const SERVICE_NAME = 'Installations';
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const ERROR_DESCRIPTION_MAP = {
+    ["missing-app-config-values" /* ErrorCode.MISSING_APP_CONFIG_VALUES */]: 'Missing App configuration value: "{$valueName}"',
+    ["not-registered" /* ErrorCode.NOT_REGISTERED */]: 'Firebase Installation is not registered.',
+    ["installation-not-found" /* ErrorCode.INSTALLATION_NOT_FOUND */]: 'Firebase Installation not found.',
+    ["request-failed" /* ErrorCode.REQUEST_FAILED */]: '{$requestName} request failed with error "{$serverCode} {$serverStatus}: {$serverMessage}"',
+    ["app-offline" /* ErrorCode.APP_OFFLINE */]: 'Could not process request. Application offline.',
+    ["delete-pending-registration" /* ErrorCode.DELETE_PENDING_REGISTRATION */]: "Can't delete installation while there is a pending registration request."
+};
+const ERROR_FACTORY = new _firebase_util__WEBPACK_IMPORTED_MODULE_2__.ErrorFactory(SERVICE, SERVICE_NAME, ERROR_DESCRIPTION_MAP);
+/** Returns true if error is a FirebaseError that is based on an error from the server. */
+function isServerError(error) {
+    return (error instanceof _firebase_util__WEBPACK_IMPORTED_MODULE_2__.FirebaseError &&
+        error.code.includes("request-failed" /* ErrorCode.REQUEST_FAILED */));
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function getInstallationsEndpoint({ projectId }) {
+    return `${INSTALLATIONS_API_URL}/projects/${projectId}/installations`;
+}
+function extractAuthTokenInfoFromResponse(response) {
+    return {
+        token: response.token,
+        requestStatus: 2 /* RequestStatus.COMPLETED */,
+        expiresIn: getExpiresInFromResponseExpiresIn(response.expiresIn),
+        creationTime: Date.now()
+    };
+}
+async function getErrorFromResponse(requestName, response) {
+    const responseJson = await response.json();
+    const errorData = responseJson.error;
+    return ERROR_FACTORY.create("request-failed" /* ErrorCode.REQUEST_FAILED */, {
+        requestName,
+        serverCode: errorData.code,
+        serverMessage: errorData.message,
+        serverStatus: errorData.status
+    });
+}
+function getHeaders({ apiKey }) {
+    return new Headers({
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'x-goog-api-key': apiKey
+    });
+}
+function getHeadersWithAuth(appConfig, { refreshToken }) {
+    const headers = getHeaders(appConfig);
+    headers.append('Authorization', getAuthorizationHeader(refreshToken));
+    return headers;
+}
+/**
+ * Calls the passed in fetch wrapper and returns the response.
+ * If the returned response has a status of 5xx, re-runs the function once and
+ * returns the response.
+ */
+async function retryIfServerError(fn) {
+    const result = await fn();
+    if (result.status >= 500 && result.status < 600) {
+        // Internal Server Error. Retry request.
+        return fn();
+    }
+    return result;
+}
+function getExpiresInFromResponseExpiresIn(responseExpiresIn) {
+    // This works because the server will never respond with fractions of a second.
+    return Number(responseExpiresIn.replace('s', '000'));
+}
+function getAuthorizationHeader(refreshToken) {
+    return `${INTERNAL_AUTH_VERSION} ${refreshToken}`;
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function createInstallationRequest({ appConfig, heartbeatServiceProvider }, { fid }) {
+    const endpoint = getInstallationsEndpoint(appConfig);
+    const headers = getHeaders(appConfig);
+    // If heartbeat service exists, add the heartbeat string to the header.
+    const heartbeatService = heartbeatServiceProvider.getImmediate({
+        optional: true
+    });
+    if (heartbeatService) {
+        const heartbeatsHeader = await heartbeatService.getHeartbeatsHeader();
+        if (heartbeatsHeader) {
+            headers.append('x-firebase-client', heartbeatsHeader);
+        }
+    }
+    const body = {
+        fid,
+        authVersion: INTERNAL_AUTH_VERSION,
+        appId: appConfig.appId,
+        sdkVersion: PACKAGE_VERSION
+    };
+    const request = {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body)
+    };
+    const response = await retryIfServerError(() => fetch(endpoint, request));
+    if (response.ok) {
+        const responseValue = await response.json();
+        const registeredInstallationEntry = {
+            fid: responseValue.fid || fid,
+            registrationStatus: 2 /* RequestStatus.COMPLETED */,
+            refreshToken: responseValue.refreshToken,
+            authToken: extractAuthTokenInfoFromResponse(responseValue.authToken)
+        };
+        return registeredInstallationEntry;
+    }
+    else {
+        throw await getErrorFromResponse('Create Installation', response);
+    }
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/** Returns a promise that resolves after given time passes. */
+function sleep(ms) {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function bufferToBase64UrlSafe(array) {
+    const b64 = btoa(String.fromCharCode(...array));
+    return b64.replace(/\+/g, '-').replace(/\//g, '_');
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const VALID_FID_PATTERN = /^[cdef][\w-]{21}$/;
+const INVALID_FID = '';
+/**
+ * Generates a new FID using random values from Web Crypto API.
+ * Returns an empty string if FID generation fails for any reason.
+ */
+function generateFid() {
+    try {
+        // A valid FID has exactly 22 base64 characters, which is 132 bits, or 16.5
+        // bytes. our implementation generates a 17 byte array instead.
+        const fidByteArray = new Uint8Array(17);
+        const crypto = self.crypto || self.msCrypto;
+        crypto.getRandomValues(fidByteArray);
+        // Replace the first 4 random bits with the constant FID header of 0b0111.
+        fidByteArray[0] = 0b01110000 + (fidByteArray[0] % 0b00010000);
+        const fid = encode(fidByteArray);
+        return VALID_FID_PATTERN.test(fid) ? fid : INVALID_FID;
+    }
+    catch (_a) {
+        // FID generation errored
+        return INVALID_FID;
+    }
+}
+/** Converts a FID Uint8Array to a base64 string representation. */
+function encode(fidByteArray) {
+    const b64String = bufferToBase64UrlSafe(fidByteArray);
+    // Remove the 23rd character that was added because of the extra 4 bits at the
+    // end of our 17 byte array, and the '=' padding.
+    return b64String.substr(0, 22);
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/** Returns a string key that can be used to identify the app. */
+function getKey(appConfig) {
+    return `${appConfig.appName}!${appConfig.appId}`;
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const fidChangeCallbacks = new Map();
+/**
+ * Calls the onIdChange callbacks with the new FID value, and broadcasts the
+ * change to other tabs.
+ */
+function fidChanged(appConfig, fid) {
+    const key = getKey(appConfig);
+    callFidChangeCallbacks(key, fid);
+    broadcastFidChange(key, fid);
+}
+function addCallback(appConfig, callback) {
+    // Open the broadcast channel if it's not already open,
+    // to be able to listen to change events from other tabs.
+    getBroadcastChannel();
+    const key = getKey(appConfig);
+    let callbackSet = fidChangeCallbacks.get(key);
+    if (!callbackSet) {
+        callbackSet = new Set();
+        fidChangeCallbacks.set(key, callbackSet);
+    }
+    callbackSet.add(callback);
+}
+function removeCallback(appConfig, callback) {
+    const key = getKey(appConfig);
+    const callbackSet = fidChangeCallbacks.get(key);
+    if (!callbackSet) {
+        return;
+    }
+    callbackSet.delete(callback);
+    if (callbackSet.size === 0) {
+        fidChangeCallbacks.delete(key);
+    }
+    // Close broadcast channel if there are no more callbacks.
+    closeBroadcastChannel();
+}
+function callFidChangeCallbacks(key, fid) {
+    const callbacks = fidChangeCallbacks.get(key);
+    if (!callbacks) {
+        return;
+    }
+    for (const callback of callbacks) {
+        callback(fid);
+    }
+}
+function broadcastFidChange(key, fid) {
+    const channel = getBroadcastChannel();
+    if (channel) {
+        channel.postMessage({ key, fid });
+    }
+    closeBroadcastChannel();
+}
+let broadcastChannel = null;
+/** Opens and returns a BroadcastChannel if it is supported by the browser. */
+function getBroadcastChannel() {
+    if (!broadcastChannel && 'BroadcastChannel' in self) {
+        broadcastChannel = new BroadcastChannel('[Firebase] FID Change');
+        broadcastChannel.onmessage = e => {
+            callFidChangeCallbacks(e.data.key, e.data.fid);
+        };
+    }
+    return broadcastChannel;
+}
+function closeBroadcastChannel() {
+    if (fidChangeCallbacks.size === 0 && broadcastChannel) {
+        broadcastChannel.close();
+        broadcastChannel = null;
+    }
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const DATABASE_NAME = 'firebase-installations-database';
+const DATABASE_VERSION = 1;
+const OBJECT_STORE_NAME = 'firebase-installations-store';
+let dbPromise = null;
+function getDbPromise() {
+    if (!dbPromise) {
+        dbPromise = (0,idb__WEBPACK_IMPORTED_MODULE_3__.openDB)(DATABASE_NAME, DATABASE_VERSION, {
+            upgrade: (db, oldVersion) => {
+                // We don't use 'break' in this switch statement, the fall-through
+                // behavior is what we want, because if there are multiple versions between
+                // the old version and the current version, we want ALL the migrations
+                // that correspond to those versions to run, not only the last one.
+                // eslint-disable-next-line default-case
+                switch (oldVersion) {
+                    case 0:
+                        db.createObjectStore(OBJECT_STORE_NAME);
+                }
+            }
+        });
+    }
+    return dbPromise;
+}
+/** Assigns or overwrites the record for the given key with the given value. */
+async function set(appConfig, value) {
+    const key = getKey(appConfig);
+    const db = await getDbPromise();
+    const tx = db.transaction(OBJECT_STORE_NAME, 'readwrite');
+    const objectStore = tx.objectStore(OBJECT_STORE_NAME);
+    const oldValue = (await objectStore.get(key));
+    await objectStore.put(value, key);
+    await tx.done;
+    if (!oldValue || oldValue.fid !== value.fid) {
+        fidChanged(appConfig, value.fid);
+    }
+    return value;
+}
+/** Removes record(s) from the objectStore that match the given key. */
+async function remove(appConfig) {
+    const key = getKey(appConfig);
+    const db = await getDbPromise();
+    const tx = db.transaction(OBJECT_STORE_NAME, 'readwrite');
+    await tx.objectStore(OBJECT_STORE_NAME).delete(key);
+    await tx.done;
+}
+/**
+ * Atomically updates a record with the result of updateFn, which gets
+ * called with the current value. If newValue is undefined, the record is
+ * deleted instead.
+ * @return Updated value
+ */
+async function update(appConfig, updateFn) {
+    const key = getKey(appConfig);
+    const db = await getDbPromise();
+    const tx = db.transaction(OBJECT_STORE_NAME, 'readwrite');
+    const store = tx.objectStore(OBJECT_STORE_NAME);
+    const oldValue = (await store.get(key));
+    const newValue = updateFn(oldValue);
+    if (newValue === undefined) {
+        await store.delete(key);
+    }
+    else {
+        await store.put(newValue, key);
+    }
+    await tx.done;
+    if (newValue && (!oldValue || oldValue.fid !== newValue.fid)) {
+        fidChanged(appConfig, newValue.fid);
+    }
+    return newValue;
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Updates and returns the InstallationEntry from the database.
+ * Also triggers a registration request if it is necessary and possible.
+ */
+async function getInstallationEntry(installations) {
+    let registrationPromise;
+    const installationEntry = await update(installations.appConfig, oldEntry => {
+        const installationEntry = updateOrCreateInstallationEntry(oldEntry);
+        const entryWithPromise = triggerRegistrationIfNecessary(installations, installationEntry);
+        registrationPromise = entryWithPromise.registrationPromise;
+        return entryWithPromise.installationEntry;
+    });
+    if (installationEntry.fid === INVALID_FID) {
+        // FID generation failed. Waiting for the FID from the server.
+        return { installationEntry: await registrationPromise };
+    }
+    return {
+        installationEntry,
+        registrationPromise
+    };
+}
+/**
+ * Creates a new Installation Entry if one does not exist.
+ * Also clears timed out pending requests.
+ */
+function updateOrCreateInstallationEntry(oldEntry) {
+    const entry = oldEntry || {
+        fid: generateFid(),
+        registrationStatus: 0 /* RequestStatus.NOT_STARTED */
+    };
+    return clearTimedOutRequest(entry);
+}
+/**
+ * If the Firebase Installation is not registered yet, this will trigger the
+ * registration and return an InProgressInstallationEntry.
+ *
+ * If registrationPromise does not exist, the installationEntry is guaranteed
+ * to be registered.
+ */
+function triggerRegistrationIfNecessary(installations, installationEntry) {
+    if (installationEntry.registrationStatus === 0 /* RequestStatus.NOT_STARTED */) {
+        if (!navigator.onLine) {
+            // Registration required but app is offline.
+            const registrationPromiseWithError = Promise.reject(ERROR_FACTORY.create("app-offline" /* ErrorCode.APP_OFFLINE */));
+            return {
+                installationEntry,
+                registrationPromise: registrationPromiseWithError
+            };
+        }
+        // Try registering. Change status to IN_PROGRESS.
+        const inProgressEntry = {
+            fid: installationEntry.fid,
+            registrationStatus: 1 /* RequestStatus.IN_PROGRESS */,
+            registrationTime: Date.now()
+        };
+        const registrationPromise = registerInstallation(installations, inProgressEntry);
+        return { installationEntry: inProgressEntry, registrationPromise };
+    }
+    else if (installationEntry.registrationStatus === 1 /* RequestStatus.IN_PROGRESS */) {
+        return {
+            installationEntry,
+            registrationPromise: waitUntilFidRegistration(installations)
+        };
+    }
+    else {
+        return { installationEntry };
+    }
+}
+/** This will be executed only once for each new Firebase Installation. */
+async function registerInstallation(installations, installationEntry) {
+    try {
+        const registeredInstallationEntry = await createInstallationRequest(installations, installationEntry);
+        return set(installations.appConfig, registeredInstallationEntry);
+    }
+    catch (e) {
+        if (isServerError(e) && e.customData.serverCode === 409) {
+            // Server returned a "FID cannot be used" error.
+            // Generate a new ID next time.
+            await remove(installations.appConfig);
+        }
+        else {
+            // Registration failed. Set FID as not registered.
+            await set(installations.appConfig, {
+                fid: installationEntry.fid,
+                registrationStatus: 0 /* RequestStatus.NOT_STARTED */
+            });
+        }
+        throw e;
+    }
+}
+/** Call if FID registration is pending in another request. */
+async function waitUntilFidRegistration(installations) {
+    // Unfortunately, there is no way of reliably observing when a value in
+    // IndexedDB changes (yet, see https://github.com/WICG/indexed-db-observers),
+    // so we need to poll.
+    let entry = await updateInstallationRequest(installations.appConfig);
+    while (entry.registrationStatus === 1 /* RequestStatus.IN_PROGRESS */) {
+        // createInstallation request still in progress.
+        await sleep(100);
+        entry = await updateInstallationRequest(installations.appConfig);
+    }
+    if (entry.registrationStatus === 0 /* RequestStatus.NOT_STARTED */) {
+        // The request timed out or failed in a different call. Try again.
+        const { installationEntry, registrationPromise } = await getInstallationEntry(installations);
+        if (registrationPromise) {
+            return registrationPromise;
+        }
+        else {
+            // if there is no registrationPromise, entry is registered.
+            return installationEntry;
+        }
+    }
+    return entry;
+}
+/**
+ * Called only if there is a CreateInstallation request in progress.
+ *
+ * Updates the InstallationEntry in the DB based on the status of the
+ * CreateInstallation request.
+ *
+ * Returns the updated InstallationEntry.
+ */
+function updateInstallationRequest(appConfig) {
+    return update(appConfig, oldEntry => {
+        if (!oldEntry) {
+            throw ERROR_FACTORY.create("installation-not-found" /* ErrorCode.INSTALLATION_NOT_FOUND */);
+        }
+        return clearTimedOutRequest(oldEntry);
+    });
+}
+function clearTimedOutRequest(entry) {
+    if (hasInstallationRequestTimedOut(entry)) {
+        return {
+            fid: entry.fid,
+            registrationStatus: 0 /* RequestStatus.NOT_STARTED */
+        };
+    }
+    return entry;
+}
+function hasInstallationRequestTimedOut(installationEntry) {
+    return (installationEntry.registrationStatus === 1 /* RequestStatus.IN_PROGRESS */ &&
+        installationEntry.registrationTime + PENDING_TIMEOUT_MS < Date.now());
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function generateAuthTokenRequest({ appConfig, heartbeatServiceProvider }, installationEntry) {
+    const endpoint = getGenerateAuthTokenEndpoint(appConfig, installationEntry);
+    const headers = getHeadersWithAuth(appConfig, installationEntry);
+    // If heartbeat service exists, add the heartbeat string to the header.
+    const heartbeatService = heartbeatServiceProvider.getImmediate({
+        optional: true
+    });
+    if (heartbeatService) {
+        const heartbeatsHeader = await heartbeatService.getHeartbeatsHeader();
+        if (heartbeatsHeader) {
+            headers.append('x-firebase-client', heartbeatsHeader);
+        }
+    }
+    const body = {
+        installation: {
+            sdkVersion: PACKAGE_VERSION,
+            appId: appConfig.appId
+        }
+    };
+    const request = {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body)
+    };
+    const response = await retryIfServerError(() => fetch(endpoint, request));
+    if (response.ok) {
+        const responseValue = await response.json();
+        const completedAuthToken = extractAuthTokenInfoFromResponse(responseValue);
+        return completedAuthToken;
+    }
+    else {
+        throw await getErrorFromResponse('Generate Auth Token', response);
+    }
+}
+function getGenerateAuthTokenEndpoint(appConfig, { fid }) {
+    return `${getInstallationsEndpoint(appConfig)}/${fid}/authTokens:generate`;
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Returns a valid authentication token for the installation. Generates a new
+ * token if one doesn't exist, is expired or about to expire.
+ *
+ * Should only be called if the Firebase Installation is registered.
+ */
+async function refreshAuthToken(installations, forceRefresh = false) {
+    let tokenPromise;
+    const entry = await update(installations.appConfig, oldEntry => {
+        if (!isEntryRegistered(oldEntry)) {
+            throw ERROR_FACTORY.create("not-registered" /* ErrorCode.NOT_REGISTERED */);
+        }
+        const oldAuthToken = oldEntry.authToken;
+        if (!forceRefresh && isAuthTokenValid(oldAuthToken)) {
+            // There is a valid token in the DB.
+            return oldEntry;
+        }
+        else if (oldAuthToken.requestStatus === 1 /* RequestStatus.IN_PROGRESS */) {
+            // There already is a token request in progress.
+            tokenPromise = waitUntilAuthTokenRequest(installations, forceRefresh);
+            return oldEntry;
+        }
+        else {
+            // No token or token expired.
+            if (!navigator.onLine) {
+                throw ERROR_FACTORY.create("app-offline" /* ErrorCode.APP_OFFLINE */);
+            }
+            const inProgressEntry = makeAuthTokenRequestInProgressEntry(oldEntry);
+            tokenPromise = fetchAuthTokenFromServer(installations, inProgressEntry);
+            return inProgressEntry;
+        }
+    });
+    const authToken = tokenPromise
+        ? await tokenPromise
+        : entry.authToken;
+    return authToken;
+}
+/**
+ * Call only if FID is registered and Auth Token request is in progress.
+ *
+ * Waits until the current pending request finishes. If the request times out,
+ * tries once in this thread as well.
+ */
+async function waitUntilAuthTokenRequest(installations, forceRefresh) {
+    // Unfortunately, there is no way of reliably observing when a value in
+    // IndexedDB changes (yet, see https://github.com/WICG/indexed-db-observers),
+    // so we need to poll.
+    let entry = await updateAuthTokenRequest(installations.appConfig);
+    while (entry.authToken.requestStatus === 1 /* RequestStatus.IN_PROGRESS */) {
+        // generateAuthToken still in progress.
+        await sleep(100);
+        entry = await updateAuthTokenRequest(installations.appConfig);
+    }
+    const authToken = entry.authToken;
+    if (authToken.requestStatus === 0 /* RequestStatus.NOT_STARTED */) {
+        // The request timed out or failed in a different call. Try again.
+        return refreshAuthToken(installations, forceRefresh);
+    }
+    else {
+        return authToken;
+    }
+}
+/**
+ * Called only if there is a GenerateAuthToken request in progress.
+ *
+ * Updates the InstallationEntry in the DB based on the status of the
+ * GenerateAuthToken request.
+ *
+ * Returns the updated InstallationEntry.
+ */
+function updateAuthTokenRequest(appConfig) {
+    return update(appConfig, oldEntry => {
+        if (!isEntryRegistered(oldEntry)) {
+            throw ERROR_FACTORY.create("not-registered" /* ErrorCode.NOT_REGISTERED */);
+        }
+        const oldAuthToken = oldEntry.authToken;
+        if (hasAuthTokenRequestTimedOut(oldAuthToken)) {
+            return Object.assign(Object.assign({}, oldEntry), { authToken: { requestStatus: 0 /* RequestStatus.NOT_STARTED */ } });
+        }
+        return oldEntry;
+    });
+}
+async function fetchAuthTokenFromServer(installations, installationEntry) {
+    try {
+        const authToken = await generateAuthTokenRequest(installations, installationEntry);
+        const updatedInstallationEntry = Object.assign(Object.assign({}, installationEntry), { authToken });
+        await set(installations.appConfig, updatedInstallationEntry);
+        return authToken;
+    }
+    catch (e) {
+        if (isServerError(e) &&
+            (e.customData.serverCode === 401 || e.customData.serverCode === 404)) {
+            // Server returned a "FID not found" or a "Invalid authentication" error.
+            // Generate a new ID next time.
+            await remove(installations.appConfig);
+        }
+        else {
+            const updatedInstallationEntry = Object.assign(Object.assign({}, installationEntry), { authToken: { requestStatus: 0 /* RequestStatus.NOT_STARTED */ } });
+            await set(installations.appConfig, updatedInstallationEntry);
+        }
+        throw e;
+    }
+}
+function isEntryRegistered(installationEntry) {
+    return (installationEntry !== undefined &&
+        installationEntry.registrationStatus === 2 /* RequestStatus.COMPLETED */);
+}
+function isAuthTokenValid(authToken) {
+    return (authToken.requestStatus === 2 /* RequestStatus.COMPLETED */ &&
+        !isAuthTokenExpired(authToken));
+}
+function isAuthTokenExpired(authToken) {
+    const now = Date.now();
+    return (now < authToken.creationTime ||
+        authToken.creationTime + authToken.expiresIn < now + TOKEN_EXPIRATION_BUFFER);
+}
+/** Returns an updated InstallationEntry with an InProgressAuthToken. */
+function makeAuthTokenRequestInProgressEntry(oldEntry) {
+    const inProgressAuthToken = {
+        requestStatus: 1 /* RequestStatus.IN_PROGRESS */,
+        requestTime: Date.now()
+    };
+    return Object.assign(Object.assign({}, oldEntry), { authToken: inProgressAuthToken });
+}
+function hasAuthTokenRequestTimedOut(authToken) {
+    return (authToken.requestStatus === 1 /* RequestStatus.IN_PROGRESS */ &&
+        authToken.requestTime + PENDING_TIMEOUT_MS < Date.now());
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Creates a Firebase Installation if there isn't one for the app and
+ * returns the Installation ID.
+ * @param installations - The `Installations` instance.
+ *
+ * @public
+ */
+async function getId(installations) {
+    const installationsImpl = installations;
+    const { installationEntry, registrationPromise } = await getInstallationEntry(installationsImpl);
+    if (registrationPromise) {
+        registrationPromise.catch(console.error);
+    }
+    else {
+        // If the installation is already registered, update the authentication
+        // token if needed.
+        refreshAuthToken(installationsImpl).catch(console.error);
+    }
+    return installationEntry.fid;
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Returns a Firebase Installations auth token, identifying the current
+ * Firebase Installation.
+ * @param installations - The `Installations` instance.
+ * @param forceRefresh - Force refresh regardless of token expiration.
+ *
+ * @public
+ */
+async function getToken(installations, forceRefresh = false) {
+    const installationsImpl = installations;
+    await completeInstallationRegistration(installationsImpl);
+    // At this point we either have a Registered Installation in the DB, or we've
+    // already thrown an error.
+    const authToken = await refreshAuthToken(installationsImpl, forceRefresh);
+    return authToken.token;
+}
+async function completeInstallationRegistration(installations) {
+    const { registrationPromise } = await getInstallationEntry(installations);
+    if (registrationPromise) {
+        // A createInstallation request is in progress. Wait until it finishes.
+        await registrationPromise;
+    }
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function deleteInstallationRequest(appConfig, installationEntry) {
+    const endpoint = getDeleteEndpoint(appConfig, installationEntry);
+    const headers = getHeadersWithAuth(appConfig, installationEntry);
+    const request = {
+        method: 'DELETE',
+        headers
+    };
+    const response = await retryIfServerError(() => fetch(endpoint, request));
+    if (!response.ok) {
+        throw await getErrorFromResponse('Delete Installation', response);
+    }
+}
+function getDeleteEndpoint(appConfig, { fid }) {
+    return `${getInstallationsEndpoint(appConfig)}/${fid}`;
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Deletes the Firebase Installation and all associated data.
+ * @param installations - The `Installations` instance.
+ *
+ * @public
+ */
+async function deleteInstallations(installations) {
+    const { appConfig } = installations;
+    const entry = await update(appConfig, oldEntry => {
+        if (oldEntry && oldEntry.registrationStatus === 0 /* RequestStatus.NOT_STARTED */) {
+            // Delete the unregistered entry without sending a deleteInstallation request.
+            return undefined;
+        }
+        return oldEntry;
+    });
+    if (entry) {
+        if (entry.registrationStatus === 1 /* RequestStatus.IN_PROGRESS */) {
+            // Can't delete while trying to register.
+            throw ERROR_FACTORY.create("delete-pending-registration" /* ErrorCode.DELETE_PENDING_REGISTRATION */);
+        }
+        else if (entry.registrationStatus === 2 /* RequestStatus.COMPLETED */) {
+            if (!navigator.onLine) {
+                throw ERROR_FACTORY.create("app-offline" /* ErrorCode.APP_OFFLINE */);
+            }
+            else {
+                await deleteInstallationRequest(appConfig, entry);
+                await remove(appConfig);
+            }
+        }
+    }
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Sets a new callback that will get called when Installation ID changes.
+ * Returns an unsubscribe function that will remove the callback when called.
+ * @param installations - The `Installations` instance.
+ * @param callback - The callback function that is invoked when FID changes.
+ * @returns A function that can be called to unsubscribe.
+ *
+ * @public
+ */
+function onIdChange(installations, callback) {
+    const { appConfig } = installations;
+    addCallback(appConfig, callback);
+    return () => {
+        removeCallback(appConfig, callback);
+    };
+}
+
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Returns an instance of {@link Installations} associated with the given
+ * {@link @firebase/app#FirebaseApp} instance.
+ * @param app - The {@link @firebase/app#FirebaseApp} instance.
+ *
+ * @public
+ */
+function getInstallations(app = (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__.getApp)()) {
+    const installationsImpl = (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__._getProvider)(app, 'installations').getImmediate();
+    return installationsImpl;
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function extractAppConfig(app) {
+    if (!app || !app.options) {
+        throw getMissingValueError('App Configuration');
+    }
+    if (!app.name) {
+        throw getMissingValueError('App Name');
+    }
+    // Required app config keys
+    const configKeys = [
+        'projectId',
+        'apiKey',
+        'appId'
+    ];
+    for (const keyName of configKeys) {
+        if (!app.options[keyName]) {
+            throw getMissingValueError(keyName);
+        }
+    }
+    return {
+        appName: app.name,
+        projectId: app.options.projectId,
+        apiKey: app.options.apiKey,
+        appId: app.options.appId
+    };
+}
+function getMissingValueError(valueName) {
+    return ERROR_FACTORY.create("missing-app-config-values" /* ErrorCode.MISSING_APP_CONFIG_VALUES */, {
+        valueName
+    });
+}
+
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const INSTALLATIONS_NAME = 'installations';
+const INSTALLATIONS_NAME_INTERNAL = 'installations-internal';
+const publicFactory = (container) => {
+    const app = container.getProvider('app').getImmediate();
+    // Throws if app isn't configured properly.
+    const appConfig = extractAppConfig(app);
+    const heartbeatServiceProvider = (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__._getProvider)(app, 'heartbeat');
+    const installationsImpl = {
+        app,
+        appConfig,
+        heartbeatServiceProvider,
+        _delete: () => Promise.resolve()
+    };
+    return installationsImpl;
+};
+const internalFactory = (container) => {
+    const app = container.getProvider('app').getImmediate();
+    // Internal FIS instance relies on public FIS instance.
+    const installations = (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__._getProvider)(app, INSTALLATIONS_NAME).getImmediate();
+    const installationsInternal = {
+        getId: () => getId(installations),
+        getToken: (forceRefresh) => getToken(installations, forceRefresh)
+    };
+    return installationsInternal;
+};
+function registerInstallations() {
+    (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__._registerComponent)(new _firebase_component__WEBPACK_IMPORTED_MODULE_1__.Component(INSTALLATIONS_NAME, publicFactory, "PUBLIC" /* ComponentType.PUBLIC */));
+    (0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__._registerComponent)(new _firebase_component__WEBPACK_IMPORTED_MODULE_1__.Component(INSTALLATIONS_NAME_INTERNAL, internalFactory, "PRIVATE" /* ComponentType.PRIVATE */));
+}
+
+/**
+ * The Firebase Installations Web SDK.
+ * This SDK does not work in a Node.js environment.
+ *
+ * @packageDocumentation
+ */
+registerInstallations();
+(0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__.registerVersion)(name, version);
+// BUILD_TARGET will be replaced by values like esm2017, cjs2017, etc during the compilation
+(0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__.registerVersion)(name, version, 'esm2017');
+
+
+//# sourceMappingURL=index.esm2017.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@firebase/logger/dist/esm/index.esm2017.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/@firebase/logger/dist/esm/index.esm2017.js ***!
+  \*****************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   LogLevel: function() { return /* binding */ LogLevel; },
+/* harmony export */   Logger: function() { return /* binding */ Logger; },
+/* harmony export */   setLogLevel: function() { return /* binding */ setLogLevel; },
+/* harmony export */   setUserLogHandler: function() { return /* binding */ setUserLogHandler; }
+/* harmony export */ });
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * A container for all of the Logger instances
+ */
+const instances = [];
+/**
+ * The JS SDK supports 5 log levels and also allows a user the ability to
+ * silence the logs altogether.
+ *
+ * The order is a follows:
+ * DEBUG < VERBOSE < INFO < WARN < ERROR
+ *
+ * All of the log types above the current log level will be captured (i.e. if
+ * you set the log level to `INFO`, errors will still be logged, but `DEBUG` and
+ * `VERBOSE` logs will not)
+ */
+var LogLevel;
+(function (LogLevel) {
+    LogLevel[LogLevel["DEBUG"] = 0] = "DEBUG";
+    LogLevel[LogLevel["VERBOSE"] = 1] = "VERBOSE";
+    LogLevel[LogLevel["INFO"] = 2] = "INFO";
+    LogLevel[LogLevel["WARN"] = 3] = "WARN";
+    LogLevel[LogLevel["ERROR"] = 4] = "ERROR";
+    LogLevel[LogLevel["SILENT"] = 5] = "SILENT";
+})(LogLevel || (LogLevel = {}));
+const levelStringToEnum = {
+    'debug': LogLevel.DEBUG,
+    'verbose': LogLevel.VERBOSE,
+    'info': LogLevel.INFO,
+    'warn': LogLevel.WARN,
+    'error': LogLevel.ERROR,
+    'silent': LogLevel.SILENT
+};
+/**
+ * The default log level
+ */
+const defaultLogLevel = LogLevel.INFO;
+/**
+ * By default, `console.debug` is not displayed in the developer console (in
+ * chrome). To avoid forcing users to have to opt-in to these logs twice
+ * (i.e. once for firebase, and once in the console), we are sending `DEBUG`
+ * logs to the `console.log` function.
+ */
+const ConsoleMethod = {
+    [LogLevel.DEBUG]: 'log',
+    [LogLevel.VERBOSE]: 'log',
+    [LogLevel.INFO]: 'info',
+    [LogLevel.WARN]: 'warn',
+    [LogLevel.ERROR]: 'error'
+};
+/**
+ * The default log handler will forward DEBUG, VERBOSE, INFO, WARN, and ERROR
+ * messages on to their corresponding console counterparts (if the log method
+ * is supported by the current log level)
+ */
+const defaultLogHandler = (instance, logType, ...args) => {
+    if (logType < instance.logLevel) {
+        return;
+    }
+    const now = new Date().toISOString();
+    const method = ConsoleMethod[logType];
+    if (method) {
+        console[method](`[${now}]  ${instance.name}:`, ...args);
+    }
+    else {
+        throw new Error(`Attempted to log a message with an invalid logType (value: ${logType})`);
+    }
+};
+class Logger {
+    /**
+     * Gives you an instance of a Logger to capture messages according to
+     * Firebase's logging scheme.
+     *
+     * @param name The name that the logs will be associated with
+     */
+    constructor(name) {
+        this.name = name;
+        /**
+         * The log level of the given Logger instance.
+         */
+        this._logLevel = defaultLogLevel;
+        /**
+         * The main (internal) log handler for the Logger instance.
+         * Can be set to a new function in internal package code but not by user.
+         */
+        this._logHandler = defaultLogHandler;
+        /**
+         * The optional, additional, user-defined log handler for the Logger instance.
+         */
+        this._userLogHandler = null;
+        /**
+         * Capture the current instance for later use
+         */
+        instances.push(this);
+    }
+    get logLevel() {
+        return this._logLevel;
+    }
+    set logLevel(val) {
+        if (!(val in LogLevel)) {
+            throw new TypeError(`Invalid value "${val}" assigned to \`logLevel\``);
+        }
+        this._logLevel = val;
+    }
+    // Workaround for setter/getter having to be the same type.
+    setLogLevel(val) {
+        this._logLevel = typeof val === 'string' ? levelStringToEnum[val] : val;
+    }
+    get logHandler() {
+        return this._logHandler;
+    }
+    set logHandler(val) {
+        if (typeof val !== 'function') {
+            throw new TypeError('Value assigned to `logHandler` must be a function');
+        }
+        this._logHandler = val;
+    }
+    get userLogHandler() {
+        return this._userLogHandler;
+    }
+    set userLogHandler(val) {
+        this._userLogHandler = val;
+    }
+    /**
+     * The functions below are all based on the `console` interface
+     */
+    debug(...args) {
+        this._userLogHandler && this._userLogHandler(this, LogLevel.DEBUG, ...args);
+        this._logHandler(this, LogLevel.DEBUG, ...args);
+    }
+    log(...args) {
+        this._userLogHandler &&
+            this._userLogHandler(this, LogLevel.VERBOSE, ...args);
+        this._logHandler(this, LogLevel.VERBOSE, ...args);
+    }
+    info(...args) {
+        this._userLogHandler && this._userLogHandler(this, LogLevel.INFO, ...args);
+        this._logHandler(this, LogLevel.INFO, ...args);
+    }
+    warn(...args) {
+        this._userLogHandler && this._userLogHandler(this, LogLevel.WARN, ...args);
+        this._logHandler(this, LogLevel.WARN, ...args);
+    }
+    error(...args) {
+        this._userLogHandler && this._userLogHandler(this, LogLevel.ERROR, ...args);
+        this._logHandler(this, LogLevel.ERROR, ...args);
+    }
+}
+function setLogLevel(level) {
+    instances.forEach(inst => {
+        inst.setLogLevel(level);
+    });
+}
+function setUserLogHandler(logCallback, options) {
+    for (const instance of instances) {
+        let customLogLevel = null;
+        if (options && options.level) {
+            customLogLevel = levelStringToEnum[options.level];
+        }
+        if (logCallback === null) {
+            instance.userLogHandler = null;
+        }
+        else {
+            instance.userLogHandler = (instance, level, ...args) => {
+                const message = args
+                    .map(arg => {
+                    if (arg == null) {
+                        return null;
+                    }
+                    else if (typeof arg === 'string') {
+                        return arg;
+                    }
+                    else if (typeof arg === 'number' || typeof arg === 'boolean') {
+                        return arg.toString();
+                    }
+                    else if (arg instanceof Error) {
+                        return arg.message;
+                    }
+                    else {
+                        try {
+                            return JSON.stringify(arg);
+                        }
+                        catch (ignored) {
+                            return null;
+                        }
+                    }
+                })
+                    .filter(arg => arg)
+                    .join(' ');
+                if (level >= (customLogLevel !== null && customLogLevel !== void 0 ? customLogLevel : instance.logLevel)) {
+                    logCallback({
+                        level: LogLevel[level].toLowerCase(),
+                        message,
+                        args,
+                        type: instance.name
+                    });
+                }
+            };
+        }
+    }
+}
+
+
+//# sourceMappingURL=index.esm2017.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@firebase/messaging/dist/esm/index.esm2017.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@firebase/messaging/dist/esm/index.esm2017.js ***!
+  \********************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   deleteToken: function() { return /* binding */ deleteToken; },
+/* harmony export */   getMessaging: function() { return /* binding */ getMessagingInWindow; },
+/* harmony export */   getToken: function() { return /* binding */ getToken; },
+/* harmony export */   isSupported: function() { return /* binding */ isWindowSupported; },
+/* harmony export */   onMessage: function() { return /* binding */ onMessage; }
+/* harmony export */ });
+/* harmony import */ var _firebase_installations__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @firebase/installations */ "./node_modules/@firebase/installations/dist/esm/index.esm2017.js");
+/* harmony import */ var _firebase_component__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @firebase/component */ "./node_modules/@firebase/component/dist/esm/index.esm2017.js");
+/* harmony import */ var idb__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! idb */ "./node_modules/idb/build/index.js");
+/* harmony import */ var _firebase_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @firebase/util */ "./node_modules/@firebase/util/dist/index.esm2017.js");
+/* harmony import */ var _firebase_app__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @firebase/app */ "./node_modules/@firebase/app/dist/esm/index.esm2017.js");
+
+
+
+
+
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const DEFAULT_SW_PATH = '/firebase-messaging-sw.js';
+const DEFAULT_SW_SCOPE = '/firebase-cloud-messaging-push-scope';
+const DEFAULT_VAPID_KEY = 'BDOU99-h67HcA6JeFXHbSNMu7e2yNNu3RzoMj8TM4W88jITfq7ZmPvIM1Iv-4_l2LxQcYwhqby2xGpWwzjfAnG4';
+const ENDPOINT = 'https://fcmregistrations.googleapis.com/v1';
+const CONSOLE_CAMPAIGN_ID = 'google.c.a.c_id';
+const CONSOLE_CAMPAIGN_NAME = 'google.c.a.c_l';
+const CONSOLE_CAMPAIGN_TIME = 'google.c.a.ts';
+/** Set to '1' if Analytics is enabled for the campaign */
+const CONSOLE_CAMPAIGN_ANALYTICS_ENABLED = 'google.c.a.e';
+const DEFAULT_REGISTRATION_TIMEOUT = 10000;
+var MessageType$1;
+(function (MessageType) {
+    MessageType[MessageType["DATA_MESSAGE"] = 1] = "DATA_MESSAGE";
+    MessageType[MessageType["DISPLAY_NOTIFICATION"] = 3] = "DISPLAY_NOTIFICATION";
+})(MessageType$1 || (MessageType$1 = {}));
+
+/**
+ * @license
+ * Copyright 2018 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+var MessageType;
+(function (MessageType) {
+    MessageType["PUSH_RECEIVED"] = "push-received";
+    MessageType["NOTIFICATION_CLICKED"] = "notification-clicked";
+})(MessageType || (MessageType = {}));
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function arrayToBase64(array) {
+    const uint8Array = new Uint8Array(array);
+    const base64String = btoa(String.fromCharCode(...uint8Array));
+    return base64String.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+}
+function base64ToArray(base64String) {
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+    const rawData = atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const OLD_DB_NAME = 'fcm_token_details_db';
+/**
+ * The last DB version of 'fcm_token_details_db' was 4. This is one higher, so that the upgrade
+ * callback is called for all versions of the old DB.
+ */
+const OLD_DB_VERSION = 5;
+const OLD_OBJECT_STORE_NAME = 'fcm_token_object_Store';
+async function migrateOldDatabase(senderId) {
+    if ('databases' in indexedDB) {
+        // indexedDb.databases() is an IndexedDB v3 API and does not exist in all browsers. TODO: Remove
+        // typecast when it lands in TS types.
+        const databases = await indexedDB.databases();
+        const dbNames = databases.map(db => db.name);
+        if (!dbNames.includes(OLD_DB_NAME)) {
+            // old DB didn't exist, no need to open.
+            return null;
+        }
+    }
+    let tokenDetails = null;
+    const db = await (0,idb__WEBPACK_IMPORTED_MODULE_2__.openDB)(OLD_DB_NAME, OLD_DB_VERSION, {
+        upgrade: async (db, oldVersion, newVersion, upgradeTransaction) => {
+            var _a;
+            if (oldVersion < 2) {
+                // Database too old, skip migration.
+                return;
+            }
+            if (!db.objectStoreNames.contains(OLD_OBJECT_STORE_NAME)) {
+                // Database did not exist. Nothing to do.
+                return;
+            }
+            const objectStore = upgradeTransaction.objectStore(OLD_OBJECT_STORE_NAME);
+            const value = await objectStore.index('fcmSenderId').get(senderId);
+            await objectStore.clear();
+            if (!value) {
+                // No entry in the database, nothing to migrate.
+                return;
+            }
+            if (oldVersion === 2) {
+                const oldDetails = value;
+                if (!oldDetails.auth || !oldDetails.p256dh || !oldDetails.endpoint) {
+                    return;
+                }
+                tokenDetails = {
+                    token: oldDetails.fcmToken,
+                    createTime: (_a = oldDetails.createTime) !== null && _a !== void 0 ? _a : Date.now(),
+                    subscriptionOptions: {
+                        auth: oldDetails.auth,
+                        p256dh: oldDetails.p256dh,
+                        endpoint: oldDetails.endpoint,
+                        swScope: oldDetails.swScope,
+                        vapidKey: typeof oldDetails.vapidKey === 'string'
+                            ? oldDetails.vapidKey
+                            : arrayToBase64(oldDetails.vapidKey)
+                    }
+                };
+            }
+            else if (oldVersion === 3) {
+                const oldDetails = value;
+                tokenDetails = {
+                    token: oldDetails.fcmToken,
+                    createTime: oldDetails.createTime,
+                    subscriptionOptions: {
+                        auth: arrayToBase64(oldDetails.auth),
+                        p256dh: arrayToBase64(oldDetails.p256dh),
+                        endpoint: oldDetails.endpoint,
+                        swScope: oldDetails.swScope,
+                        vapidKey: arrayToBase64(oldDetails.vapidKey)
+                    }
+                };
+            }
+            else if (oldVersion === 4) {
+                const oldDetails = value;
+                tokenDetails = {
+                    token: oldDetails.fcmToken,
+                    createTime: oldDetails.createTime,
+                    subscriptionOptions: {
+                        auth: arrayToBase64(oldDetails.auth),
+                        p256dh: arrayToBase64(oldDetails.p256dh),
+                        endpoint: oldDetails.endpoint,
+                        swScope: oldDetails.swScope,
+                        vapidKey: arrayToBase64(oldDetails.vapidKey)
+                    }
+                };
+            }
+        }
+    });
+    db.close();
+    // Delete all old databases.
+    await (0,idb__WEBPACK_IMPORTED_MODULE_2__.deleteDB)(OLD_DB_NAME);
+    await (0,idb__WEBPACK_IMPORTED_MODULE_2__.deleteDB)('fcm_vapid_details_db');
+    await (0,idb__WEBPACK_IMPORTED_MODULE_2__.deleteDB)('undefined');
+    return checkTokenDetails(tokenDetails) ? tokenDetails : null;
+}
+function checkTokenDetails(tokenDetails) {
+    if (!tokenDetails || !tokenDetails.subscriptionOptions) {
+        return false;
+    }
+    const { subscriptionOptions } = tokenDetails;
+    return (typeof tokenDetails.createTime === 'number' &&
+        tokenDetails.createTime > 0 &&
+        typeof tokenDetails.token === 'string' &&
+        tokenDetails.token.length > 0 &&
+        typeof subscriptionOptions.auth === 'string' &&
+        subscriptionOptions.auth.length > 0 &&
+        typeof subscriptionOptions.p256dh === 'string' &&
+        subscriptionOptions.p256dh.length > 0 &&
+        typeof subscriptionOptions.endpoint === 'string' &&
+        subscriptionOptions.endpoint.length > 0 &&
+        typeof subscriptionOptions.swScope === 'string' &&
+        subscriptionOptions.swScope.length > 0 &&
+        typeof subscriptionOptions.vapidKey === 'string' &&
+        subscriptionOptions.vapidKey.length > 0);
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+// Exported for tests.
+const DATABASE_NAME = 'firebase-messaging-database';
+const DATABASE_VERSION = 1;
+const OBJECT_STORE_NAME = 'firebase-messaging-store';
+let dbPromise = null;
+function getDbPromise() {
+    if (!dbPromise) {
+        dbPromise = (0,idb__WEBPACK_IMPORTED_MODULE_2__.openDB)(DATABASE_NAME, DATABASE_VERSION, {
+            upgrade: (upgradeDb, oldVersion) => {
+                // We don't use 'break' in this switch statement, the fall-through behavior is what we want,
+                // because if there are multiple versions between the old version and the current version, we
+                // want ALL the migrations that correspond to those versions to run, not only the last one.
+                // eslint-disable-next-line default-case
+                switch (oldVersion) {
+                    case 0:
+                        upgradeDb.createObjectStore(OBJECT_STORE_NAME);
+                }
+            }
+        });
+    }
+    return dbPromise;
+}
+/** Gets record(s) from the objectStore that match the given key. */
+async function dbGet(firebaseDependencies) {
+    const key = getKey(firebaseDependencies);
+    const db = await getDbPromise();
+    const tokenDetails = (await db
+        .transaction(OBJECT_STORE_NAME)
+        .objectStore(OBJECT_STORE_NAME)
+        .get(key));
+    if (tokenDetails) {
+        return tokenDetails;
+    }
+    else {
+        // Check if there is a tokenDetails object in the old DB.
+        const oldTokenDetails = await migrateOldDatabase(firebaseDependencies.appConfig.senderId);
+        if (oldTokenDetails) {
+            await dbSet(firebaseDependencies, oldTokenDetails);
+            return oldTokenDetails;
+        }
+    }
+}
+/** Assigns or overwrites the record for the given key with the given value. */
+async function dbSet(firebaseDependencies, tokenDetails) {
+    const key = getKey(firebaseDependencies);
+    const db = await getDbPromise();
+    const tx = db.transaction(OBJECT_STORE_NAME, 'readwrite');
+    await tx.objectStore(OBJECT_STORE_NAME).put(tokenDetails, key);
+    await tx.done;
+    return tokenDetails;
+}
+/** Removes record(s) from the objectStore that match the given key. */
+async function dbRemove(firebaseDependencies) {
+    const key = getKey(firebaseDependencies);
+    const db = await getDbPromise();
+    const tx = db.transaction(OBJECT_STORE_NAME, 'readwrite');
+    await tx.objectStore(OBJECT_STORE_NAME).delete(key);
+    await tx.done;
+}
+function getKey({ appConfig }) {
+    return appConfig.appId;
+}
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const ERROR_MAP = {
+    ["missing-app-config-values" /* ErrorCode.MISSING_APP_CONFIG_VALUES */]: 'Missing App configuration value: "{$valueName}"',
+    ["only-available-in-window" /* ErrorCode.AVAILABLE_IN_WINDOW */]: 'This method is available in a Window context.',
+    ["only-available-in-sw" /* ErrorCode.AVAILABLE_IN_SW */]: 'This method is available in a service worker context.',
+    ["permission-default" /* ErrorCode.PERMISSION_DEFAULT */]: 'The notification permission was not granted and dismissed instead.',
+    ["permission-blocked" /* ErrorCode.PERMISSION_BLOCKED */]: 'The notification permission was not granted and blocked instead.',
+    ["unsupported-browser" /* ErrorCode.UNSUPPORTED_BROWSER */]: "This browser doesn't support the API's required to use the Firebase SDK.",
+    ["indexed-db-unsupported" /* ErrorCode.INDEXED_DB_UNSUPPORTED */]: "This browser doesn't support indexedDb.open() (ex. Safari iFrame, Firefox Private Browsing, etc)",
+    ["failed-service-worker-registration" /* ErrorCode.FAILED_DEFAULT_REGISTRATION */]: 'We are unable to register the default service worker. {$browserErrorMessage}',
+    ["token-subscribe-failed" /* ErrorCode.TOKEN_SUBSCRIBE_FAILED */]: 'A problem occurred while subscribing the user to FCM: {$errorInfo}',
+    ["token-subscribe-no-token" /* ErrorCode.TOKEN_SUBSCRIBE_NO_TOKEN */]: 'FCM returned no token when subscribing the user to push.',
+    ["token-unsubscribe-failed" /* ErrorCode.TOKEN_UNSUBSCRIBE_FAILED */]: 'A problem occurred while unsubscribing the ' +
+        'user from FCM: {$errorInfo}',
+    ["token-update-failed" /* ErrorCode.TOKEN_UPDATE_FAILED */]: 'A problem occurred while updating the user from FCM: {$errorInfo}',
+    ["token-update-no-token" /* ErrorCode.TOKEN_UPDATE_NO_TOKEN */]: 'FCM returned no token when updating the user to push.',
+    ["use-sw-after-get-token" /* ErrorCode.USE_SW_AFTER_GET_TOKEN */]: 'The useServiceWorker() method may only be called once and must be ' +
+        'called before calling getToken() to ensure your service worker is used.',
+    ["invalid-sw-registration" /* ErrorCode.INVALID_SW_REGISTRATION */]: 'The input to useServiceWorker() must be a ServiceWorkerRegistration.',
+    ["invalid-bg-handler" /* ErrorCode.INVALID_BG_HANDLER */]: 'The input to setBackgroundMessageHandler() must be a function.',
+    ["invalid-vapid-key" /* ErrorCode.INVALID_VAPID_KEY */]: 'The public VAPID key must be a string.',
+    ["use-vapid-key-after-get-token" /* ErrorCode.USE_VAPID_KEY_AFTER_GET_TOKEN */]: 'The usePublicVapidKey() method may only be called once and must be ' +
+        'called before calling getToken() to ensure your VAPID key is used.'
+};
+const ERROR_FACTORY = new _firebase_util__WEBPACK_IMPORTED_MODULE_3__.ErrorFactory('messaging', 'Messaging', ERROR_MAP);
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function requestGetToken(firebaseDependencies, subscriptionOptions) {
+    const headers = await getHeaders(firebaseDependencies);
+    const body = getBody(subscriptionOptions);
+    const subscribeOptions = {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body)
+    };
+    let responseData;
+    try {
+        const response = await fetch(getEndpoint(firebaseDependencies.appConfig), subscribeOptions);
+        responseData = await response.json();
+    }
+    catch (err) {
+        throw ERROR_FACTORY.create("token-subscribe-failed" /* ErrorCode.TOKEN_SUBSCRIBE_FAILED */, {
+            errorInfo: err === null || err === void 0 ? void 0 : err.toString()
+        });
+    }
+    if (responseData.error) {
+        const message = responseData.error.message;
+        throw ERROR_FACTORY.create("token-subscribe-failed" /* ErrorCode.TOKEN_SUBSCRIBE_FAILED */, {
+            errorInfo: message
+        });
+    }
+    if (!responseData.token) {
+        throw ERROR_FACTORY.create("token-subscribe-no-token" /* ErrorCode.TOKEN_SUBSCRIBE_NO_TOKEN */);
+    }
+    return responseData.token;
+}
+async function requestUpdateToken(firebaseDependencies, tokenDetails) {
+    const headers = await getHeaders(firebaseDependencies);
+    const body = getBody(tokenDetails.subscriptionOptions);
+    const updateOptions = {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify(body)
+    };
+    let responseData;
+    try {
+        const response = await fetch(`${getEndpoint(firebaseDependencies.appConfig)}/${tokenDetails.token}`, updateOptions);
+        responseData = await response.json();
+    }
+    catch (err) {
+        throw ERROR_FACTORY.create("token-update-failed" /* ErrorCode.TOKEN_UPDATE_FAILED */, {
+            errorInfo: err === null || err === void 0 ? void 0 : err.toString()
+        });
+    }
+    if (responseData.error) {
+        const message = responseData.error.message;
+        throw ERROR_FACTORY.create("token-update-failed" /* ErrorCode.TOKEN_UPDATE_FAILED */, {
+            errorInfo: message
+        });
+    }
+    if (!responseData.token) {
+        throw ERROR_FACTORY.create("token-update-no-token" /* ErrorCode.TOKEN_UPDATE_NO_TOKEN */);
+    }
+    return responseData.token;
+}
+async function requestDeleteToken(firebaseDependencies, token) {
+    const headers = await getHeaders(firebaseDependencies);
+    const unsubscribeOptions = {
+        method: 'DELETE',
+        headers
+    };
+    try {
+        const response = await fetch(`${getEndpoint(firebaseDependencies.appConfig)}/${token}`, unsubscribeOptions);
+        const responseData = await response.json();
+        if (responseData.error) {
+            const message = responseData.error.message;
+            throw ERROR_FACTORY.create("token-unsubscribe-failed" /* ErrorCode.TOKEN_UNSUBSCRIBE_FAILED */, {
+                errorInfo: message
+            });
+        }
+    }
+    catch (err) {
+        throw ERROR_FACTORY.create("token-unsubscribe-failed" /* ErrorCode.TOKEN_UNSUBSCRIBE_FAILED */, {
+            errorInfo: err === null || err === void 0 ? void 0 : err.toString()
+        });
+    }
+}
+function getEndpoint({ projectId }) {
+    return `${ENDPOINT}/projects/${projectId}/registrations`;
+}
+async function getHeaders({ appConfig, installations }) {
+    const authToken = await installations.getToken();
+    return new Headers({
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'x-goog-api-key': appConfig.apiKey,
+        'x-goog-firebase-installations-auth': `FIS ${authToken}`
+    });
+}
+function getBody({ p256dh, auth, endpoint, vapidKey }) {
+    const body = {
+        web: {
+            endpoint,
+            auth,
+            p256dh
+        }
+    };
+    if (vapidKey !== DEFAULT_VAPID_KEY) {
+        body.web.applicationPubKey = vapidKey;
+    }
+    return body;
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+// UpdateRegistration will be called once every week.
+const TOKEN_EXPIRATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+async function getTokenInternal(messaging) {
+    const pushSubscription = await getPushSubscription(messaging.swRegistration, messaging.vapidKey);
+    const subscriptionOptions = {
+        vapidKey: messaging.vapidKey,
+        swScope: messaging.swRegistration.scope,
+        endpoint: pushSubscription.endpoint,
+        auth: arrayToBase64(pushSubscription.getKey('auth')),
+        p256dh: arrayToBase64(pushSubscription.getKey('p256dh'))
+    };
+    const tokenDetails = await dbGet(messaging.firebaseDependencies);
+    if (!tokenDetails) {
+        // No token, get a new one.
+        return getNewToken(messaging.firebaseDependencies, subscriptionOptions);
+    }
+    else if (!isTokenValid(tokenDetails.subscriptionOptions, subscriptionOptions)) {
+        // Invalid token, get a new one.
+        try {
+            await requestDeleteToken(messaging.firebaseDependencies, tokenDetails.token);
+        }
+        catch (e) {
+            // Suppress errors because of #2364
+            console.warn(e);
+        }
+        return getNewToken(messaging.firebaseDependencies, subscriptionOptions);
+    }
+    else if (Date.now() >= tokenDetails.createTime + TOKEN_EXPIRATION_MS) {
+        // Weekly token refresh
+        return updateToken(messaging, {
+            token: tokenDetails.token,
+            createTime: Date.now(),
+            subscriptionOptions
+        });
+    }
+    else {
+        // Valid token, nothing to do.
+        return tokenDetails.token;
+    }
+}
+/**
+ * This method deletes the token from the database, unsubscribes the token from FCM, and unregisters
+ * the push subscription if it exists.
+ */
+async function deleteTokenInternal(messaging) {
+    const tokenDetails = await dbGet(messaging.firebaseDependencies);
+    if (tokenDetails) {
+        await requestDeleteToken(messaging.firebaseDependencies, tokenDetails.token);
+        await dbRemove(messaging.firebaseDependencies);
+    }
+    // Unsubscribe from the push subscription.
+    const pushSubscription = await messaging.swRegistration.pushManager.getSubscription();
+    if (pushSubscription) {
+        return pushSubscription.unsubscribe();
+    }
+    // If there's no SW, consider it a success.
+    return true;
+}
+async function updateToken(messaging, tokenDetails) {
+    try {
+        const updatedToken = await requestUpdateToken(messaging.firebaseDependencies, tokenDetails);
+        const updatedTokenDetails = Object.assign(Object.assign({}, tokenDetails), { token: updatedToken, createTime: Date.now() });
+        await dbSet(messaging.firebaseDependencies, updatedTokenDetails);
+        return updatedToken;
+    }
+    catch (e) {
+        throw e;
+    }
+}
+async function getNewToken(firebaseDependencies, subscriptionOptions) {
+    const token = await requestGetToken(firebaseDependencies, subscriptionOptions);
+    const tokenDetails = {
+        token,
+        createTime: Date.now(),
+        subscriptionOptions
+    };
+    await dbSet(firebaseDependencies, tokenDetails);
+    return tokenDetails.token;
+}
+/**
+ * Gets a PushSubscription for the current user.
+ */
+async function getPushSubscription(swRegistration, vapidKey) {
+    const subscription = await swRegistration.pushManager.getSubscription();
+    if (subscription) {
+        return subscription;
+    }
+    return swRegistration.pushManager.subscribe({
+        userVisibleOnly: true,
+        // Chrome <= 75 doesn't support base64-encoded VAPID key. For backward compatibility, VAPID key
+        // submitted to pushManager#subscribe must be of type Uint8Array.
+        applicationServerKey: base64ToArray(vapidKey)
+    });
+}
+/**
+ * Checks if the saved tokenDetails object matches the configuration provided.
+ */
+function isTokenValid(dbOptions, currentOptions) {
+    const isVapidKeyEqual = currentOptions.vapidKey === dbOptions.vapidKey;
+    const isEndpointEqual = currentOptions.endpoint === dbOptions.endpoint;
+    const isAuthEqual = currentOptions.auth === dbOptions.auth;
+    const isP256dhEqual = currentOptions.p256dh === dbOptions.p256dh;
+    return isVapidKeyEqual && isEndpointEqual && isAuthEqual && isP256dhEqual;
+}
+
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function externalizePayload(internalPayload) {
+    const payload = {
+        from: internalPayload.from,
+        // eslint-disable-next-line camelcase
+        collapseKey: internalPayload.collapse_key,
+        // eslint-disable-next-line camelcase
+        messageId: internalPayload.fcmMessageId
+    };
+    propagateNotificationPayload(payload, internalPayload);
+    propagateDataPayload(payload, internalPayload);
+    propagateFcmOptions(payload, internalPayload);
+    return payload;
+}
+function propagateNotificationPayload(payload, messagePayloadInternal) {
+    if (!messagePayloadInternal.notification) {
+        return;
+    }
+    payload.notification = {};
+    const title = messagePayloadInternal.notification.title;
+    if (!!title) {
+        payload.notification.title = title;
+    }
+    const body = messagePayloadInternal.notification.body;
+    if (!!body) {
+        payload.notification.body = body;
+    }
+    const image = messagePayloadInternal.notification.image;
+    if (!!image) {
+        payload.notification.image = image;
+    }
+    const icon = messagePayloadInternal.notification.icon;
+    if (!!icon) {
+        payload.notification.icon = icon;
+    }
+}
+function propagateDataPayload(payload, messagePayloadInternal) {
+    if (!messagePayloadInternal.data) {
+        return;
+    }
+    payload.data = messagePayloadInternal.data;
+}
+function propagateFcmOptions(payload, messagePayloadInternal) {
+    var _a, _b, _c, _d, _e;
+    // fcmOptions.link value is written into notification.click_action. see more in b/232072111
+    if (!messagePayloadInternal.fcmOptions &&
+        !((_a = messagePayloadInternal.notification) === null || _a === void 0 ? void 0 : _a.click_action)) {
+        return;
+    }
+    payload.fcmOptions = {};
+    const link = (_c = (_b = messagePayloadInternal.fcmOptions) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : (_d = messagePayloadInternal.notification) === null || _d === void 0 ? void 0 : _d.click_action;
+    if (!!link) {
+        payload.fcmOptions.link = link;
+    }
+    // eslint-disable-next-line camelcase
+    const analyticsLabel = (_e = messagePayloadInternal.fcmOptions) === null || _e === void 0 ? void 0 : _e.analytics_label;
+    if (!!analyticsLabel) {
+        payload.fcmOptions.analyticsLabel = analyticsLabel;
+    }
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function isConsoleMessage(data) {
+    // This message has a campaign ID, meaning it was sent using the Firebase Console.
+    return typeof data === 'object' && !!data && CONSOLE_CAMPAIGN_ID in data;
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+_mergeStrings('AzSCbw63g1R0nCw85jG8', 'Iaya3yLKwmgvh7cF0q4');
+function _mergeStrings(s1, s2) {
+    const resultArray = [];
+    for (let i = 0; i < s1.length; i++) {
+        resultArray.push(s1.charAt(i));
+        if (i < s2.length) {
+            resultArray.push(s2.charAt(i));
+        }
+    }
+    return resultArray.join('');
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function extractAppConfig(app) {
+    if (!app || !app.options) {
+        throw getMissingValueError('App Configuration Object');
+    }
+    if (!app.name) {
+        throw getMissingValueError('App Name');
+    }
+    // Required app config keys
+    const configKeys = [
+        'projectId',
+        'apiKey',
+        'appId',
+        'messagingSenderId'
+    ];
+    const { options } = app;
+    for (const keyName of configKeys) {
+        if (!options[keyName]) {
+            throw getMissingValueError(keyName);
+        }
+    }
+    return {
+        appName: app.name,
+        projectId: options.projectId,
+        apiKey: options.apiKey,
+        appId: options.appId,
+        senderId: options.messagingSenderId
+    };
+}
+function getMissingValueError(valueName) {
+    return ERROR_FACTORY.create("missing-app-config-values" /* ErrorCode.MISSING_APP_CONFIG_VALUES */, {
+        valueName
+    });
+}
+
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+class MessagingService {
+    constructor(app, installations, analyticsProvider) {
+        // logging is only done with end user consent. Default to false.
+        this.deliveryMetricsExportedToBigQueryEnabled = false;
+        this.onBackgroundMessageHandler = null;
+        this.onMessageHandler = null;
+        this.logEvents = [];
+        this.isLogServiceStarted = false;
+        const appConfig = extractAppConfig(app);
+        this.firebaseDependencies = {
+            app,
+            appConfig,
+            installations,
+            analyticsProvider
+        };
+    }
+    _delete() {
+        return Promise.resolve();
+    }
+}
+
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function registerDefaultSw(messaging) {
+    try {
+        messaging.swRegistration = await navigator.serviceWorker.register(DEFAULT_SW_PATH, {
+            scope: DEFAULT_SW_SCOPE
+        });
+        // The timing when browser updates sw when sw has an update is unreliable from experiment. It
+        // leads to version conflict when the SDK upgrades to a newer version in the main page, but sw
+        // is stuck with the old version. For example,
+        // https://github.com/firebase/firebase-js-sdk/issues/2590 The following line reliably updates
+        // sw if there was an update.
+        messaging.swRegistration.update().catch(() => {
+            /* it is non blocking and we don't care if it failed */
+        });
+        await waitForRegistrationActive(messaging.swRegistration);
+    }
+    catch (e) {
+        throw ERROR_FACTORY.create("failed-service-worker-registration" /* ErrorCode.FAILED_DEFAULT_REGISTRATION */, {
+            browserErrorMessage: e === null || e === void 0 ? void 0 : e.message
+        });
+    }
+}
+/**
+ * Waits for registration to become active. MDN documentation claims that
+ * a service worker registration should be ready to use after awaiting
+ * navigator.serviceWorker.register() but that doesn't seem to be the case in
+ * practice, causing the SDK to throw errors when calling
+ * swRegistration.pushManager.subscribe() too soon after register(). The only
+ * solution seems to be waiting for the service worker registration `state`
+ * to become "active".
+ */
+async function waitForRegistrationActive(registration) {
+    return new Promise((resolve, reject) => {
+        const rejectTimeout = setTimeout(() => reject(new Error(`Service worker not registered after ${DEFAULT_REGISTRATION_TIMEOUT} ms`)), DEFAULT_REGISTRATION_TIMEOUT);
+        const incomingSw = registration.installing || registration.waiting;
+        if (registration.active) {
+            clearTimeout(rejectTimeout);
+            resolve();
+        }
+        else if (incomingSw) {
+            incomingSw.onstatechange = ev => {
+                var _a;
+                if (((_a = ev.target) === null || _a === void 0 ? void 0 : _a.state) === 'activated') {
+                    incomingSw.onstatechange = null;
+                    clearTimeout(rejectTimeout);
+                    resolve();
+                }
+            };
+        }
+        else {
+            clearTimeout(rejectTimeout);
+            reject(new Error('No incoming service worker found.'));
+        }
+    });
+}
+
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function updateSwReg(messaging, swRegistration) {
+    if (!swRegistration && !messaging.swRegistration) {
+        await registerDefaultSw(messaging);
+    }
+    if (!swRegistration && !!messaging.swRegistration) {
+        return;
+    }
+    if (!(swRegistration instanceof ServiceWorkerRegistration)) {
+        throw ERROR_FACTORY.create("invalid-sw-registration" /* ErrorCode.INVALID_SW_REGISTRATION */);
+    }
+    messaging.swRegistration = swRegistration;
+}
+
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function updateVapidKey(messaging, vapidKey) {
+    if (!!vapidKey) {
+        messaging.vapidKey = vapidKey;
+    }
+    else if (!messaging.vapidKey) {
+        messaging.vapidKey = DEFAULT_VAPID_KEY;
+    }
+}
+
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function getToken$1(messaging, options) {
+    if (!navigator) {
+        throw ERROR_FACTORY.create("only-available-in-window" /* ErrorCode.AVAILABLE_IN_WINDOW */);
+    }
+    if (Notification.permission === 'default') {
+        await Notification.requestPermission();
+    }
+    if (Notification.permission !== 'granted') {
+        throw ERROR_FACTORY.create("permission-blocked" /* ErrorCode.PERMISSION_BLOCKED */);
+    }
+    await updateVapidKey(messaging, options === null || options === void 0 ? void 0 : options.vapidKey);
+    await updateSwReg(messaging, options === null || options === void 0 ? void 0 : options.serviceWorkerRegistration);
+    return getTokenInternal(messaging);
+}
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function logToScion(messaging, messageType, data) {
+    const eventType = getEventType(messageType);
+    const analytics = await messaging.firebaseDependencies.analyticsProvider.get();
+    analytics.logEvent(eventType, {
+        /* eslint-disable camelcase */
+        message_id: data[CONSOLE_CAMPAIGN_ID],
+        message_name: data[CONSOLE_CAMPAIGN_NAME],
+        message_time: data[CONSOLE_CAMPAIGN_TIME],
+        message_device_time: Math.floor(Date.now() / 1000)
+        /* eslint-enable camelcase */
+    });
+}
+function getEventType(messageType) {
+    switch (messageType) {
+        case MessageType.NOTIFICATION_CLICKED:
+            return 'notification_open';
+        case MessageType.PUSH_RECEIVED:
+            return 'notification_foreground';
+        default:
+            throw new Error();
+    }
+}
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function messageEventListener(messaging, event) {
+    const internalPayload = event.data;
+    if (!internalPayload.isFirebaseMessaging) {
+        return;
+    }
+    if (messaging.onMessageHandler &&
+        internalPayload.messageType === MessageType.PUSH_RECEIVED) {
+        if (typeof messaging.onMessageHandler === 'function') {
+            messaging.onMessageHandler(externalizePayload(internalPayload));
+        }
+        else {
+            messaging.onMessageHandler.next(externalizePayload(internalPayload));
+        }
+    }
+    // Log to Scion if applicable
+    const dataPayload = internalPayload.data;
+    if (isConsoleMessage(dataPayload) &&
+        dataPayload[CONSOLE_CAMPAIGN_ANALYTICS_ENABLED] === '1') {
+        await logToScion(messaging, internalPayload.messageType, dataPayload);
+    }
+}
+
+const name = "@firebase/messaging";
+const version = "0.12.22";
+
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const WindowMessagingFactory = (container) => {
+    const messaging = new MessagingService(container.getProvider('app').getImmediate(), container.getProvider('installations-internal').getImmediate(), container.getProvider('analytics-internal'));
+    navigator.serviceWorker.addEventListener('message', e => messageEventListener(messaging, e));
+    return messaging;
+};
+const WindowMessagingInternalFactory = (container) => {
+    const messaging = container
+        .getProvider('messaging')
+        .getImmediate();
+    const messagingInternal = {
+        getToken: (options) => getToken$1(messaging, options)
+    };
+    return messagingInternal;
+};
+function registerMessagingInWindow() {
+    (0,_firebase_app__WEBPACK_IMPORTED_MODULE_4__._registerComponent)(new _firebase_component__WEBPACK_IMPORTED_MODULE_1__.Component('messaging', WindowMessagingFactory, "PUBLIC" /* ComponentType.PUBLIC */));
+    (0,_firebase_app__WEBPACK_IMPORTED_MODULE_4__._registerComponent)(new _firebase_component__WEBPACK_IMPORTED_MODULE_1__.Component('messaging-internal', WindowMessagingInternalFactory, "PRIVATE" /* ComponentType.PRIVATE */));
+    (0,_firebase_app__WEBPACK_IMPORTED_MODULE_4__.registerVersion)(name, version);
+    // BUILD_TARGET will be replaced by values like esm2017, cjs2017, etc during the compilation
+    (0,_firebase_app__WEBPACK_IMPORTED_MODULE_4__.registerVersion)(name, version, 'esm2017');
+}
+
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Checks if all required APIs exist in the browser.
+ * @returns a Promise that resolves to a boolean.
+ *
+ * @public
+ */
+async function isWindowSupported() {
+    try {
+        // This throws if open() is unsupported, so adding it to the conditional
+        // statement below can cause an uncaught error.
+        await (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__.validateIndexedDBOpenable)();
+    }
+    catch (e) {
+        return false;
+    }
+    // firebase-js-sdk/issues/2393 reveals that idb#open in Safari iframe and Firefox private browsing
+    // might be prohibited to run. In these contexts, an error would be thrown during the messaging
+    // instantiating phase, informing the developers to import/call isSupported for special handling.
+    return (typeof window !== 'undefined' &&
+        (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__.isIndexedDBAvailable)() &&
+        (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__.areCookiesEnabled)() &&
+        'serviceWorker' in navigator &&
+        'PushManager' in window &&
+        'Notification' in window &&
+        'fetch' in window &&
+        ServiceWorkerRegistration.prototype.hasOwnProperty('showNotification') &&
+        PushSubscription.prototype.hasOwnProperty('getKey'));
+}
+
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+async function deleteToken$1(messaging) {
+    if (!navigator) {
+        throw ERROR_FACTORY.create("only-available-in-window" /* ErrorCode.AVAILABLE_IN_WINDOW */);
+    }
+    if (!messaging.swRegistration) {
+        await registerDefaultSw(messaging);
+    }
+    return deleteTokenInternal(messaging);
+}
+
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function onMessage$1(messaging, nextOrObserver) {
+    if (!navigator) {
+        throw ERROR_FACTORY.create("only-available-in-window" /* ErrorCode.AVAILABLE_IN_WINDOW */);
+    }
+    messaging.onMessageHandler = nextOrObserver;
+    return () => {
+        messaging.onMessageHandler = null;
+    };
+}
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Retrieves a Firebase Cloud Messaging instance.
+ *
+ * @returns The Firebase Cloud Messaging instance associated with the provided firebase app.
+ *
+ * @public
+ */
+function getMessagingInWindow(app = (0,_firebase_app__WEBPACK_IMPORTED_MODULE_4__.getApp)()) {
+    // Conscious decision to make this async check non-blocking during the messaging instance
+    // initialization phase for performance consideration. An error would be thrown latter for
+    // developer's information. Developers can then choose to import and call `isSupported` for
+    // special handling.
+    isWindowSupported().then(isSupported => {
+        // If `isWindowSupported()` resolved, but returned false.
+        if (!isSupported) {
+            throw ERROR_FACTORY.create("unsupported-browser" /* ErrorCode.UNSUPPORTED_BROWSER */);
+        }
+    }, _ => {
+        // If `isWindowSupported()` rejected.
+        throw ERROR_FACTORY.create("indexed-db-unsupported" /* ErrorCode.INDEXED_DB_UNSUPPORTED */);
+    });
+    return (0,_firebase_app__WEBPACK_IMPORTED_MODULE_4__._getProvider)((0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__.getModularInstance)(app), 'messaging').getImmediate();
+}
+/**
+ * Subscribes the {@link Messaging} instance to push notifications. Returns a Firebase Cloud
+ * Messaging registration token that can be used to send push messages to that {@link Messaging}
+ * instance.
+ *
+ * If notification permission isn't already granted, this method asks the user for permission. The
+ * returned promise rejects if the user does not allow the app to show notifications.
+ *
+ * @param messaging - The {@link Messaging} instance.
+ * @param options - Provides an optional vapid key and an optional service worker registration.
+ *
+ * @returns The promise resolves with an FCM registration token.
+ *
+ * @public
+ */
+async function getToken(messaging, options) {
+    messaging = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__.getModularInstance)(messaging);
+    return getToken$1(messaging, options);
+}
+/**
+ * Deletes the registration token associated with this {@link Messaging} instance and unsubscribes
+ * the {@link Messaging} instance from the push subscription.
+ *
+ * @param messaging - The {@link Messaging} instance.
+ *
+ * @returns The promise resolves when the token has been successfully deleted.
+ *
+ * @public
+ */
+function deleteToken(messaging) {
+    messaging = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__.getModularInstance)(messaging);
+    return deleteToken$1(messaging);
+}
+/**
+ * When a push message is received and the user is currently on a page for your origin, the
+ * message is passed to the page and an `onMessage()` event is dispatched with the payload of
+ * the push message.
+ *
+ *
+ * @param messaging - The {@link Messaging} instance.
+ * @param nextOrObserver - This function, or observer object with `next` defined,
+ *     is called when a message is received and the user is currently viewing your page.
+ * @returns To stop listening for messages execute this returned function.
+ *
+ * @public
+ */
+function onMessage(messaging, nextOrObserver) {
+    messaging = (0,_firebase_util__WEBPACK_IMPORTED_MODULE_3__.getModularInstance)(messaging);
+    return onMessage$1(messaging, nextOrObserver);
+}
+
+/**
+ * The Firebase Cloud Messaging Web SDK.
+ * This SDK does not work in a Node.js environment.
+ *
+ * @packageDocumentation
+ */
+registerMessagingInWindow();
+
+
+//# sourceMappingURL=index.esm2017.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@firebase/util/dist/index.esm2017.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/@firebase/util/dist/index.esm2017.js ***!
+  \***********************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   CONSTANTS: function() { return /* binding */ CONSTANTS; },
+/* harmony export */   DecodeBase64StringError: function() { return /* binding */ DecodeBase64StringError; },
+/* harmony export */   Deferred: function() { return /* binding */ Deferred; },
+/* harmony export */   ErrorFactory: function() { return /* binding */ ErrorFactory; },
+/* harmony export */   FirebaseError: function() { return /* binding */ FirebaseError; },
+/* harmony export */   MAX_VALUE_MILLIS: function() { return /* binding */ MAX_VALUE_MILLIS; },
+/* harmony export */   RANDOM_FACTOR: function() { return /* binding */ RANDOM_FACTOR; },
+/* harmony export */   Sha1: function() { return /* binding */ Sha1; },
+/* harmony export */   areCookiesEnabled: function() { return /* binding */ areCookiesEnabled; },
+/* harmony export */   assert: function() { return /* binding */ assert; },
+/* harmony export */   assertionError: function() { return /* binding */ assertionError; },
+/* harmony export */   async: function() { return /* binding */ async; },
+/* harmony export */   base64: function() { return /* binding */ base64; },
+/* harmony export */   base64Decode: function() { return /* binding */ base64Decode; },
+/* harmony export */   base64Encode: function() { return /* binding */ base64Encode; },
+/* harmony export */   base64urlEncodeWithoutPadding: function() { return /* binding */ base64urlEncodeWithoutPadding; },
+/* harmony export */   calculateBackoffMillis: function() { return /* binding */ calculateBackoffMillis; },
+/* harmony export */   contains: function() { return /* binding */ contains; },
+/* harmony export */   createMockUserToken: function() { return /* binding */ createMockUserToken; },
+/* harmony export */   createSubscribe: function() { return /* binding */ createSubscribe; },
+/* harmony export */   decode: function() { return /* binding */ decode; },
+/* harmony export */   deepCopy: function() { return /* binding */ deepCopy; },
+/* harmony export */   deepEqual: function() { return /* binding */ deepEqual; },
+/* harmony export */   deepExtend: function() { return /* binding */ deepExtend; },
+/* harmony export */   errorPrefix: function() { return /* binding */ errorPrefix; },
+/* harmony export */   extractQuerystring: function() { return /* binding */ extractQuerystring; },
+/* harmony export */   getDefaultAppConfig: function() { return /* binding */ getDefaultAppConfig; },
+/* harmony export */   getDefaultEmulatorHost: function() { return /* binding */ getDefaultEmulatorHost; },
+/* harmony export */   getDefaultEmulatorHostnameAndPort: function() { return /* binding */ getDefaultEmulatorHostnameAndPort; },
+/* harmony export */   getDefaults: function() { return /* binding */ getDefaults; },
+/* harmony export */   getExperimentalSetting: function() { return /* binding */ getExperimentalSetting; },
+/* harmony export */   getGlobal: function() { return /* binding */ getGlobal; },
+/* harmony export */   getModularInstance: function() { return /* binding */ getModularInstance; },
+/* harmony export */   getUA: function() { return /* binding */ getUA; },
+/* harmony export */   isAdmin: function() { return /* binding */ isAdmin; },
+/* harmony export */   isBrowser: function() { return /* binding */ isBrowser; },
+/* harmony export */   isBrowserExtension: function() { return /* binding */ isBrowserExtension; },
+/* harmony export */   isCloudWorkstation: function() { return /* binding */ isCloudWorkstation; },
+/* harmony export */   isCloudflareWorker: function() { return /* binding */ isCloudflareWorker; },
+/* harmony export */   isElectron: function() { return /* binding */ isElectron; },
+/* harmony export */   isEmpty: function() { return /* binding */ isEmpty; },
+/* harmony export */   isIE: function() { return /* binding */ isIE; },
+/* harmony export */   isIndexedDBAvailable: function() { return /* binding */ isIndexedDBAvailable; },
+/* harmony export */   isMobileCordova: function() { return /* binding */ isMobileCordova; },
+/* harmony export */   isNode: function() { return /* binding */ isNode; },
+/* harmony export */   isNodeSdk: function() { return /* binding */ isNodeSdk; },
+/* harmony export */   isReactNative: function() { return /* binding */ isReactNative; },
+/* harmony export */   isSafari: function() { return /* binding */ isSafari; },
+/* harmony export */   isSafariOrWebkit: function() { return /* binding */ isSafariOrWebkit; },
+/* harmony export */   isUWP: function() { return /* binding */ isUWP; },
+/* harmony export */   isValidFormat: function() { return /* binding */ isValidFormat; },
+/* harmony export */   isValidTimestamp: function() { return /* binding */ isValidTimestamp; },
+/* harmony export */   isWebWorker: function() { return /* binding */ isWebWorker; },
+/* harmony export */   issuedAtTime: function() { return /* binding */ issuedAtTime; },
+/* harmony export */   jsonEval: function() { return /* binding */ jsonEval; },
+/* harmony export */   map: function() { return /* binding */ map; },
+/* harmony export */   ordinal: function() { return /* binding */ ordinal; },
+/* harmony export */   pingServer: function() { return /* binding */ pingServer; },
+/* harmony export */   promiseWithTimeout: function() { return /* binding */ promiseWithTimeout; },
+/* harmony export */   querystring: function() { return /* binding */ querystring; },
+/* harmony export */   querystringDecode: function() { return /* binding */ querystringDecode; },
+/* harmony export */   safeGet: function() { return /* binding */ safeGet; },
+/* harmony export */   stringLength: function() { return /* binding */ stringLength; },
+/* harmony export */   stringToByteArray: function() { return /* binding */ stringToByteArray; },
+/* harmony export */   stringify: function() { return /* binding */ stringify; },
+/* harmony export */   updateEmulatorBanner: function() { return /* binding */ updateEmulatorBanner; },
+/* harmony export */   validateArgCount: function() { return /* binding */ validateArgCount; },
+/* harmony export */   validateCallback: function() { return /* binding */ validateCallback; },
+/* harmony export */   validateContextObject: function() { return /* binding */ validateContextObject; },
+/* harmony export */   validateIndexedDBOpenable: function() { return /* binding */ validateIndexedDBOpenable; },
+/* harmony export */   validateNamespace: function() { return /* binding */ validateNamespace; }
+/* harmony export */ });
+/* harmony import */ var _postinstall_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./postinstall.mjs */ "./node_modules/@firebase/util/dist/postinstall.mjs");
+
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * @fileoverview Firebase constants.  Some of these (@defines) can be overridden at compile-time.
+ */
+const CONSTANTS = {
+    /**
+     * @define {boolean} Whether this is the client Node.js SDK.
+     */
+    NODE_CLIENT: false,
+    /**
+     * @define {boolean} Whether this is the Admin Node.js SDK.
+     */
+    NODE_ADMIN: false,
+    /**
+     * Firebase SDK Version
+     */
+    SDK_VERSION: '${JSCORE_VERSION}'
+};
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Throws an error if the provided assertion is falsy
+ */
+const assert = function (assertion, message) {
+    if (!assertion) {
+        throw assertionError(message);
+    }
+};
+/**
+ * Returns an Error object suitable for throwing.
+ */
+const assertionError = function (message) {
+    return new Error('Firebase Database (' +
+        CONSTANTS.SDK_VERSION +
+        ') INTERNAL ASSERT FAILED: ' +
+        message);
+};
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const stringToByteArray$1 = function (str) {
+    // TODO(user): Use native implementations if/when available
+    const out = [];
+    let p = 0;
+    for (let i = 0; i < str.length; i++) {
+        let c = str.charCodeAt(i);
+        if (c < 128) {
+            out[p++] = c;
+        }
+        else if (c < 2048) {
+            out[p++] = (c >> 6) | 192;
+            out[p++] = (c & 63) | 128;
+        }
+        else if ((c & 0xfc00) === 0xd800 &&
+            i + 1 < str.length &&
+            (str.charCodeAt(i + 1) & 0xfc00) === 0xdc00) {
+            // Surrogate Pair
+            c = 0x10000 + ((c & 0x03ff) << 10) + (str.charCodeAt(++i) & 0x03ff);
+            out[p++] = (c >> 18) | 240;
+            out[p++] = ((c >> 12) & 63) | 128;
+            out[p++] = ((c >> 6) & 63) | 128;
+            out[p++] = (c & 63) | 128;
+        }
+        else {
+            out[p++] = (c >> 12) | 224;
+            out[p++] = ((c >> 6) & 63) | 128;
+            out[p++] = (c & 63) | 128;
+        }
+    }
+    return out;
+};
+/**
+ * Turns an array of numbers into the string given by the concatenation of the
+ * characters to which the numbers correspond.
+ * @param bytes Array of numbers representing characters.
+ * @return Stringification of the array.
+ */
+const byteArrayToString = function (bytes) {
+    // TODO(user): Use native implementations if/when available
+    const out = [];
+    let pos = 0, c = 0;
+    while (pos < bytes.length) {
+        const c1 = bytes[pos++];
+        if (c1 < 128) {
+            out[c++] = String.fromCharCode(c1);
+        }
+        else if (c1 > 191 && c1 < 224) {
+            const c2 = bytes[pos++];
+            out[c++] = String.fromCharCode(((c1 & 31) << 6) | (c2 & 63));
+        }
+        else if (c1 > 239 && c1 < 365) {
+            // Surrogate Pair
+            const c2 = bytes[pos++];
+            const c3 = bytes[pos++];
+            const c4 = bytes[pos++];
+            const u = (((c1 & 7) << 18) | ((c2 & 63) << 12) | ((c3 & 63) << 6) | (c4 & 63)) -
+                0x10000;
+            out[c++] = String.fromCharCode(0xd800 + (u >> 10));
+            out[c++] = String.fromCharCode(0xdc00 + (u & 1023));
+        }
+        else {
+            const c2 = bytes[pos++];
+            const c3 = bytes[pos++];
+            out[c++] = String.fromCharCode(((c1 & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+        }
+    }
+    return out.join('');
+};
+// We define it as an object literal instead of a class because a class compiled down to es5 can't
+// be treeshaked. https://github.com/rollup/rollup/issues/1691
+// Static lookup maps, lazily populated by init_()
+// TODO(dlarocque): Define this as a class, since we no longer target ES5.
+const base64 = {
+    /**
+     * Maps bytes to characters.
+     */
+    byteToCharMap_: null,
+    /**
+     * Maps characters to bytes.
+     */
+    charToByteMap_: null,
+    /**
+     * Maps bytes to websafe characters.
+     * @private
+     */
+    byteToCharMapWebSafe_: null,
+    /**
+     * Maps websafe characters to bytes.
+     * @private
+     */
+    charToByteMapWebSafe_: null,
+    /**
+     * Our default alphabet, shared between
+     * ENCODED_VALS and ENCODED_VALS_WEBSAFE
+     */
+    ENCODED_VALS_BASE: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + 'abcdefghijklmnopqrstuvwxyz' + '0123456789',
+    /**
+     * Our default alphabet. Value 64 (=) is special; it means "nothing."
+     */
+    get ENCODED_VALS() {
+        return this.ENCODED_VALS_BASE + '+/=';
+    },
+    /**
+     * Our websafe alphabet.
+     */
+    get ENCODED_VALS_WEBSAFE() {
+        return this.ENCODED_VALS_BASE + '-_.';
+    },
+    /**
+     * Whether this browser supports the atob and btoa functions. This extension
+     * started at Mozilla but is now implemented by many browsers. We use the
+     * ASSUME_* variables to avoid pulling in the full useragent detection library
+     * but still allowing the standard per-browser compilations.
+     *
+     */
+    HAS_NATIVE_SUPPORT: typeof atob === 'function',
+    /**
+     * Base64-encode an array of bytes.
+     *
+     * @param input An array of bytes (numbers with
+     *     value in [0, 255]) to encode.
+     * @param webSafe Boolean indicating we should use the
+     *     alternative alphabet.
+     * @return The base64 encoded string.
+     */
+    encodeByteArray(input, webSafe) {
+        if (!Array.isArray(input)) {
+            throw Error('encodeByteArray takes an array as a parameter');
+        }
+        this.init_();
+        const byteToCharMap = webSafe
+            ? this.byteToCharMapWebSafe_
+            : this.byteToCharMap_;
+        const output = [];
+        for (let i = 0; i < input.length; i += 3) {
+            const byte1 = input[i];
+            const haveByte2 = i + 1 < input.length;
+            const byte2 = haveByte2 ? input[i + 1] : 0;
+            const haveByte3 = i + 2 < input.length;
+            const byte3 = haveByte3 ? input[i + 2] : 0;
+            const outByte1 = byte1 >> 2;
+            const outByte2 = ((byte1 & 0x03) << 4) | (byte2 >> 4);
+            let outByte3 = ((byte2 & 0x0f) << 2) | (byte3 >> 6);
+            let outByte4 = byte3 & 0x3f;
+            if (!haveByte3) {
+                outByte4 = 64;
+                if (!haveByte2) {
+                    outByte3 = 64;
+                }
+            }
+            output.push(byteToCharMap[outByte1], byteToCharMap[outByte2], byteToCharMap[outByte3], byteToCharMap[outByte4]);
+        }
+        return output.join('');
+    },
+    /**
+     * Base64-encode a string.
+     *
+     * @param input A string to encode.
+     * @param webSafe If true, we should use the
+     *     alternative alphabet.
+     * @return The base64 encoded string.
+     */
+    encodeString(input, webSafe) {
+        // Shortcut for Mozilla browsers that implement
+        // a native base64 encoder in the form of "btoa/atob"
+        if (this.HAS_NATIVE_SUPPORT && !webSafe) {
+            return btoa(input);
+        }
+        return this.encodeByteArray(stringToByteArray$1(input), webSafe);
+    },
+    /**
+     * Base64-decode a string.
+     *
+     * @param input to decode.
+     * @param webSafe True if we should use the
+     *     alternative alphabet.
+     * @return string representing the decoded value.
+     */
+    decodeString(input, webSafe) {
+        // Shortcut for Mozilla browsers that implement
+        // a native base64 encoder in the form of "btoa/atob"
+        if (this.HAS_NATIVE_SUPPORT && !webSafe) {
+            return atob(input);
+        }
+        return byteArrayToString(this.decodeStringToByteArray(input, webSafe));
+    },
+    /**
+     * Base64-decode a string.
+     *
+     * In base-64 decoding, groups of four characters are converted into three
+     * bytes.  If the encoder did not apply padding, the input length may not
+     * be a multiple of 4.
+     *
+     * In this case, the last group will have fewer than 4 characters, and
+     * padding will be inferred.  If the group has one or two characters, it decodes
+     * to one byte.  If the group has three characters, it decodes to two bytes.
+     *
+     * @param input Input to decode.
+     * @param webSafe True if we should use the web-safe alphabet.
+     * @return bytes representing the decoded value.
+     */
+    decodeStringToByteArray(input, webSafe) {
+        this.init_();
+        const charToByteMap = webSafe
+            ? this.charToByteMapWebSafe_
+            : this.charToByteMap_;
+        const output = [];
+        for (let i = 0; i < input.length;) {
+            const byte1 = charToByteMap[input.charAt(i++)];
+            const haveByte2 = i < input.length;
+            const byte2 = haveByte2 ? charToByteMap[input.charAt(i)] : 0;
+            ++i;
+            const haveByte3 = i < input.length;
+            const byte3 = haveByte3 ? charToByteMap[input.charAt(i)] : 64;
+            ++i;
+            const haveByte4 = i < input.length;
+            const byte4 = haveByte4 ? charToByteMap[input.charAt(i)] : 64;
+            ++i;
+            if (byte1 == null || byte2 == null || byte3 == null || byte4 == null) {
+                throw new DecodeBase64StringError();
+            }
+            const outByte1 = (byte1 << 2) | (byte2 >> 4);
+            output.push(outByte1);
+            if (byte3 !== 64) {
+                const outByte2 = ((byte2 << 4) & 0xf0) | (byte3 >> 2);
+                output.push(outByte2);
+                if (byte4 !== 64) {
+                    const outByte3 = ((byte3 << 6) & 0xc0) | byte4;
+                    output.push(outByte3);
+                }
+            }
+        }
+        return output;
+    },
+    /**
+     * Lazy static initialization function. Called before
+     * accessing any of the static map variables.
+     * @private
+     */
+    init_() {
+        if (!this.byteToCharMap_) {
+            this.byteToCharMap_ = {};
+            this.charToByteMap_ = {};
+            this.byteToCharMapWebSafe_ = {};
+            this.charToByteMapWebSafe_ = {};
+            // We want quick mappings back and forth, so we precompute two maps.
+            for (let i = 0; i < this.ENCODED_VALS.length; i++) {
+                this.byteToCharMap_[i] = this.ENCODED_VALS.charAt(i);
+                this.charToByteMap_[this.byteToCharMap_[i]] = i;
+                this.byteToCharMapWebSafe_[i] = this.ENCODED_VALS_WEBSAFE.charAt(i);
+                this.charToByteMapWebSafe_[this.byteToCharMapWebSafe_[i]] = i;
+                // Be forgiving when decoding and correctly decode both encodings.
+                if (i >= this.ENCODED_VALS_BASE.length) {
+                    this.charToByteMap_[this.ENCODED_VALS_WEBSAFE.charAt(i)] = i;
+                    this.charToByteMapWebSafe_[this.ENCODED_VALS.charAt(i)] = i;
+                }
+            }
+        }
+    }
+};
+/**
+ * An error encountered while decoding base64 string.
+ */
+class DecodeBase64StringError extends Error {
+    constructor() {
+        super(...arguments);
+        this.name = 'DecodeBase64StringError';
+    }
+}
+/**
+ * URL-safe base64 encoding
+ */
+const base64Encode = function (str) {
+    const utf8Bytes = stringToByteArray$1(str);
+    return base64.encodeByteArray(utf8Bytes, true);
+};
+/**
+ * URL-safe base64 encoding (without "." padding in the end).
+ * e.g. Used in JSON Web Token (JWT) parts.
+ */
+const base64urlEncodeWithoutPadding = function (str) {
+    // Use base64url encoding and remove padding in the end (dot characters).
+    return base64Encode(str).replace(/\./g, '');
+};
+/**
+ * URL-safe base64 decoding
+ *
+ * NOTE: DO NOT use the global atob() function - it does NOT support the
+ * base64Url variant encoding.
+ *
+ * @param str To be decoded
+ * @return Decoded result, if possible
+ */
+const base64Decode = function (str) {
+    try {
+        return base64.decodeString(str, true);
+    }
+    catch (e) {
+        console.error('base64Decode failed: ', e);
+    }
+    return null;
+};
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Do a deep-copy of basic JavaScript Objects or Arrays.
+ */
+function deepCopy(value) {
+    return deepExtend(undefined, value);
+}
+/**
+ * Copy properties from source to target (recursively allows extension
+ * of Objects and Arrays).  Scalar values in the target are over-written.
+ * If target is undefined, an object of the appropriate type will be created
+ * (and returned).
+ *
+ * We recursively copy all child properties of plain Objects in the source- so
+ * that namespace- like dictionaries are merged.
+ *
+ * Note that the target can be a function, in which case the properties in
+ * the source Object are copied onto it as static properties of the Function.
+ *
+ * Note: we don't merge __proto__ to prevent prototype pollution
+ */
+function deepExtend(target, source) {
+    if (!(source instanceof Object)) {
+        return source;
+    }
+    switch (source.constructor) {
+        case Date:
+            // Treat Dates like scalars; if the target date object had any child
+            // properties - they will be lost!
+            const dateValue = source;
+            return new Date(dateValue.getTime());
+        case Object:
+            if (target === undefined) {
+                target = {};
+            }
+            break;
+        case Array:
+            // Always copy the array source and overwrite the target.
+            target = [];
+            break;
+        default:
+            // Not a plain Object - treat it as a scalar.
+            return source;
+    }
+    for (const prop in source) {
+        // use isValidKey to guard against prototype pollution. See https://snyk.io/vuln/SNYK-JS-LODASH-450202
+        if (!source.hasOwnProperty(prop) || !isValidKey(prop)) {
+            continue;
+        }
+        target[prop] = deepExtend(target[prop], source[prop]);
+    }
+    return target;
+}
+function isValidKey(key) {
+    return key !== '__proto__';
+}
+
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Polyfill for `globalThis` object.
+ * @returns the `globalThis` object for the given environment.
+ * @public
+ */
+function getGlobal() {
+    if (typeof self !== 'undefined') {
+        return self;
+    }
+    if (typeof window !== 'undefined') {
+        return window;
+    }
+    if (typeof __webpack_require__.g !== 'undefined') {
+        return __webpack_require__.g;
+    }
+    throw new Error('Unable to locate global object.');
+}
+
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const getDefaultsFromGlobal = () => getGlobal().__FIREBASE_DEFAULTS__;
+/**
+ * Attempt to read defaults from a JSON string provided to
+ * process(.)env(.)__FIREBASE_DEFAULTS__ or a JSON file whose path is in
+ * process(.)env(.)__FIREBASE_DEFAULTS_PATH__
+ * The dots are in parens because certain compilers (Vite?) cannot
+ * handle seeing that variable in comments.
+ * See https://github.com/firebase/firebase-js-sdk/issues/6838
+ */
+const getDefaultsFromEnvVariable = () => {
+    if (typeof process === 'undefined' || typeof process.env === 'undefined') {
+        return;
+    }
+    const defaultsJsonString = process.env.__FIREBASE_DEFAULTS__;
+    if (defaultsJsonString) {
+        return JSON.parse(defaultsJsonString);
+    }
+};
+const getDefaultsFromCookie = () => {
+    if (typeof document === 'undefined') {
+        return;
+    }
+    let match;
+    try {
+        match = document.cookie.match(/__FIREBASE_DEFAULTS__=([^;]+)/);
+    }
+    catch (e) {
+        // Some environments such as Angular Universal SSR have a
+        // `document` object but error on accessing `document.cookie`.
+        return;
+    }
+    const decoded = match && base64Decode(match[1]);
+    return decoded && JSON.parse(decoded);
+};
+/**
+ * Get the __FIREBASE_DEFAULTS__ object. It checks in order:
+ * (1) if such an object exists as a property of `globalThis`
+ * (2) if such an object was provided on a shell environment variable
+ * (3) if such an object exists in a cookie
+ * @public
+ */
+const getDefaults = () => {
+    try {
+        return ((0,_postinstall_mjs__WEBPACK_IMPORTED_MODULE_0__.getDefaultsFromPostinstall)() ||
+            getDefaultsFromGlobal() ||
+            getDefaultsFromEnvVariable() ||
+            getDefaultsFromCookie());
+    }
+    catch (e) {
+        /**
+         * Catch-all for being unable to get __FIREBASE_DEFAULTS__ due
+         * to any environment case we have not accounted for. Log to
+         * info instead of swallowing so we can find these unknown cases
+         * and add paths for them if needed.
+         */
+        console.info(`Unable to get __FIREBASE_DEFAULTS__ due to: ${e}`);
+        return;
+    }
+};
+/**
+ * Returns emulator host stored in the __FIREBASE_DEFAULTS__ object
+ * for the given product.
+ * @returns a URL host formatted like `127.0.0.1:9999` or `[::1]:4000` if available
+ * @public
+ */
+const getDefaultEmulatorHost = (productName) => { var _a, _b; return (_b = (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.emulatorHosts) === null || _b === void 0 ? void 0 : _b[productName]; };
+/**
+ * Returns emulator hostname and port stored in the __FIREBASE_DEFAULTS__ object
+ * for the given product.
+ * @returns a pair of hostname and port like `["::1", 4000]` if available
+ * @public
+ */
+const getDefaultEmulatorHostnameAndPort = (productName) => {
+    const host = getDefaultEmulatorHost(productName);
+    if (!host) {
+        return undefined;
+    }
+    const separatorIndex = host.lastIndexOf(':'); // Finding the last since IPv6 addr also has colons.
+    if (separatorIndex <= 0 || separatorIndex + 1 === host.length) {
+        throw new Error(`Invalid host ${host} with no separate hostname and port!`);
+    }
+    // eslint-disable-next-line no-restricted-globals
+    const port = parseInt(host.substring(separatorIndex + 1), 10);
+    if (host[0] === '[') {
+        // Bracket-quoted `[ipv6addr]:port` => return "ipv6addr" (without brackets).
+        return [host.substring(1, separatorIndex - 1), port];
+    }
+    else {
+        return [host.substring(0, separatorIndex), port];
+    }
+};
+/**
+ * Returns Firebase app config stored in the __FIREBASE_DEFAULTS__ object.
+ * @public
+ */
+const getDefaultAppConfig = () => { var _a; return (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.config; };
+/**
+ * Returns an experimental setting on the __FIREBASE_DEFAULTS__ object (properties
+ * prefixed by "_")
+ * @public
+ */
+const getExperimentalSetting = (name) => { var _a; return (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a[`_${name}`]; };
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+class Deferred {
+    constructor() {
+        this.reject = () => { };
+        this.resolve = () => { };
+        this.promise = new Promise((resolve, reject) => {
+            this.resolve = resolve;
+            this.reject = reject;
+        });
+    }
+    /**
+     * Our API internals are not promisified and cannot because our callback APIs have subtle expectations around
+     * invoking promises inline, which Promises are forbidden to do. This method accepts an optional node-style callback
+     * and returns a node-style callback which will resolve or reject the Deferred's promise.
+     */
+    wrapCallback(callback) {
+        return (error, value) => {
+            if (error) {
+                this.reject(error);
+            }
+            else {
+                this.resolve(value);
+            }
+            if (typeof callback === 'function') {
+                // Attaching noop handler just in case developer wasn't expecting
+                // promises
+                this.promise.catch(() => { });
+                // Some of our callbacks don't expect a value and our own tests
+                // assert that the parameter length is 1
+                if (callback.length === 1) {
+                    callback(error);
+                }
+                else {
+                    callback(error, value);
+                }
+            }
+        };
+    }
+}
+
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Checks whether host is a cloud workstation or not.
+ * @public
+ */
+function isCloudWorkstation(url) {
+    // `isCloudWorkstation` is called without protocol in certain connect*Emulator functions
+    // In HTTP request builders, it's called with the protocol.
+    // If called with protocol prefix, it's a valid URL, so we extract the hostname
+    // If called without, we assume the string is the hostname.
+    try {
+        const host = url.startsWith('http://') || url.startsWith('https://')
+            ? new URL(url).hostname
+            : url;
+        return host.endsWith('.cloudworkstations.dev');
+    }
+    catch (_a) {
+        return false;
+    }
+}
+/**
+ * Makes a fetch request to the given server.
+ * Mostly used for forwarding cookies in Firebase Studio.
+ * @public
+ */
+async function pingServer(endpoint) {
+    const result = await fetch(endpoint, {
+        credentials: 'include'
+    });
+    return result.ok;
+}
+
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function createMockUserToken(token, projectId) {
+    if (token.uid) {
+        throw new Error('The "uid" field is no longer supported by mockUserToken. Please use "sub" instead for Firebase Auth User ID.');
+    }
+    // Unsecured JWTs use "none" as the algorithm.
+    const header = {
+        alg: 'none',
+        type: 'JWT'
+    };
+    const project = projectId || 'demo-project';
+    const iat = token.iat || 0;
+    const sub = token.sub || token.user_id;
+    if (!sub) {
+        throw new Error("mockUserToken must contain 'sub' or 'user_id' field!");
+    }
+    const payload = Object.assign({ 
+        // Set all required fields to decent defaults
+        iss: `https://securetoken.google.com/${project}`, aud: project, iat, exp: iat + 3600, auth_time: iat, sub, user_id: sub, firebase: {
+            sign_in_provider: 'custom',
+            identities: {}
+        } }, token);
+    // Unsecured JWTs use the empty string as a signature.
+    const signature = '';
+    return [
+        base64urlEncodeWithoutPadding(JSON.stringify(header)),
+        base64urlEncodeWithoutPadding(JSON.stringify(payload)),
+        signature
+    ].join('.');
+}
+const emulatorStatus = {};
+// Checks whether any products are running on an emulator
+function getEmulatorSummary() {
+    const summary = {
+        prod: [],
+        emulator: []
+    };
+    for (const key of Object.keys(emulatorStatus)) {
+        if (emulatorStatus[key]) {
+            summary.emulator.push(key);
+        }
+        else {
+            summary.prod.push(key);
+        }
+    }
+    return summary;
+}
+function getOrCreateEl(id) {
+    let parentDiv = document.getElementById(id);
+    let created = false;
+    if (!parentDiv) {
+        parentDiv = document.createElement('div');
+        parentDiv.setAttribute('id', id);
+        created = true;
+    }
+    return { created, element: parentDiv };
+}
+let previouslyDismissed = false;
+/**
+ * Updates Emulator Banner. Primarily used for Firebase Studio
+ * @param name
+ * @param isRunningEmulator
+ * @public
+ */
+function updateEmulatorBanner(name, isRunningEmulator) {
+    if (typeof window === 'undefined' ||
+        typeof document === 'undefined' ||
+        !isCloudWorkstation(window.location.host) ||
+        emulatorStatus[name] === isRunningEmulator ||
+        emulatorStatus[name] || // If already set to use emulator, can't go back to prod.
+        previouslyDismissed) {
+        return;
+    }
+    emulatorStatus[name] = isRunningEmulator;
+    function prefixedId(id) {
+        return `__firebase__banner__${id}`;
+    }
+    const bannerId = '__firebase__banner';
+    const summary = getEmulatorSummary();
+    const showError = summary.prod.length > 0;
+    function tearDown() {
+        const element = document.getElementById(bannerId);
+        if (element) {
+            element.remove();
+        }
+    }
+    function setupBannerStyles(bannerEl) {
+        bannerEl.style.display = 'flex';
+        bannerEl.style.background = '#7faaf0';
+        bannerEl.style.position = 'fixed';
+        bannerEl.style.bottom = '5px';
+        bannerEl.style.left = '5px';
+        bannerEl.style.padding = '.5em';
+        bannerEl.style.borderRadius = '5px';
+        bannerEl.style.alignItems = 'center';
+    }
+    function setupIconStyles(prependIcon, iconId) {
+        prependIcon.setAttribute('width', '24');
+        prependIcon.setAttribute('id', iconId);
+        prependIcon.setAttribute('height', '24');
+        prependIcon.setAttribute('viewBox', '0 0 24 24');
+        prependIcon.setAttribute('fill', 'none');
+        prependIcon.style.marginLeft = '-6px';
+    }
+    function setupCloseBtn() {
+        const closeBtn = document.createElement('span');
+        closeBtn.style.cursor = 'pointer';
+        closeBtn.style.marginLeft = '16px';
+        closeBtn.style.fontSize = '24px';
+        closeBtn.innerHTML = ' &times;';
+        closeBtn.onclick = () => {
+            previouslyDismissed = true;
+            tearDown();
+        };
+        return closeBtn;
+    }
+    function setupLinkStyles(learnMoreLink, learnMoreId) {
+        learnMoreLink.setAttribute('id', learnMoreId);
+        learnMoreLink.innerText = 'Learn more';
+        learnMoreLink.href =
+            'https://firebase.google.com/docs/studio/preview-apps#preview-backend';
+        learnMoreLink.setAttribute('target', '__blank');
+        learnMoreLink.style.paddingLeft = '5px';
+        learnMoreLink.style.textDecoration = 'underline';
+    }
+    function setupDom() {
+        const banner = getOrCreateEl(bannerId);
+        const firebaseTextId = prefixedId('text');
+        const firebaseText = document.getElementById(firebaseTextId) || document.createElement('span');
+        const learnMoreId = prefixedId('learnmore');
+        const learnMoreLink = document.getElementById(learnMoreId) ||
+            document.createElement('a');
+        const prependIconId = prefixedId('preprendIcon');
+        const prependIcon = document.getElementById(prependIconId) ||
+            document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        if (banner.created) {
+            // update styles
+            const bannerEl = banner.element;
+            setupBannerStyles(bannerEl);
+            setupLinkStyles(learnMoreLink, learnMoreId);
+            const closeBtn = setupCloseBtn();
+            setupIconStyles(prependIcon, prependIconId);
+            bannerEl.append(prependIcon, firebaseText, learnMoreLink, closeBtn);
+            document.body.appendChild(bannerEl);
+        }
+        if (showError) {
+            firebaseText.innerText = `Preview backend disconnected.`;
+            prependIcon.innerHTML = `<g clip-path="url(#clip0_6013_33858)">
+<path d="M4.8 17.6L12 5.6L19.2 17.6H4.8ZM6.91667 16.4H17.0833L12 7.93333L6.91667 16.4ZM12 15.6C12.1667 15.6 12.3056 15.5444 12.4167 15.4333C12.5389 15.3111 12.6 15.1667 12.6 15C12.6 14.8333 12.5389 14.6944 12.4167 14.5833C12.3056 14.4611 12.1667 14.4 12 14.4C11.8333 14.4 11.6889 14.4611 11.5667 14.5833C11.4556 14.6944 11.4 14.8333 11.4 15C11.4 15.1667 11.4556 15.3111 11.5667 15.4333C11.6889 15.5444 11.8333 15.6 12 15.6ZM11.4 13.6H12.6V10.4H11.4V13.6Z" fill="#212121"/>
+</g>
+<defs>
+<clipPath id="clip0_6013_33858">
+<rect width="24" height="24" fill="white"/>
+</clipPath>
+</defs>`;
+        }
+        else {
+            prependIcon.innerHTML = `<g clip-path="url(#clip0_6083_34804)">
+<path d="M11.4 15.2H12.6V11.2H11.4V15.2ZM12 10C12.1667 10 12.3056 9.94444 12.4167 9.83333C12.5389 9.71111 12.6 9.56667 12.6 9.4C12.6 9.23333 12.5389 9.09444 12.4167 8.98333C12.3056 8.86111 12.1667 8.8 12 8.8C11.8333 8.8 11.6889 8.86111 11.5667 8.98333C11.4556 9.09444 11.4 9.23333 11.4 9.4C11.4 9.56667 11.4556 9.71111 11.5667 9.83333C11.6889 9.94444 11.8333 10 12 10ZM12 18.4C11.1222 18.4 10.2944 18.2333 9.51667 17.9C8.73889 17.5667 8.05556 17.1111 7.46667 16.5333C6.88889 15.9444 6.43333 15.2611 6.1 14.4833C5.76667 13.7056 5.6 12.8778 5.6 12C5.6 11.1111 5.76667 10.2833 6.1 9.51667C6.43333 8.73889 6.88889 8.06111 7.46667 7.48333C8.05556 6.89444 8.73889 6.43333 9.51667 6.1C10.2944 5.76667 11.1222 5.6 12 5.6C12.8889 5.6 13.7167 5.76667 14.4833 6.1C15.2611 6.43333 15.9389 6.89444 16.5167 7.48333C17.1056 8.06111 17.5667 8.73889 17.9 9.51667C18.2333 10.2833 18.4 11.1111 18.4 12C18.4 12.8778 18.2333 13.7056 17.9 14.4833C17.5667 15.2611 17.1056 15.9444 16.5167 16.5333C15.9389 17.1111 15.2611 17.5667 14.4833 17.9C13.7167 18.2333 12.8889 18.4 12 18.4ZM12 17.2C13.4444 17.2 14.6722 16.6944 15.6833 15.6833C16.6944 14.6722 17.2 13.4444 17.2 12C17.2 10.5556 16.6944 9.32778 15.6833 8.31667C14.6722 7.30555 13.4444 6.8 12 6.8C10.5556 6.8 9.32778 7.30555 8.31667 8.31667C7.30556 9.32778 6.8 10.5556 6.8 12C6.8 13.4444 7.30556 14.6722 8.31667 15.6833C9.32778 16.6944 10.5556 17.2 12 17.2Z" fill="#212121"/>
+</g>
+<defs>
+<clipPath id="clip0_6083_34804">
+<rect width="24" height="24" fill="white"/>
+</clipPath>
+</defs>`;
+            firebaseText.innerText = 'Preview backend running in this workspace.';
+        }
+        firebaseText.setAttribute('id', firebaseTextId);
+    }
+    if (document.readyState === 'loading') {
+        window.addEventListener('DOMContentLoaded', setupDom);
+    }
+    else {
+        setupDom();
+    }
+}
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Returns navigator.userAgent string or '' if it's not defined.
+ * @return user agent string
+ */
+function getUA() {
+    if (typeof navigator !== 'undefined' &&
+        typeof navigator['userAgent'] === 'string') {
+        return navigator['userAgent'];
+    }
+    else {
+        return '';
+    }
+}
+/**
+ * Detect Cordova / PhoneGap / Ionic frameworks on a mobile device.
+ *
+ * Deliberately does not rely on checking `file://` URLs (as this fails PhoneGap
+ * in the Ripple emulator) nor Cordova `onDeviceReady`, which would normally
+ * wait for a callback.
+ */
+function isMobileCordova() {
+    return (typeof window !== 'undefined' &&
+        // @ts-ignore Setting up an broadly applicable index signature for Window
+        // just to deal with this case would probably be a bad idea.
+        !!(window['cordova'] || window['phonegap'] || window['PhoneGap']) &&
+        /ios|iphone|ipod|ipad|android|blackberry|iemobile/i.test(getUA()));
+}
+/**
+ * Detect Node.js.
+ *
+ * @return true if Node.js environment is detected or specified.
+ */
+// Node detection logic from: https://github.com/iliakan/detect-node/
+function isNode() {
+    var _a;
+    const forceEnvironment = (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.forceEnvironment;
+    if (forceEnvironment === 'node') {
+        return true;
+    }
+    else if (forceEnvironment === 'browser') {
+        return false;
+    }
+    try {
+        return (Object.prototype.toString.call(__webpack_require__.g.process) === '[object process]');
+    }
+    catch (e) {
+        return false;
+    }
+}
+/**
+ * Detect Browser Environment.
+ * Note: This will return true for certain test frameworks that are incompletely
+ * mimicking a browser, and should not lead to assuming all browser APIs are
+ * available.
+ */
+function isBrowser() {
+    return typeof window !== 'undefined' || isWebWorker();
+}
+/**
+ * Detect Web Worker context.
+ */
+function isWebWorker() {
+    return (typeof WorkerGlobalScope !== 'undefined' &&
+        typeof self !== 'undefined' &&
+        self instanceof WorkerGlobalScope);
+}
+/**
+ * Detect Cloudflare Worker context.
+ */
+function isCloudflareWorker() {
+    return (typeof navigator !== 'undefined' &&
+        navigator.userAgent === 'Cloudflare-Workers');
+}
+function isBrowserExtension() {
+    const runtime = typeof chrome === 'object'
+        ? chrome.runtime
+        : typeof browser === 'object'
+            ? browser.runtime
+            : undefined;
+    return typeof runtime === 'object' && runtime.id !== undefined;
+}
+/**
+ * Detect React Native.
+ *
+ * @return true if ReactNative environment is detected.
+ */
+function isReactNative() {
+    return (typeof navigator === 'object' && navigator['product'] === 'ReactNative');
+}
+/** Detects Electron apps. */
+function isElectron() {
+    return getUA().indexOf('Electron/') >= 0;
+}
+/** Detects Internet Explorer. */
+function isIE() {
+    const ua = getUA();
+    return ua.indexOf('MSIE ') >= 0 || ua.indexOf('Trident/') >= 0;
+}
+/** Detects Universal Windows Platform apps. */
+function isUWP() {
+    return getUA().indexOf('MSAppHost/') >= 0;
+}
+/**
+ * Detect whether the current SDK build is the Node version.
+ *
+ * @return true if it's the Node SDK build.
+ */
+function isNodeSdk() {
+    return CONSTANTS.NODE_CLIENT === true || CONSTANTS.NODE_ADMIN === true;
+}
+/** Returns true if we are running in Safari. */
+function isSafari() {
+    return (!isNode() &&
+        !!navigator.userAgent &&
+        navigator.userAgent.includes('Safari') &&
+        !navigator.userAgent.includes('Chrome'));
+}
+/** Returns true if we are running in Safari or WebKit */
+function isSafariOrWebkit() {
+    return (!isNode() &&
+        !!navigator.userAgent &&
+        (navigator.userAgent.includes('Safari') ||
+            navigator.userAgent.includes('WebKit')) &&
+        !navigator.userAgent.includes('Chrome'));
+}
+/**
+ * This method checks if indexedDB is supported by current browser/service worker context
+ * @return true if indexedDB is supported by current browser/service worker context
+ */
+function isIndexedDBAvailable() {
+    try {
+        return typeof indexedDB === 'object';
+    }
+    catch (e) {
+        return false;
+    }
+}
+/**
+ * This method validates browser/sw context for indexedDB by opening a dummy indexedDB database and reject
+ * if errors occur during the database open operation.
+ *
+ * @throws exception if current browser/sw context can't run idb.open (ex: Safari iframe, Firefox
+ * private browsing)
+ */
+function validateIndexedDBOpenable() {
+    return new Promise((resolve, reject) => {
+        try {
+            let preExist = true;
+            const DB_CHECK_NAME = 'validate-browser-context-for-indexeddb-analytics-module';
+            const request = self.indexedDB.open(DB_CHECK_NAME);
+            request.onsuccess = () => {
+                request.result.close();
+                // delete database only when it doesn't pre-exist
+                if (!preExist) {
+                    self.indexedDB.deleteDatabase(DB_CHECK_NAME);
+                }
+                resolve(true);
+            };
+            request.onupgradeneeded = () => {
+                preExist = false;
+            };
+            request.onerror = () => {
+                var _a;
+                reject(((_a = request.error) === null || _a === void 0 ? void 0 : _a.message) || '');
+            };
+        }
+        catch (error) {
+            reject(error);
+        }
+    });
+}
+/**
+ *
+ * This method checks whether cookie is enabled within current browser
+ * @return true if cookie is enabled within current browser
+ */
+function areCookiesEnabled() {
+    if (typeof navigator === 'undefined' || !navigator.cookieEnabled) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * @fileoverview Standardized Firebase Error.
+ *
+ * Usage:
+ *
+ *   // TypeScript string literals for type-safe codes
+ *   type Err =
+ *     'unknown' |
+ *     'object-not-found'
+ *     ;
+ *
+ *   // Closure enum for type-safe error codes
+ *   // at-enum {string}
+ *   var Err = {
+ *     UNKNOWN: 'unknown',
+ *     OBJECT_NOT_FOUND: 'object-not-found',
+ *   }
+ *
+ *   let errors: Map<Err, string> = {
+ *     'generic-error': "Unknown error",
+ *     'file-not-found': "Could not find file: {$file}",
+ *   };
+ *
+ *   // Type-safe function - must pass a valid error code as param.
+ *   let error = new ErrorFactory<Err>('service', 'Service', errors);
+ *
+ *   ...
+ *   throw error.create(Err.GENERIC);
+ *   ...
+ *   throw error.create(Err.FILE_NOT_FOUND, {'file': fileName});
+ *   ...
+ *   // Service: Could not file file: foo.txt (service/file-not-found).
+ *
+ *   catch (e) {
+ *     assert(e.message === "Could not find file: foo.txt.");
+ *     if ((e as FirebaseError)?.code === 'service/file-not-found') {
+ *       console.log("Could not read file: " + e['file']);
+ *     }
+ *   }
+ */
+const ERROR_NAME = 'FirebaseError';
+// Based on code from:
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Custom_Error_Types
+class FirebaseError extends Error {
+    constructor(
+    /** The error code for this error. */
+    code, message, 
+    /** Custom data for this error. */
+    customData) {
+        super(message);
+        this.code = code;
+        this.customData = customData;
+        /** The custom name for all FirebaseErrors. */
+        this.name = ERROR_NAME;
+        // Fix For ES5
+        // https://github.com/Microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
+        // TODO(dlarocque): Replace this with `new.target`: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-2.html#support-for-newtarget
+        //                   which we can now use since we no longer target ES5.
+        Object.setPrototypeOf(this, FirebaseError.prototype);
+        // Maintains proper stack trace for where our error was thrown.
+        // Only available on V8.
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, ErrorFactory.prototype.create);
+        }
+    }
+}
+class ErrorFactory {
+    constructor(service, serviceName, errors) {
+        this.service = service;
+        this.serviceName = serviceName;
+        this.errors = errors;
+    }
+    create(code, ...data) {
+        const customData = data[0] || {};
+        const fullCode = `${this.service}/${code}`;
+        const template = this.errors[code];
+        const message = template ? replaceTemplate(template, customData) : 'Error';
+        // Service Name: Error message (service/code).
+        const fullMessage = `${this.serviceName}: ${message} (${fullCode}).`;
+        const error = new FirebaseError(fullCode, fullMessage, customData);
+        return error;
+    }
+}
+function replaceTemplate(template, data) {
+    return template.replace(PATTERN, (_, key) => {
+        const value = data[key];
+        return value != null ? String(value) : `<${key}?>`;
+    });
+}
+const PATTERN = /\{\$([^}]+)}/g;
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Evaluates a JSON string into a javascript object.
+ *
+ * @param {string} str A string containing JSON.
+ * @return {*} The javascript object representing the specified JSON.
+ */
+function jsonEval(str) {
+    return JSON.parse(str);
+}
+/**
+ * Returns JSON representing a javascript object.
+ * @param {*} data JavaScript object to be stringified.
+ * @return {string} The JSON contents of the object.
+ */
+function stringify(data) {
+    return JSON.stringify(data);
+}
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Decodes a Firebase auth. token into constituent parts.
+ *
+ * Notes:
+ * - May return with invalid / incomplete claims if there's no native base64 decoding support.
+ * - Doesn't check if the token is actually valid.
+ */
+const decode = function (token) {
+    let header = {}, claims = {}, data = {}, signature = '';
+    try {
+        const parts = token.split('.');
+        header = jsonEval(base64Decode(parts[0]) || '');
+        claims = jsonEval(base64Decode(parts[1]) || '');
+        signature = parts[2];
+        data = claims['d'] || {};
+        delete claims['d'];
+    }
+    catch (e) { }
+    return {
+        header,
+        claims,
+        data,
+        signature
+    };
+};
+/**
+ * Decodes a Firebase auth. token and checks the validity of its time-based claims. Will return true if the
+ * token is within the time window authorized by the 'nbf' (not-before) and 'iat' (issued-at) claims.
+ *
+ * Notes:
+ * - May return a false negative if there's no native base64 decoding support.
+ * - Doesn't check if the token is actually valid.
+ */
+const isValidTimestamp = function (token) {
+    const claims = decode(token).claims;
+    const now = Math.floor(new Date().getTime() / 1000);
+    let validSince = 0, validUntil = 0;
+    if (typeof claims === 'object') {
+        if (claims.hasOwnProperty('nbf')) {
+            validSince = claims['nbf'];
+        }
+        else if (claims.hasOwnProperty('iat')) {
+            validSince = claims['iat'];
+        }
+        if (claims.hasOwnProperty('exp')) {
+            validUntil = claims['exp'];
+        }
+        else {
+            // token will expire after 24h by default
+            validUntil = validSince + 86400;
+        }
+    }
+    return (!!now &&
+        !!validSince &&
+        !!validUntil &&
+        now >= validSince &&
+        now <= validUntil);
+};
+/**
+ * Decodes a Firebase auth. token and returns its issued at time if valid, null otherwise.
+ *
+ * Notes:
+ * - May return null if there's no native base64 decoding support.
+ * - Doesn't check if the token is actually valid.
+ */
+const issuedAtTime = function (token) {
+    const claims = decode(token).claims;
+    if (typeof claims === 'object' && claims.hasOwnProperty('iat')) {
+        return claims['iat'];
+    }
+    return null;
+};
+/**
+ * Decodes a Firebase auth. token and checks the validity of its format. Expects a valid issued-at time.
+ *
+ * Notes:
+ * - May return a false negative if there's no native base64 decoding support.
+ * - Doesn't check if the token is actually valid.
+ */
+const isValidFormat = function (token) {
+    const decoded = decode(token), claims = decoded.claims;
+    return !!claims && typeof claims === 'object' && claims.hasOwnProperty('iat');
+};
+/**
+ * Attempts to peer into an auth token and determine if it's an admin auth token by looking at the claims portion.
+ *
+ * Notes:
+ * - May return a false negative if there's no native base64 decoding support.
+ * - Doesn't check if the token is actually valid.
+ */
+const isAdmin = function (token) {
+    const claims = decode(token).claims;
+    return typeof claims === 'object' && claims['admin'] === true;
+};
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function contains(obj, key) {
+    return Object.prototype.hasOwnProperty.call(obj, key);
+}
+function safeGet(obj, key) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        return obj[key];
+    }
+    else {
+        return undefined;
+    }
+}
+function isEmpty(obj) {
+    for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            return false;
+        }
+    }
+    return true;
+}
+function map(obj, fn, contextObj) {
+    const res = {};
+    for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            res[key] = fn.call(contextObj, obj[key], key, obj);
+        }
+    }
+    return res;
+}
+/**
+ * Deep equal two objects. Support Arrays and Objects.
+ */
+function deepEqual(a, b) {
+    if (a === b) {
+        return true;
+    }
+    const aKeys = Object.keys(a);
+    const bKeys = Object.keys(b);
+    for (const k of aKeys) {
+        if (!bKeys.includes(k)) {
+            return false;
+        }
+        const aProp = a[k];
+        const bProp = b[k];
+        if (isObject(aProp) && isObject(bProp)) {
+            if (!deepEqual(aProp, bProp)) {
+                return false;
+            }
+        }
+        else if (aProp !== bProp) {
+            return false;
+        }
+    }
+    for (const k of bKeys) {
+        if (!aKeys.includes(k)) {
+            return false;
+        }
+    }
+    return true;
+}
+function isObject(thing) {
+    return thing !== null && typeof thing === 'object';
+}
+
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Rejects if the given promise doesn't resolve in timeInMS milliseconds.
+ * @internal
+ */
+function promiseWithTimeout(promise, timeInMS = 2000) {
+    const deferredPromise = new Deferred();
+    setTimeout(() => deferredPromise.reject('timeout!'), timeInMS);
+    promise.then(deferredPromise.resolve, deferredPromise.reject);
+    return deferredPromise.promise;
+}
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Returns a querystring-formatted string (e.g. &arg=val&arg2=val2) from a
+ * params object (e.g. {arg: 'val', arg2: 'val2'})
+ * Note: You must prepend it with ? when adding it to a URL.
+ */
+function querystring(querystringParams) {
+    const params = [];
+    for (const [key, value] of Object.entries(querystringParams)) {
+        if (Array.isArray(value)) {
+            value.forEach(arrayVal => {
+                params.push(encodeURIComponent(key) + '=' + encodeURIComponent(arrayVal));
+            });
+        }
+        else {
+            params.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+        }
+    }
+    return params.length ? '&' + params.join('&') : '';
+}
+/**
+ * Decodes a querystring (e.g. ?arg=val&arg2=val2) into a params object
+ * (e.g. {arg: 'val', arg2: 'val2'})
+ */
+function querystringDecode(querystring) {
+    const obj = {};
+    const tokens = querystring.replace(/^\?/, '').split('&');
+    tokens.forEach(token => {
+        if (token) {
+            const [key, value] = token.split('=');
+            obj[decodeURIComponent(key)] = decodeURIComponent(value);
+        }
+    });
+    return obj;
+}
+/**
+ * Extract the query string part of a URL, including the leading question mark (if present).
+ */
+function extractQuerystring(url) {
+    const queryStart = url.indexOf('?');
+    if (!queryStart) {
+        return '';
+    }
+    const fragmentStart = url.indexOf('#', queryStart);
+    return url.substring(queryStart, fragmentStart > 0 ? fragmentStart : undefined);
+}
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * @fileoverview SHA-1 cryptographic hash.
+ * Variable names follow the notation in FIPS PUB 180-3:
+ * http://csrc.nist.gov/publications/fips/fips180-3/fips180-3_final.pdf.
+ *
+ * Usage:
+ *   var sha1 = new sha1();
+ *   sha1.update(bytes);
+ *   var hash = sha1.digest();
+ *
+ * Performance:
+ *   Chrome 23:   ~400 Mbit/s
+ *   Firefox 16:  ~250 Mbit/s
+ *
+ */
+/**
+ * SHA-1 cryptographic hash constructor.
+ *
+ * The properties declared here are discussed in the above algorithm document.
+ * @constructor
+ * @final
+ * @struct
+ */
+class Sha1 {
+    constructor() {
+        /**
+         * Holds the previous values of accumulated variables a-e in the compress_
+         * function.
+         * @private
+         */
+        this.chain_ = [];
+        /**
+         * A buffer holding the partially computed hash result.
+         * @private
+         */
+        this.buf_ = [];
+        /**
+         * An array of 80 bytes, each a part of the message to be hashed.  Referred to
+         * as the message schedule in the docs.
+         * @private
+         */
+        this.W_ = [];
+        /**
+         * Contains data needed to pad messages less than 64 bytes.
+         * @private
+         */
+        this.pad_ = [];
+        /**
+         * @private {number}
+         */
+        this.inbuf_ = 0;
+        /**
+         * @private {number}
+         */
+        this.total_ = 0;
+        this.blockSize = 512 / 8;
+        this.pad_[0] = 128;
+        for (let i = 1; i < this.blockSize; ++i) {
+            this.pad_[i] = 0;
+        }
+        this.reset();
+    }
+    reset() {
+        this.chain_[0] = 0x67452301;
+        this.chain_[1] = 0xefcdab89;
+        this.chain_[2] = 0x98badcfe;
+        this.chain_[3] = 0x10325476;
+        this.chain_[4] = 0xc3d2e1f0;
+        this.inbuf_ = 0;
+        this.total_ = 0;
+    }
+    /**
+     * Internal compress helper function.
+     * @param buf Block to compress.
+     * @param offset Offset of the block in the buffer.
+     * @private
+     */
+    compress_(buf, offset) {
+        if (!offset) {
+            offset = 0;
+        }
+        const W = this.W_;
+        // get 16 big endian words
+        if (typeof buf === 'string') {
+            for (let i = 0; i < 16; i++) {
+                // TODO(user): [bug 8140122] Recent versions of Safari for Mac OS and iOS
+                // have a bug that turns the post-increment ++ operator into pre-increment
+                // during JIT compilation.  We have code that depends heavily on SHA-1 for
+                // correctness and which is affected by this bug, so I've removed all uses
+                // of post-increment ++ in which the result value is used.  We can revert
+                // this change once the Safari bug
+                // (https://bugs.webkit.org/show_bug.cgi?id=109036) has been fixed and
+                // most clients have been updated.
+                W[i] =
+                    (buf.charCodeAt(offset) << 24) |
+                        (buf.charCodeAt(offset + 1) << 16) |
+                        (buf.charCodeAt(offset + 2) << 8) |
+                        buf.charCodeAt(offset + 3);
+                offset += 4;
+            }
+        }
+        else {
+            for (let i = 0; i < 16; i++) {
+                W[i] =
+                    (buf[offset] << 24) |
+                        (buf[offset + 1] << 16) |
+                        (buf[offset + 2] << 8) |
+                        buf[offset + 3];
+                offset += 4;
+            }
+        }
+        // expand to 80 words
+        for (let i = 16; i < 80; i++) {
+            const t = W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16];
+            W[i] = ((t << 1) | (t >>> 31)) & 0xffffffff;
+        }
+        let a = this.chain_[0];
+        let b = this.chain_[1];
+        let c = this.chain_[2];
+        let d = this.chain_[3];
+        let e = this.chain_[4];
+        let f, k;
+        // TODO(user): Try to unroll this loop to speed up the computation.
+        for (let i = 0; i < 80; i++) {
+            if (i < 40) {
+                if (i < 20) {
+                    f = d ^ (b & (c ^ d));
+                    k = 0x5a827999;
+                }
+                else {
+                    f = b ^ c ^ d;
+                    k = 0x6ed9eba1;
+                }
+            }
+            else {
+                if (i < 60) {
+                    f = (b & c) | (d & (b | c));
+                    k = 0x8f1bbcdc;
+                }
+                else {
+                    f = b ^ c ^ d;
+                    k = 0xca62c1d6;
+                }
+            }
+            const t = (((a << 5) | (a >>> 27)) + f + e + k + W[i]) & 0xffffffff;
+            e = d;
+            d = c;
+            c = ((b << 30) | (b >>> 2)) & 0xffffffff;
+            b = a;
+            a = t;
+        }
+        this.chain_[0] = (this.chain_[0] + a) & 0xffffffff;
+        this.chain_[1] = (this.chain_[1] + b) & 0xffffffff;
+        this.chain_[2] = (this.chain_[2] + c) & 0xffffffff;
+        this.chain_[3] = (this.chain_[3] + d) & 0xffffffff;
+        this.chain_[4] = (this.chain_[4] + e) & 0xffffffff;
+    }
+    update(bytes, length) {
+        // TODO(johnlenz): tighten the function signature and remove this check
+        if (bytes == null) {
+            return;
+        }
+        if (length === undefined) {
+            length = bytes.length;
+        }
+        const lengthMinusBlock = length - this.blockSize;
+        let n = 0;
+        // Using local instead of member variables gives ~5% speedup on Firefox 16.
+        const buf = this.buf_;
+        let inbuf = this.inbuf_;
+        // The outer while loop should execute at most twice.
+        while (n < length) {
+            // When we have no data in the block to top up, we can directly process the
+            // input buffer (assuming it contains sufficient data). This gives ~25%
+            // speedup on Chrome 23 and ~15% speedup on Firefox 16, but requires that
+            // the data is provided in large chunks (or in multiples of 64 bytes).
+            if (inbuf === 0) {
+                while (n <= lengthMinusBlock) {
+                    this.compress_(bytes, n);
+                    n += this.blockSize;
+                }
+            }
+            if (typeof bytes === 'string') {
+                while (n < length) {
+                    buf[inbuf] = bytes.charCodeAt(n);
+                    ++inbuf;
+                    ++n;
+                    if (inbuf === this.blockSize) {
+                        this.compress_(buf);
+                        inbuf = 0;
+                        // Jump to the outer loop so we use the full-block optimization.
+                        break;
+                    }
+                }
+            }
+            else {
+                while (n < length) {
+                    buf[inbuf] = bytes[n];
+                    ++inbuf;
+                    ++n;
+                    if (inbuf === this.blockSize) {
+                        this.compress_(buf);
+                        inbuf = 0;
+                        // Jump to the outer loop so we use the full-block optimization.
+                        break;
+                    }
+                }
+            }
+        }
+        this.inbuf_ = inbuf;
+        this.total_ += length;
+    }
+    /** @override */
+    digest() {
+        const digest = [];
+        let totalBits = this.total_ * 8;
+        // Add pad 0x80 0x00*.
+        if (this.inbuf_ < 56) {
+            this.update(this.pad_, 56 - this.inbuf_);
+        }
+        else {
+            this.update(this.pad_, this.blockSize - (this.inbuf_ - 56));
+        }
+        // Add # bits.
+        for (let i = this.blockSize - 1; i >= 56; i--) {
+            this.buf_[i] = totalBits & 255;
+            totalBits /= 256; // Don't use bit-shifting here!
+        }
+        this.compress_(this.buf_);
+        let n = 0;
+        for (let i = 0; i < 5; i++) {
+            for (let j = 24; j >= 0; j -= 8) {
+                digest[n] = (this.chain_[i] >> j) & 255;
+                ++n;
+            }
+        }
+        return digest;
+    }
+}
+
+/**
+ * Helper to make a Subscribe function (just like Promise helps make a
+ * Thenable).
+ *
+ * @param executor Function which can make calls to a single Observer
+ *     as a proxy.
+ * @param onNoObservers Callback when count of Observers goes to zero.
+ */
+function createSubscribe(executor, onNoObservers) {
+    const proxy = new ObserverProxy(executor, onNoObservers);
+    return proxy.subscribe.bind(proxy);
+}
+/**
+ * Implement fan-out for any number of Observers attached via a subscribe
+ * function.
+ */
+class ObserverProxy {
+    /**
+     * @param executor Function which can make calls to a single Observer
+     *     as a proxy.
+     * @param onNoObservers Callback when count of Observers goes to zero.
+     */
+    constructor(executor, onNoObservers) {
+        this.observers = [];
+        this.unsubscribes = [];
+        this.observerCount = 0;
+        // Micro-task scheduling by calling task.then().
+        this.task = Promise.resolve();
+        this.finalized = false;
+        this.onNoObservers = onNoObservers;
+        // Call the executor asynchronously so subscribers that are called
+        // synchronously after the creation of the subscribe function
+        // can still receive the very first value generated in the executor.
+        this.task
+            .then(() => {
+            executor(this);
+        })
+            .catch(e => {
+            this.error(e);
+        });
+    }
+    next(value) {
+        this.forEachObserver((observer) => {
+            observer.next(value);
+        });
+    }
+    error(error) {
+        this.forEachObserver((observer) => {
+            observer.error(error);
+        });
+        this.close(error);
+    }
+    complete() {
+        this.forEachObserver((observer) => {
+            observer.complete();
+        });
+        this.close();
+    }
+    /**
+     * Subscribe function that can be used to add an Observer to the fan-out list.
+     *
+     * - We require that no event is sent to a subscriber synchronously to their
+     *   call to subscribe().
+     */
+    subscribe(nextOrObserver, error, complete) {
+        let observer;
+        if (nextOrObserver === undefined &&
+            error === undefined &&
+            complete === undefined) {
+            throw new Error('Missing Observer.');
+        }
+        // Assemble an Observer object when passed as callback functions.
+        if (implementsAnyMethods(nextOrObserver, [
+            'next',
+            'error',
+            'complete'
+        ])) {
+            observer = nextOrObserver;
+        }
+        else {
+            observer = {
+                next: nextOrObserver,
+                error,
+                complete
+            };
+        }
+        if (observer.next === undefined) {
+            observer.next = noop;
+        }
+        if (observer.error === undefined) {
+            observer.error = noop;
+        }
+        if (observer.complete === undefined) {
+            observer.complete = noop;
+        }
+        const unsub = this.unsubscribeOne.bind(this, this.observers.length);
+        // Attempt to subscribe to a terminated Observable - we
+        // just respond to the Observer with the final error or complete
+        // event.
+        if (this.finalized) {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            this.task.then(() => {
+                try {
+                    if (this.finalError) {
+                        observer.error(this.finalError);
+                    }
+                    else {
+                        observer.complete();
+                    }
+                }
+                catch (e) {
+                    // nothing
+                }
+                return;
+            });
+        }
+        this.observers.push(observer);
+        return unsub;
+    }
+    // Unsubscribe is synchronous - we guarantee that no events are sent to
+    // any unsubscribed Observer.
+    unsubscribeOne(i) {
+        if (this.observers === undefined || this.observers[i] === undefined) {
+            return;
+        }
+        delete this.observers[i];
+        this.observerCount -= 1;
+        if (this.observerCount === 0 && this.onNoObservers !== undefined) {
+            this.onNoObservers(this);
+        }
+    }
+    forEachObserver(fn) {
+        if (this.finalized) {
+            // Already closed by previous event....just eat the additional values.
+            return;
+        }
+        // Since sendOne calls asynchronously - there is no chance that
+        // this.observers will become undefined.
+        for (let i = 0; i < this.observers.length; i++) {
+            this.sendOne(i, fn);
+        }
+    }
+    // Call the Observer via one of it's callback function. We are careful to
+    // confirm that the observe has not been unsubscribed since this asynchronous
+    // function had been queued.
+    sendOne(i, fn) {
+        // Execute the callback asynchronously
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.task.then(() => {
+            if (this.observers !== undefined && this.observers[i] !== undefined) {
+                try {
+                    fn(this.observers[i]);
+                }
+                catch (e) {
+                    // Ignore exceptions raised in Observers or missing methods of an
+                    // Observer.
+                    // Log error to console. b/31404806
+                    if (typeof console !== 'undefined' && console.error) {
+                        console.error(e);
+                    }
+                }
+            }
+        });
+    }
+    close(err) {
+        if (this.finalized) {
+            return;
+        }
+        this.finalized = true;
+        if (err !== undefined) {
+            this.finalError = err;
+        }
+        // Proxy is no longer needed - garbage collect references
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.task.then(() => {
+            this.observers = undefined;
+            this.onNoObservers = undefined;
+        });
+    }
+}
+/** Turn synchronous function into one called asynchronously. */
+// eslint-disable-next-line @typescript-eslint/ban-types
+function async(fn, onError) {
+    return (...args) => {
+        Promise.resolve(true)
+            .then(() => {
+            fn(...args);
+        })
+            .catch((error) => {
+            if (onError) {
+                onError(error);
+            }
+        });
+    };
+}
+/**
+ * Return true if the object passed in implements any of the named methods.
+ */
+function implementsAnyMethods(obj, methods) {
+    if (typeof obj !== 'object' || obj === null) {
+        return false;
+    }
+    for (const method of methods) {
+        if (method in obj && typeof obj[method] === 'function') {
+            return true;
+        }
+    }
+    return false;
+}
+function noop() {
+    // do nothing
+}
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Check to make sure the appropriate number of arguments are provided for a public function.
+ * Throws an error if it fails.
+ *
+ * @param fnName The function name
+ * @param minCount The minimum number of arguments to allow for the function call
+ * @param maxCount The maximum number of argument to allow for the function call
+ * @param argCount The actual number of arguments provided.
+ */
+const validateArgCount = function (fnName, minCount, maxCount, argCount) {
+    let argError;
+    if (argCount < minCount) {
+        argError = 'at least ' + minCount;
+    }
+    else if (argCount > maxCount) {
+        argError = maxCount === 0 ? 'none' : 'no more than ' + maxCount;
+    }
+    if (argError) {
+        const error = fnName +
+            ' failed: Was called with ' +
+            argCount +
+            (argCount === 1 ? ' argument.' : ' arguments.') +
+            ' Expects ' +
+            argError +
+            '.';
+        throw new Error(error);
+    }
+};
+/**
+ * Generates a string to prefix an error message about failed argument validation
+ *
+ * @param fnName The function name
+ * @param argName The name of the argument
+ * @return The prefix to add to the error thrown for validation.
+ */
+function errorPrefix(fnName, argName) {
+    return `${fnName} failed: ${argName} argument `;
+}
+/**
+ * @param fnName
+ * @param argumentNumber
+ * @param namespace
+ * @param optional
+ */
+function validateNamespace(fnName, namespace, optional) {
+    if (optional && !namespace) {
+        return;
+    }
+    if (typeof namespace !== 'string') {
+        //TODO: I should do more validation here. We only allow certain chars in namespaces.
+        throw new Error(errorPrefix(fnName, 'namespace') + 'must be a valid firebase namespace.');
+    }
+}
+function validateCallback(fnName, argumentName, 
+// eslint-disable-next-line @typescript-eslint/ban-types
+callback, optional) {
+    if (optional && !callback) {
+        return;
+    }
+    if (typeof callback !== 'function') {
+        throw new Error(errorPrefix(fnName, argumentName) + 'must be a valid function.');
+    }
+}
+function validateContextObject(fnName, argumentName, context, optional) {
+    if (optional && !context) {
+        return;
+    }
+    if (typeof context !== 'object' || context === null) {
+        throw new Error(errorPrefix(fnName, argumentName) + 'must be a valid context object.');
+    }
+}
+
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+// Code originally came from goog.crypt.stringToUtf8ByteArray, but for some reason they
+// automatically replaced '\r\n' with '\n', and they didn't handle surrogate pairs,
+// so it's been modified.
+// Note that not all Unicode characters appear as single characters in JavaScript strings.
+// fromCharCode returns the UTF-16 encoding of a character - so some Unicode characters
+// use 2 characters in JavaScript.  All 4-byte UTF-8 characters begin with a first
+// character in the range 0xD800 - 0xDBFF (the first character of a so-called surrogate
+// pair).
+// See http://www.ecma-international.org/ecma-262/5.1/#sec-15.1.3
+/**
+ * @param {string} str
+ * @return {Array}
+ */
+const stringToByteArray = function (str) {
+    const out = [];
+    let p = 0;
+    for (let i = 0; i < str.length; i++) {
+        let c = str.charCodeAt(i);
+        // Is this the lead surrogate in a surrogate pair?
+        if (c >= 0xd800 && c <= 0xdbff) {
+            const high = c - 0xd800; // the high 10 bits.
+            i++;
+            assert(i < str.length, 'Surrogate pair missing trail surrogate.');
+            const low = str.charCodeAt(i) - 0xdc00; // the low 10 bits.
+            c = 0x10000 + (high << 10) + low;
+        }
+        if (c < 128) {
+            out[p++] = c;
+        }
+        else if (c < 2048) {
+            out[p++] = (c >> 6) | 192;
+            out[p++] = (c & 63) | 128;
+        }
+        else if (c < 65536) {
+            out[p++] = (c >> 12) | 224;
+            out[p++] = ((c >> 6) & 63) | 128;
+            out[p++] = (c & 63) | 128;
+        }
+        else {
+            out[p++] = (c >> 18) | 240;
+            out[p++] = ((c >> 12) & 63) | 128;
+            out[p++] = ((c >> 6) & 63) | 128;
+            out[p++] = (c & 63) | 128;
+        }
+    }
+    return out;
+};
+/**
+ * Calculate length without actually converting; useful for doing cheaper validation.
+ * @param {string} str
+ * @return {number}
+ */
+const stringLength = function (str) {
+    let p = 0;
+    for (let i = 0; i < str.length; i++) {
+        const c = str.charCodeAt(i);
+        if (c < 128) {
+            p++;
+        }
+        else if (c < 2048) {
+            p += 2;
+        }
+        else if (c >= 0xd800 && c <= 0xdbff) {
+            // Lead surrogate of a surrogate pair.  The pair together will take 4 bytes to represent.
+            p += 4;
+            i++; // skip trail surrogate.
+        }
+        else {
+            p += 3;
+        }
+    }
+    return p;
+};
+
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * The amount of milliseconds to exponentially increase.
+ */
+const DEFAULT_INTERVAL_MILLIS = 1000;
+/**
+ * The factor to backoff by.
+ * Should be a number greater than 1.
+ */
+const DEFAULT_BACKOFF_FACTOR = 2;
+/**
+ * The maximum milliseconds to increase to.
+ *
+ * <p>Visible for testing
+ */
+const MAX_VALUE_MILLIS = 4 * 60 * 60 * 1000; // Four hours, like iOS and Android.
+/**
+ * The percentage of backoff time to randomize by.
+ * See
+ * http://go/safe-client-behavior#step-1-determine-the-appropriate-retry-interval-to-handle-spike-traffic
+ * for context.
+ *
+ * <p>Visible for testing
+ */
+const RANDOM_FACTOR = 0.5;
+/**
+ * Based on the backoff method from
+ * https://github.com/google/closure-library/blob/master/closure/goog/math/exponentialbackoff.js.
+ * Extracted here so we don't need to pass metadata and a stateful ExponentialBackoff object around.
+ */
+function calculateBackoffMillis(backoffCount, intervalMillis = DEFAULT_INTERVAL_MILLIS, backoffFactor = DEFAULT_BACKOFF_FACTOR) {
+    // Calculates an exponentially increasing value.
+    // Deviation: calculates value from count and a constant interval, so we only need to save value
+    // and count to restore state.
+    const currBaseValue = intervalMillis * Math.pow(backoffFactor, backoffCount);
+    // A random "fuzz" to avoid waves of retries.
+    // Deviation: randomFactor is required.
+    const randomWait = Math.round(
+    // A fraction of the backoff value to add/subtract.
+    // Deviation: changes multiplication order to improve readability.
+    RANDOM_FACTOR *
+        currBaseValue *
+        // A random float (rounded to int by Math.round above) in the range [-1, 1]. Determines
+        // if we add or subtract.
+        (Math.random() - 0.5) *
+        2);
+    // Limits backoff to max to avoid effectively permanent backoff.
+    return Math.min(MAX_VALUE_MILLIS, currBaseValue + randomWait);
+}
+
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * Provide English ordinal letters after a number
+ */
+function ordinal(i) {
+    if (!Number.isFinite(i)) {
+        return `${i}`;
+    }
+    return i + indicator(i);
+}
+function indicator(i) {
+    i = Math.abs(i);
+    const cent = i % 100;
+    if (cent >= 10 && cent <= 20) {
+        return 'th';
+    }
+    const dec = i % 10;
+    if (dec === 1) {
+        return 'st';
+    }
+    if (dec === 2) {
+        return 'nd';
+    }
+    if (dec === 3) {
+        return 'rd';
+    }
+    return 'th';
+}
+
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function getModularInstance(service) {
+    if (service && service._delegate) {
+        return service._delegate;
+    }
+    else {
+        return service;
+    }
+}
+
+
+//# sourceMappingURL=index.esm2017.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@firebase/util/dist/postinstall.mjs":
+/*!**********************************************************!*\
+  !*** ./node_modules/@firebase/util/dist/postinstall.mjs ***!
+  \**********************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getDefaultsFromPostinstall: function() { return /* binding */ getDefaultsFromPostinstall; }
+/* harmony export */ });
+const getDefaultsFromPostinstall = () => (undefined);
+
+
+/***/ }),
+
+/***/ "./node_modules/firebase/app/dist/esm/index.esm.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/firebase/app/dist/esm/index.esm.js ***!
+  \*********************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FirebaseError: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__.FirebaseError; },
+/* harmony export */   SDK_VERSION: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__.SDK_VERSION; },
+/* harmony export */   _DEFAULT_ENTRY_NAME: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__._DEFAULT_ENTRY_NAME; },
+/* harmony export */   _addComponent: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__._addComponent; },
+/* harmony export */   _addOrOverwriteComponent: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__._addOrOverwriteComponent; },
+/* harmony export */   _apps: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__._apps; },
+/* harmony export */   _clearComponents: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__._clearComponents; },
+/* harmony export */   _components: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__._components; },
+/* harmony export */   _getProvider: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__._getProvider; },
+/* harmony export */   _isFirebaseApp: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__._isFirebaseApp; },
+/* harmony export */   _isFirebaseServerApp: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__._isFirebaseServerApp; },
+/* harmony export */   _registerComponent: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__._registerComponent; },
+/* harmony export */   _removeServiceInstance: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__._removeServiceInstance; },
+/* harmony export */   _serverApps: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__._serverApps; },
+/* harmony export */   deleteApp: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__.deleteApp; },
+/* harmony export */   getApp: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__.getApp; },
+/* harmony export */   getApps: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__.getApps; },
+/* harmony export */   initializeApp: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__.initializeApp; },
+/* harmony export */   initializeServerApp: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__.initializeServerApp; },
+/* harmony export */   onLog: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__.onLog; },
+/* harmony export */   registerVersion: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__.registerVersion; },
+/* harmony export */   setLogLevel: function() { return /* reexport safe */ _firebase_app__WEBPACK_IMPORTED_MODULE_0__.setLogLevel; }
+/* harmony export */ });
+/* harmony import */ var _firebase_app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @firebase/app */ "./node_modules/@firebase/app/dist/esm/index.esm2017.js");
+
+
+
+var name = "firebase";
+var version = "11.10.0";
+
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+(0,_firebase_app__WEBPACK_IMPORTED_MODULE_0__.registerVersion)(name, version, 'app');
+//# sourceMappingURL=index.esm.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/firebase/messaging/dist/esm/index.esm.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/firebase/messaging/dist/esm/index.esm.js ***!
+  \***************************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   deleteToken: function() { return /* reexport safe */ _firebase_messaging__WEBPACK_IMPORTED_MODULE_0__.deleteToken; },
+/* harmony export */   getMessaging: function() { return /* reexport safe */ _firebase_messaging__WEBPACK_IMPORTED_MODULE_0__.getMessaging; },
+/* harmony export */   getToken: function() { return /* reexport safe */ _firebase_messaging__WEBPACK_IMPORTED_MODULE_0__.getToken; },
+/* harmony export */   isSupported: function() { return /* reexport safe */ _firebase_messaging__WEBPACK_IMPORTED_MODULE_0__.isSupported; },
+/* harmony export */   onMessage: function() { return /* reexport safe */ _firebase_messaging__WEBPACK_IMPORTED_MODULE_0__.onMessage; }
+/* harmony export */ });
+/* harmony import */ var _firebase_messaging__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @firebase/messaging */ "./node_modules/@firebase/messaging/dist/esm/index.esm2017.js");
+
+//# sourceMappingURL=index.esm.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/idb/build/index.js":
+/*!*****************************************!*\
+  !*** ./node_modules/idb/build/index.js ***!
+  \*****************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   deleteDB: function() { return /* binding */ deleteDB; },
+/* harmony export */   openDB: function() { return /* binding */ openDB; },
+/* harmony export */   unwrap: function() { return /* reexport safe */ _wrap_idb_value_js__WEBPACK_IMPORTED_MODULE_0__.u; },
+/* harmony export */   wrap: function() { return /* reexport safe */ _wrap_idb_value_js__WEBPACK_IMPORTED_MODULE_0__.w; }
+/* harmony export */ });
+/* harmony import */ var _wrap_idb_value_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./wrap-idb-value.js */ "./node_modules/idb/build/wrap-idb-value.js");
+
+
+
+/**
+ * Open a database.
+ *
+ * @param name Name of the database.
+ * @param version Schema version.
+ * @param callbacks Additional callbacks.
+ */
+function openDB(name, version, { blocked, upgrade, blocking, terminated } = {}) {
+    const request = indexedDB.open(name, version);
+    const openPromise = (0,_wrap_idb_value_js__WEBPACK_IMPORTED_MODULE_0__.w)(request);
+    if (upgrade) {
+        request.addEventListener('upgradeneeded', (event) => {
+            upgrade((0,_wrap_idb_value_js__WEBPACK_IMPORTED_MODULE_0__.w)(request.result), event.oldVersion, event.newVersion, (0,_wrap_idb_value_js__WEBPACK_IMPORTED_MODULE_0__.w)(request.transaction), event);
+        });
+    }
+    if (blocked) {
+        request.addEventListener('blocked', (event) => blocked(
+        // Casting due to https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/1405
+        event.oldVersion, event.newVersion, event));
+    }
+    openPromise
+        .then((db) => {
+        if (terminated)
+            db.addEventListener('close', () => terminated());
+        if (blocking) {
+            db.addEventListener('versionchange', (event) => blocking(event.oldVersion, event.newVersion, event));
+        }
+    })
+        .catch(() => { });
+    return openPromise;
+}
+/**
+ * Delete a database.
+ *
+ * @param name Name of the database.
+ */
+function deleteDB(name, { blocked } = {}) {
+    const request = indexedDB.deleteDatabase(name);
+    if (blocked) {
+        request.addEventListener('blocked', (event) => blocked(
+        // Casting due to https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/1405
+        event.oldVersion, event));
+    }
+    return (0,_wrap_idb_value_js__WEBPACK_IMPORTED_MODULE_0__.w)(request).then(() => undefined);
+}
+
+const readMethods = ['get', 'getKey', 'getAll', 'getAllKeys', 'count'];
+const writeMethods = ['put', 'add', 'delete', 'clear'];
+const cachedMethods = new Map();
+function getMethod(target, prop) {
+    if (!(target instanceof IDBDatabase &&
+        !(prop in target) &&
+        typeof prop === 'string')) {
+        return;
+    }
+    if (cachedMethods.get(prop))
+        return cachedMethods.get(prop);
+    const targetFuncName = prop.replace(/FromIndex$/, '');
+    const useIndex = prop !== targetFuncName;
+    const isWrite = writeMethods.includes(targetFuncName);
+    if (
+    // Bail if the target doesn't exist on the target. Eg, getAll isn't in Edge.
+    !(targetFuncName in (useIndex ? IDBIndex : IDBObjectStore).prototype) ||
+        !(isWrite || readMethods.includes(targetFuncName))) {
+        return;
+    }
+    const method = async function (storeName, ...args) {
+        // isWrite ? 'readwrite' : undefined gzipps better, but fails in Edge :(
+        const tx = this.transaction(storeName, isWrite ? 'readwrite' : 'readonly');
+        let target = tx.store;
+        if (useIndex)
+            target = target.index(args.shift());
+        // Must reject if op rejects.
+        // If it's a write operation, must reject if tx.done rejects.
+        // Must reject with op rejection first.
+        // Must resolve with op value.
+        // Must handle both promises (no unhandled rejections)
+        return (await Promise.all([
+            target[targetFuncName](...args),
+            isWrite && tx.done,
+        ]))[0];
+    };
+    cachedMethods.set(prop, method);
+    return method;
+}
+(0,_wrap_idb_value_js__WEBPACK_IMPORTED_MODULE_0__.r)((oldTraps) => ({
+    ...oldTraps,
+    get: (target, prop, receiver) => getMethod(target, prop) || oldTraps.get(target, prop, receiver),
+    has: (target, prop) => !!getMethod(target, prop) || oldTraps.has(target, prop),
+}));
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/idb/build/wrap-idb-value.js":
+/*!**************************************************!*\
+  !*** ./node_modules/idb/build/wrap-idb-value.js ***!
+  \**************************************************/
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   a: function() { return /* binding */ reverseTransformCache; },
+/* harmony export */   i: function() { return /* binding */ instanceOfAny; },
+/* harmony export */   r: function() { return /* binding */ replaceTraps; },
+/* harmony export */   u: function() { return /* binding */ unwrap; },
+/* harmony export */   w: function() { return /* binding */ wrap; }
+/* harmony export */ });
+const instanceOfAny = (object, constructors) => constructors.some((c) => object instanceof c);
+
+let idbProxyableTypes;
+let cursorAdvanceMethods;
+// This is a function to prevent it throwing up in node environments.
+function getIdbProxyableTypes() {
+    return (idbProxyableTypes ||
+        (idbProxyableTypes = [
+            IDBDatabase,
+            IDBObjectStore,
+            IDBIndex,
+            IDBCursor,
+            IDBTransaction,
+        ]));
+}
+// This is a function to prevent it throwing up in node environments.
+function getCursorAdvanceMethods() {
+    return (cursorAdvanceMethods ||
+        (cursorAdvanceMethods = [
+            IDBCursor.prototype.advance,
+            IDBCursor.prototype.continue,
+            IDBCursor.prototype.continuePrimaryKey,
+        ]));
+}
+const cursorRequestMap = new WeakMap();
+const transactionDoneMap = new WeakMap();
+const transactionStoreNamesMap = new WeakMap();
+const transformCache = new WeakMap();
+const reverseTransformCache = new WeakMap();
+function promisifyRequest(request) {
+    const promise = new Promise((resolve, reject) => {
+        const unlisten = () => {
+            request.removeEventListener('success', success);
+            request.removeEventListener('error', error);
+        };
+        const success = () => {
+            resolve(wrap(request.result));
+            unlisten();
+        };
+        const error = () => {
+            reject(request.error);
+            unlisten();
+        };
+        request.addEventListener('success', success);
+        request.addEventListener('error', error);
+    });
+    promise
+        .then((value) => {
+        // Since cursoring reuses the IDBRequest (*sigh*), we cache it for later retrieval
+        // (see wrapFunction).
+        if (value instanceof IDBCursor) {
+            cursorRequestMap.set(value, request);
+        }
+        // Catching to avoid "Uncaught Promise exceptions"
+    })
+        .catch(() => { });
+    // This mapping exists in reverseTransformCache but doesn't doesn't exist in transformCache. This
+    // is because we create many promises from a single IDBRequest.
+    reverseTransformCache.set(promise, request);
+    return promise;
+}
+function cacheDonePromiseForTransaction(tx) {
+    // Early bail if we've already created a done promise for this transaction.
+    if (transactionDoneMap.has(tx))
+        return;
+    const done = new Promise((resolve, reject) => {
+        const unlisten = () => {
+            tx.removeEventListener('complete', complete);
+            tx.removeEventListener('error', error);
+            tx.removeEventListener('abort', error);
+        };
+        const complete = () => {
+            resolve();
+            unlisten();
+        };
+        const error = () => {
+            reject(tx.error || new DOMException('AbortError', 'AbortError'));
+            unlisten();
+        };
+        tx.addEventListener('complete', complete);
+        tx.addEventListener('error', error);
+        tx.addEventListener('abort', error);
+    });
+    // Cache it for later retrieval.
+    transactionDoneMap.set(tx, done);
+}
+let idbProxyTraps = {
+    get(target, prop, receiver) {
+        if (target instanceof IDBTransaction) {
+            // Special handling for transaction.done.
+            if (prop === 'done')
+                return transactionDoneMap.get(target);
+            // Polyfill for objectStoreNames because of Edge.
+            if (prop === 'objectStoreNames') {
+                return target.objectStoreNames || transactionStoreNamesMap.get(target);
+            }
+            // Make tx.store return the only store in the transaction, or undefined if there are many.
+            if (prop === 'store') {
+                return receiver.objectStoreNames[1]
+                    ? undefined
+                    : receiver.objectStore(receiver.objectStoreNames[0]);
+            }
+        }
+        // Else transform whatever we get back.
+        return wrap(target[prop]);
+    },
+    set(target, prop, value) {
+        target[prop] = value;
+        return true;
+    },
+    has(target, prop) {
+        if (target instanceof IDBTransaction &&
+            (prop === 'done' || prop === 'store')) {
+            return true;
+        }
+        return prop in target;
+    },
+};
+function replaceTraps(callback) {
+    idbProxyTraps = callback(idbProxyTraps);
+}
+function wrapFunction(func) {
+    // Due to expected object equality (which is enforced by the caching in `wrap`), we
+    // only create one new func per func.
+    // Edge doesn't support objectStoreNames (booo), so we polyfill it here.
+    if (func === IDBDatabase.prototype.transaction &&
+        !('objectStoreNames' in IDBTransaction.prototype)) {
+        return function (storeNames, ...args) {
+            const tx = func.call(unwrap(this), storeNames, ...args);
+            transactionStoreNamesMap.set(tx, storeNames.sort ? storeNames.sort() : [storeNames]);
+            return wrap(tx);
+        };
+    }
+    // Cursor methods are special, as the behaviour is a little more different to standard IDB. In
+    // IDB, you advance the cursor and wait for a new 'success' on the IDBRequest that gave you the
+    // cursor. It's kinda like a promise that can resolve with many values. That doesn't make sense
+    // with real promises, so each advance methods returns a new promise for the cursor object, or
+    // undefined if the end of the cursor has been reached.
+    if (getCursorAdvanceMethods().includes(func)) {
+        return function (...args) {
+            // Calling the original function with the proxy as 'this' causes ILLEGAL INVOCATION, so we use
+            // the original object.
+            func.apply(unwrap(this), args);
+            return wrap(cursorRequestMap.get(this));
+        };
+    }
+    return function (...args) {
+        // Calling the original function with the proxy as 'this' causes ILLEGAL INVOCATION, so we use
+        // the original object.
+        return wrap(func.apply(unwrap(this), args));
+    };
+}
+function transformCachableValue(value) {
+    if (typeof value === 'function')
+        return wrapFunction(value);
+    // This doesn't return, it just creates a 'done' promise for the transaction,
+    // which is later returned for transaction.done (see idbObjectHandler).
+    if (value instanceof IDBTransaction)
+        cacheDonePromiseForTransaction(value);
+    if (instanceOfAny(value, getIdbProxyableTypes()))
+        return new Proxy(value, idbProxyTraps);
+    // Return the same value back if we're not going to transform it.
+    return value;
+}
+function wrap(value) {
+    // We sometimes generate multiple promises from a single IDBRequest (eg when cursoring), because
+    // IDB is weird and a single IDBRequest can yield many responses, so these can't be cached.
+    if (value instanceof IDBRequest)
+        return promisifyRequest(value);
+    // If we've already transformed this value before, reuse the transformed value.
+    // This is faster, but it also provides object equality.
+    if (transformCache.has(value))
+        return transformCache.get(value);
+    const newValue = transformCachableValue(value);
+    // Not all types are transformed.
+    // These may be primitive types, so they can't be WeakMap keys.
+    if (newValue !== value) {
+        transformCache.set(value, newValue);
+        reverseTransformCache.set(newValue, value);
+    }
+    return newValue;
+}
+const unwrap = (value) => reverseTransformCache.get(value);
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/react-dom/client.js":
+/*!******************************************!*\
+  !*** ./node_modules/react-dom/client.js ***!
+  \******************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var m = __webpack_require__(/*! react-dom */ "react-dom");
+if (false) // removed by dead control flow
+{} else {
+  var i = m.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+  exports.createRoot = function(c, o) {
+    i.usingClientEntryPoint = true;
+    try {
+      return m.createRoot(c, o);
+    } finally {
+      i.usingClientEntryPoint = false;
+    }
+  };
+  exports.hydrateRoot = function(c, h, o) {
+    i.usingClientEntryPoint = true;
+    try {
+      return m.hydrateRoot(c, h, o);
+    } finally {
+      i.usingClientEntryPoint = false;
+    }
+  };
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/tinode-sdk/umd/tinode.prod.js":
+/*!****************************************************!*\
+  !*** ./node_modules/tinode-sdk/umd/tinode.prod.js ***!
+  \****************************************************/
+/***/ (function(module) {
+
+!function(e,t){ true?module.exports=t():0}(this,function(){return function(){"use strict";var e={767:function(e){const t="text/x-drafty",s="text/x-drafty-fr",i=["act","height","duration","fn","incoming","mime","name","premime","preref","preview","ref","size","state","url","val","width"],n=new Intl.Segmenter,r=[{name:"ST",start:/(?:^|[\W_])(\*)[^\s*]/,end:/[^\s*](\*)(?=$|[\W_])/},{name:"EM",start:/(?:^|\W)(_)[^\s_]/,end:/[^\s_](_)(?=$|\W)/},{name:"DL",start:/(?:^|[\W_])(~)[^\s~]/,end:/[^\s~](~)(?=$|[\W_])/},{name:"CO",start:/(?:^|\W)(`)[^`]/,end:/[^`](`)(?=$|\W)/}],o=["QQ"],a=[{name:"LN",dataName:"url",pack:function(e){return/^[a-z]+:\/\//i.test(e)||(e="http://"+e),{url:e}},re:/(?:(?:https?|ftp):\/\/|www\.|ftp\.)[-A-Z0-9+&@#\/%=~_|$?!:,.]*[A-Z0-9+&@#\/%=~_|$]/gi},{name:"MN",dataName:"val",pack:function(e){return{val:e.slice(1)}},re:/\B@([\p{L}\p{N}][._\p{L}\p{N}]*[\p{L}\p{N}])/gu},{name:"HT",dataName:"val",pack:function(e){return{val:e.slice(1)}},re:/\B#([\p{L}\p{N}][._\p{L}\p{N}]*[\p{L}\p{N}])/gu}],c={AU:{html_tag:"audio",md_tag:void 0,isVoid:!1},BN:{html_tag:"button",md_tag:void 0,isVoid:!1},BR:{html_tag:"br",md_tag:"\n",isVoid:!0},CO:{html_tag:"tt",md_tag:"`",isVoid:!1},DL:{html_tag:"del",md_tag:"~",isVoid:!1},EM:{html_tag:"i",md_tag:"_",isVoid:!1},EX:{html_tag:"",md_tag:void 0,isVoid:!0},FM:{html_tag:"div",md_tag:void 0,isVoid:!1},HD:{html_tag:"",md_tag:void 0,isVoid:!1},HL:{html_tag:"span",md_tag:void 0,isVoid:!1},HT:{html_tag:"a",md_tag:void 0,isVoid:!1},IM:{html_tag:"img",md_tag:void 0,isVoid:!1},LN:{html_tag:"a",md_tag:void 0,isVoid:!1},MN:{html_tag:"a",md_tag:void 0,isVoid:!1},RW:{html_tag:"div",md_tag:void 0,isVoid:!1},QQ:{html_tag:"div",md_tag:void 0,isVoid:!1},ST:{html_tag:"b",md_tag:"*",isVoid:!1},TC:{html_tag:"div",md_tag:void 0,isVoid:!1},VC:{html_tag:"div",md_tag:void 0,isVoid:!1},VD:{html_tag:"video",md_tag:void 0,isVoid:!1}};function h(e,t,s){if(!e)return null;try{const s=atob(e),i=s.length,n=new ArrayBuffer(i),r=new Uint8Array(n);for(let e=0;e<i;e++)r[e]=s.charCodeAt(e);return URL.createObjectURL(new Blob([n],{type:t}))}catch(e){s&&s("Drafty: failed to convert object.",e.message)}return null}function l(e,t){return e?"data:"+(t=t||"image/jpeg")+";base64,"+e:null}const d={ST:{open:e=>"<b>",close:e=>"</b>"},EM:{open:e=>"<i>",close:e=>"</i>"},DL:{open:e=>"<del>",close:e=>"</del>"},CO:{open:e=>"<tt>",close:e=>"</tt>"},BR:{open:e=>"<br/>",close:e=>""},HD:{open:e=>"",close:e=>""},HL:{open:e=>'<span style="color:teal">',close:e=>"</span>"},LN:{open:e=>'<a href="'+e.url+'">',close:e=>"</a>",props:e=>e?{href:e.url,target:"_blank"}:null},MN:{open:e=>'<a href="#'+e.val+'">',close:e=>"</a>",props:e=>e?{id:e.val}:null},HT:{open:e=>'<a href="#'+e.val+'">',close:e=>"</a>",props:e=>e?{id:e.val}:null},BN:{open:e=>"<button>",close:e=>"</button>",props:e=>e?{"data-act":e.act,"data-val":e.val,"data-name":e.name,"data-ref":e.ref}:null},AU:{open:e=>'<audio controls src="'+(e.ref||h(e.val,e.mime,u.logger))+'">',close:e=>"</audio>",props:e=>e?{src:e.ref||h(e.val,e.mime,u.logger),"data-preload":e.ref?"metadata":"auto","data-duration":e.duration,"data-name":e.name,"data-size":e.val?.75*e.val.length|0:0|e.size,"data-mime":e.mime}:null},IM:{open:e=>{const t=l(e._tempPreview,e.mime),s=h(e.val,e.mime,u.logger),i=e.ref||s;return(e.name?'<a href="'+i+'" download="'+e.name+'">':"")+'<img src="'+(t||s)+'"'+(e.width?' width="'+e.width+'"':"")+(e.height?' height="'+e.height+'"':"")+' border="0" />'},close:e=>e.name?"</a>":"",props:e=>e?{src:l(e._tempPreview,e.mime)||e.ref||h(e.val,e.mime,u.logger),title:e.name,alt:e.name,"data-width":e.width,"data-height":e.height,"data-name":e.name,"data-size":e.ref?0|e.size:e.val?.75*e.val.length|0:0|e.size,"data-mime":e.mime}:null},FM:{open:e=>"<div>",close:e=>"</div>"},RW:{open:e=>"<div>",close:e=>"</div>"},QQ:{open:e=>"<div>",close:e=>"</div>",props:e=>e?{}:null},TC:{open:e=>"<div>",close:e=>"</div>",props:e=>e?{"data-fn":e.fn,"data-title":e.title}:{}},VC:{open:e=>"<div>",close:e=>"</div>",props:e=>e?{"data-duration":e.duration,"data-state":e.state}:{}},VD:{open:e=>{const t=l(e._tempPreview,e.mime),s=e.ref||h(e.preview,e.premime||"image/jpeg",u.logger);return'<img src="'+(t||s)+'"'+(e.width?' width="'+e.width+'"':"")+(e.height?' height="'+e.height+'"':"")+' border="0" />'},close:e=>"",props:e=>{if(!e)return null;const t=e.preref||h(e.preview,e.premime||"image/jpeg",u.logger);return{src:t,"data-src":e.ref||h(e.val,e.mime,u.logger),"data-width":e.width,"data-height":e.height,"data-preload":e.ref?"metadata":"auto","data-preview":t,"data-duration":0|e.duration,"data-name":e.name,"data-size":e.ref?0|e.size:e.val?.75*e.val.length|0:0|e.size,"data-mime":e.mime}}}},u=function(){this.txt="",this.fmt=[],this.ent=[]};function p(e,t,s,i){const n=[];if(0==i.length)return[];for(let s in i){const r=i[s];r.at>t&&n.push({txt:e.slice(t,r.at)});const o={tp:r.tp},a=p(e,r.at+1,r.end,r.children);a.length>0?o.children=a:o.txt=r.txt,n.push(o),t=r.end+1}return t<s&&n.push({txt:e.slice(t,s)}),n}function g(e){if(0==e.length)return[];const t=[e[0]];let s=e[0];for(let i=1;i<e.length;i++)e[i].at>s.end?(t.push(e[i]),s=e[i]):e[i].end<=s.end&&s.children.push(e[i]);for(let e in t)t[e].children=g(t[e].children);return t}function f(e){if(!e)return null;e="string"==typeof e?{txt:e}:e;let{txt:t,fmt:s,ent:i}=e;if(t=t||"",Array.isArray(i)||(i=[]),!Array.isArray(s)||0==s.length){if(0==i.length)return{text:t};s=[{at:0,len:0,key:0}]}const n=[],r=[];s.forEach(e=>{if(!e||"object"!=typeof e)return;if(!["undefined","number"].includes(typeof e.at))return;if(!["undefined","number"].includes(typeof e.len))return;let s=0|e.at,o=0|e.len;if(o<0)return;let a=e.key||0;i.length>0&&("number"!=typeof a||a<0||a>=i.length)||(s<=-1?r.push({start:-1,end:0,key:a}):s+o>D(t).length||(e.tp?n.push({type:e.tp,start:s,end:s+o}):i.length>0&&"object"==typeof i[a]&&n.push({start:s,end:s+o,key:a})))}),n.sort((e,t)=>{let s=e.start-t.start;return 0!=s?s:(s=t.end-e.end,0!=s?s:o.indexOf(t.type)-o.indexOf(e.type))}),r.length>0&&n.push(...r),n.forEach(e=>{i.length>0&&!e.type&&i[e.key]&&"object"==typeof i[e.key]&&(e.type=i[e.key].tp,e.data=i[e.key].data),e.type||(e.type="HD")});const a=D(t);let c=_({},a,0,a.length,n);return c=w(c,function(e){if(Array.isArray(e.children)&&1==e.children.length){const t=e.children[0];if(e.type)t.type||t.children||(e.text=t.text,delete e.children);else{const s=e.parent;(e=t).parent=s}}return e}),c}function m(e,t){return t?(e.children||(e.children=[]),e.text&&(e.children.push({text:e.text,parent:e}),delete e.text),t.parent=e,e.children.push(t),e):e}function _(e,t,s,i,n){if(!n||0==n.length)return s<i&&m(e,{text:t.slice(s,i).map(e=>e.segment).join("")}),e;for(let i=0;i<n.length;i++){const r=n[i];if(r.start<0&&"EX"==r.type){m(e,{type:r.type,data:r.data,key:r.key,att:!0});continue}s<r.start&&(m(e,{text:t.slice(s,r.start).map(e=>e.segment).join("")}),s=r.start);const o=[];for(;i<n.length-1;){const e=n[i+1];if(e.start<0)break;if(!(e.start<r.end))break;if(e.end<=r.end){const t=c[e.tp]||{};(e.start<e.end||t.isVoid)&&o.push(e)}i++}m(e,_({type:r.type,data:r.data,key:r.key},t,s,r.end,o)),s=r.end}return s<i&&m(e,{text:t.slice(s,i).map(e=>e.segment).join("")}),e}function b(e,t,s){if(!t)return e;e.txt=e.txt||"";const i=D(e.txt).length;if(t.text?e.txt+=t.text:Array.isArray(t.children)&&t.children.forEach(t=>{b(e,t,s)}),t.type){const n=D(e.txt).length-i;if(e.fmt=e.fmt||[],Object.keys(t.data||{}).length>0){e.ent=e.ent||[];const r=void 0===s[t.key]?e.ent.length:s[t.key];s[t.key]=r,e.ent[r]={tp:t.type,data:t.data},t.att?e.fmt.push({at:-1,len:0,key:r}):e.fmt.push({at:i,len:n,key:r})}else e.fmt.push({tp:t.type,at:i,len:n})}return e}function w(e,t,s){if(!e)return null;let i=t.call(s,e);if(!i||!i.children)return i;const n=[];for(let e in i.children){let r=i.children[e];r&&(r=w(r,t,s),r&&n.push(r))}return 0==n.length?i.children=null:i.children=n,i}function v(e,t,s,i,n){if(!e)return null;i&&e.type&&i.push(e.type);let r=[];for(let s in e.children){const o=v(e.children[s],t,s,i,n);o&&r.push(o)}return 0==r.length&&(r=e.text?[e.text]:null),i&&e.type&&i.pop(),t.call(n,e.type,e.data,r,s,i)}function y(e,t,s){if(!e)return null;s&&(t-=s.length);return w(e,function(e){if(t<=-1)return null;if(e.att)return e;if(0==t)e.text=s,t=-1;else if(e.text){const i=D(e.text);i.length>t?(e.text=i.slice(0,t).map(e=>e.segment).join("")+s,t=-1):t-=i.length}return e})}function T(e,t){return w(e,e=>{const s=S(e.data,!0,t?t(e):null);return s?e.data=s:delete e.data,e})}function M(e){if("BR"==e.type)e=null;else if(e.text)e.type||(e.text=e.text.trimStart(),e.text||(e=null));else if(!e.type&&e.children&&e.children.length>0){const t=M(e.children[0]);t?e.children[0]=t:(e.children.shift(),e.type||0!=e.children.length||(e=null))}return e}function x(e,t){if(!e)return null;if(e.att)e.text=" ",delete e.att,delete e.children;else if(e.children){const s=[],i=[];for(let n in e.children){const r=e.children[n];if(r.att){if(s.length==t)continue;if(u.isFormResponseType(r.data.mime))continue;delete r.att,delete r.children,r.text=" ",s.push(r)}else i.push(r)}e.children=i.concat(s)}return e}function P(e,t){let s="",i=[];for(let n in e){const r=e[n];if(!r.txt){const e=P(r.children,s.length+t);r.txt=e.txt,i=i.concat(e.fmt)}r.tp&&i.push({at:s.length+t,len:r.txt.length,tp:r.tp}),s+=r.txt}return{txt:s,fmt:i}}function S(e,t,s){if(e&&Object.entries(e).length>0){s=s||[];const n={};if(i.forEach(i=>{if(e[i]){if(t&&!s.includes(i)&&("string"==typeof e[i]||Array.isArray(e[i]))&&e[i].length>64)return;if("object"==typeof e[i])return;n[i]=e[i]}}),0!=Object.entries(n).length)return n}return null}function E(e){return 0==Object.keys(e??{}).length}function A(e,t,s){const i=function(e){const t=[];let s=0,i=0;for(const{segment:n}of e){for(let e=0;e<n.length;e++)t[i+e]=s;i+=n.length,s++}return t}(t=t??n.segment(s)),r=i[e.at];return{at:r,len:(e.at+e.len<=s.length?i[e.at+e.len-1]-r:e.len)+1}}function D(e){return Array.from(n.segment(e))}u.init=function(e){if(void 0===e)e="";else if("string"!=typeof e)return null;return{txt:e}},u.parse=function(e){if("string"!=typeof e)return null;const t=e.split(/\r?\n/),s=[],i={},o=[];t.forEach(e=>{let t,n,c=[];if(r.forEach(t=>{c=c.concat(function(e,t,s,i){const n=[];let r=0,o=e.slice(0);for(;o.length>0;){const a=t.exec(o);if(null==a)break;let c=a.index+a[0].lastIndexOf(a[1]);o=o.slice(c+1),c+=r,r=c+1;const h=s?s.exec(o):null;if(null==h)break;let l=h.index+h[0].indexOf(h[1]);o=o.slice(l+1),l+=r,r=l+1,n.push({txt:e.slice(c+1,l),children:[],at:c,end:l,tp:i})}return n}(e,t.start,t.end,t.name))}),0==c.length)n={txt:e};else{c.sort((e,t)=>{const s=e.at-t.at;return 0!=s?s:t.end-e.end}),c=g(c);const t=P(p(e,0,e.length,c),0);n={txt:t.txt,fmt:t.fmt}}if(t=function(e){let t,s=[];if(a.forEach(i=>{for(;null!==(t=i.re.exec(e));)s.push({offset:t.index,len:t[0].length,unique:t[0],data:i.pack(t[0]),type:i.name})}),0==s.length)return s;s.sort((e,t)=>e.offset-t.offset);let i=-1;return s=s.filter(e=>{const t=e.offset>i;return i=e.offset+e.len,t}),s}(n.txt),t.length>0){const e=[];for(let n in t){const r=t[n];let o=i[r.unique];o||(o=s.length,i[r.unique]=o,s.push({tp:r.type,data:r.data})),e.push({at:r.offset,len:r.len,key:o})}n.ent=e}o.push(n)});const c={txt:""};if(o.length>0){if(c.txt=o[0].txt,c.fmt=(o[0].fmt||[]).concat(o[0].ent||[]),c.fmt.length){const e=n.segment(c.txt);for(const t of c.fmt)({at:t.at,len:t.len}=A(t,e,c.txt))}for(let e=1;e<o.length;e++){const t=o[e],s=D(c.txt).length+1;c.fmt.push({tp:"BR",len:1,at:s-1});let i={};c.txt+=" "+t.txt,t.fmt&&(i=n.segment(t.txt),c.fmt=c.fmt.concat(t.fmt.map(e=>{const{at:n,len:r}=A(e,i,t.txt);return e.at=n+s,e.len=r,e}))),t.ent&&(E(i)&&(i=n.segment(t.txt)),c.fmt=c.fmt.concat(t.ent.map(e=>{const{at:n,len:r}=A(e,i,t.txt);return e.at=n+s,e.len=r,e})))}0==c.fmt.length&&delete c.fmt,s.length>0&&(c.ent=s)}return c},u.append=function(e,t){if(!e)return t;if(!t)return e;e.txt=e.txt||"";const s=D(e.txt).length;return"string"==typeof t?e.txt+=t:t.txt&&(e.txt+=t.txt),Array.isArray(t.fmt)&&(e.fmt=e.fmt||[],Array.isArray(t.ent)&&(e.ent=e.ent||[]),t.fmt.forEach(i=>{const n={at:(0|i.at)+s,len:0|i.len};-1==i.at&&(n.at=-1,n.len=0),i.tp?n.tp=i.tp:(n.key=e.ent.length,e.ent.push(t.ent[i.key||0])),e.fmt.push(n)})),e},u.insertImage=function(e,t,s){(e=e||{txt:" "}).ent=e.ent||[],e.fmt=e.fmt||[],e.fmt.push({at:0|t,len:1,key:e.ent.length});const i={tp:"IM",data:{mime:s.mime,ref:s.refurl,val:s.bits||s.preview,width:s.width,height:s.height,name:s.filename,size:0|s.size}};return s.urlPromise&&(i.data._tempPreview=s._tempPreview,i.data._processing=!0,s.urlPromise.then(e=>{i.data.ref=e,i.data._tempPreview=void 0,i.data._processing=void 0},e=>{i.data._processing=void 0})),e.ent.push(i),e},u.insertVideo=function(e,t,s){(e=e||{txt:" "}).ent=e.ent||[],e.fmt=e.fmt||[],e.fmt.push({at:0|t,len:1,key:e.ent.length});const i={tp:"VD",data:{mime:s.mime,ref:s.refurl,val:s.bits,preref:s.preref,preview:s.preview,width:s.width,height:s.height,duration:0|s.duration,name:s.filename,size:0|s.size}};return s.urlPromise&&(i.data._tempPreview=s._tempPreview,i.data._processing=!0,s.urlPromise.then(e=>{i.data.ref=e[0],i.data.preref=e[1],i.data._tempPreview=void 0,i.data._processing=void 0},e=>{i.data._processing=void 0})),e.ent.push(i),e},u.insertAudio=function(e,t,s){(e=e||{txt:" "}).ent=e.ent||[],e.fmt=e.fmt||[],e.fmt.push({at:0|t,len:1,key:e.ent.length});const i={tp:"AU",data:{mime:s.mime,val:s.bits,duration:0|s.duration,preview:s.preview,name:s.filename,size:0|s.size,ref:s.refurl}};return s.urlPromise&&(i.data._processing=!0,s.urlPromise.then(e=>{i.data.ref=e,i.data._processing=void 0},e=>{i.data._processing=void 0})),e.ent.push(i),e},u.videoCall=function(e){return{txt:" ",fmt:[{at:0,len:1,key:0}],ent:[{tp:"VC",data:{aonly:e}}]}},u.updateVideoCall=function(e,t){const s=((e||{}).fmt||[])[0];if(!s)return e;let i;if("VC"==s.tp)delete s.tp,s.key=0,i={tp:"VC"},e.ent=[i];else if(i=(e.ent||[])[0|s.key],!i||"VC"!=i.tp)return e;return i.data=i.data||{},Object.assign(i.data,t),e},u.quote=function(e,t,s){const i=u.append(u.appendLineBreak(u.mention(e,t)),s);return i.fmt.push({at:0,len:D(i.txt).length,tp:"QQ"}),i},u.mention=function(e,t){return{txt:e||"",fmt:[{at:0,len:D(e||"").length,key:0}],ent:[{tp:"MN",data:{val:t}}]}},u.appendLink=function(e,t){(e=e||{txt:""}).ent=e.ent||[],e.fmt=e.fmt||[],e.fmt.push({at:e.txt.length,len:t.txt.length,key:e.ent.length}),e.txt+=t.txt;const s={tp:"LN",data:{url:t.url}};return e.ent.push(s),e},u.appendImage=function(e,t){return(e=e||{txt:""}).txt+=" ",u.insertImage(e,e.txt.length-1,t)},u.appendAudio=function(e,t){return(e=e||{txt:""}).txt+=" ",u.insertAudio(e,e.txt.length-1,t)},u.attachFile=function(e,t){(e=e||{txt:""}).ent=e.ent||[],e.fmt=e.fmt||[],e.fmt.push({at:-1,len:0,key:e.ent.length});const s={tp:"EX",data:{mime:t.mime,val:t.data,name:t.filename,ref:t.refurl,size:0|t.size}};return t.urlPromise&&(s.data._processing=!0,t.urlPromise.then(e=>{s.data.ref=e,s.data._processing=void 0},e=>{s.data._processing=void 0})),e.ent.push(s),e},u.wrapInto=function(e,t,s,i){return"string"==typeof e&&(e={txt:e}),e.fmt=e.fmt||[],e.fmt.push({at:s||0,len:i||e.txt.length,tp:t}),e},u.wrapAsForm=function(e,t,s){return u.wrapInto(e,"FM",t,s)},u.insertButton=function(e,t,s,i,n,r,o){return"string"==typeof e&&(e={txt:e}),!e||!e.txt||e.txt.length<t+s||s<=0||-1==["url","pub"].indexOf(n)?null:"url"!=n||o?(o=""+o,e.ent=e.ent||[],e.fmt=e.fmt||[],e.fmt.push({at:0|t,len:s,key:e.ent.length}),e.ent.push({tp:"BN",data:{act:n,val:r,ref:o,name:i}}),e):null},u.appendButton=function(e,t,s,i,n,r){const o=(e=e||{txt:""}).txt.length;return e.txt+=t,u.insertButton(e,o,t.length,s,i,n,r)},u.attachJSON=function(e,t){return(e=e||{txt:""}).ent=e.ent||[],e.fmt=e.fmt||[],e.fmt.push({at:-1,len:0,key:e.ent.length}),e.ent.push({tp:"EX",data:{mime:s,val:t}}),e},u.appendLineBreak=function(e){return(e=e||{txt:""}).fmt=e.fmt||[],e.fmt.push({at:D(e.txt).length,len:1,tp:"BR"}),e.txt+=" ",e},u.appendTheCard=function(e,t){return(e=e||{txt:""}).ent=e.ent||[],e.fmt=e.fmt||[],e.fmt.push({at:D(e.txt).length,len:1,key:e.ent.length}),e.txt+=" ",e.ent.push({tp:"TC",data:t}),e},u.UNSAFE_toHTML=function(e){return v(f(e),function(e,t,s){const i=d[e];let n=s?s.join(""):"";return i&&(n=i.open(t)+n+i.close(t)),n},0)},u.format=function(e,t,s){return v(f(e),t,0,[],s)},u.shorten=function(e,t,s){let i=f(e);return i=y(i,t,"…"),i&&s&&(i=T(i)),b({},i,[])},u.forwardedContent=function(e){let t=f(e);return t=w(t,function(e){return"MN"!=e.type||e.parent&&e.parent.type?e:null}),t=M(t),b({},t,[])},u.replyContent=function(e,t){let s=f(e);if(!s)return e;s=w(s,function(e){return"QQ"==e.type?null:("MN"==e.type?e.parent&&e.parent.type||!(e.text||"").startsWith("➦")||(e.text="➦",delete e.children,delete e.data):"BR"==e.type&&(e.text=" ",delete e.type,delete e.children),e)}),s=x(s,3),s=y(s,t,"…");return s=T(s,e=>{switch(e.type){case"IM":return["val"];case"VD":return["preview"]}return null}),b({},s,[])},u.preview=function(e,t,s){let i=f(e);i=x(i,3);if(i=w(i,function(e){return"MN"==e.type?e.parent&&e.parent.type||!(e.text||"").startsWith("➦")||(e.text="➦",delete e.children):"QQ"==e.type?(e.text=" ",delete e.children):"BR"==e.type&&(e.text=" ",delete e.children,delete e.type),e}),i=y(i,t,"…"),s){const e={IM:["val"],VD:["preview"]};i=T(i,t=>e[t.type])}else i=T(i);return b({},i,[])},u.toPlainText=function(e){return"string"==typeof e?e:e.txt},u.isPlainText=function(e){return"string"==typeof e||!(e.fmt||e.ent)},u.toMarkdown=function(e){return v(f(e),function(e,t,s){const i=c[e];let n=s?s.join(""):"";return i&&(i.isVoid?n=i.md_tag||"":i.md_tag&&(n=i.md_tag+n+i.md_tag)),n},0)},u.isValid=function(e){if(!e)return!1;const{txt:t,fmt:s,ent:i}=e;if(!t&&""!==t&&!s&&!i)return!1;const n=typeof t;return("string"==n||"undefined"==n||null===t)&&(!(void 0!==s&&!Array.isArray(s)&&null!==s)&&!(void 0!==i&&!Array.isArray(i)&&null!==i))},u.hasAttachments=function(e){if(!Array.isArray(e.fmt))return!1;for(let t in e.fmt){const s=e.fmt[t];if(s&&s.at<0){const t=e.ent[0|s.key];return t&&"EX"==t.tp&&t.data}}return!1},u.attachments=function(e,t,s){if(!Array.isArray(e.fmt))return;let i=0;for(let n in e.fmt){let r=e.fmt[n];if(r&&r.at<0){const n=e.ent[0|r.key];if(n&&"EX"==n.tp&&n.data&&t.call(s,n.data,i++,"EX"))break}}},u.hasEntities=function(e){return e.ent&&e.ent.length>0},u.entities=function(e,t,s){if(e.ent&&e.ent.length>0)for(let i in e.ent)if(e.ent[i]&&t.call(s,e.ent[i].data,i,e.ent[i].tp))break},u.styles=function(e,t,s){if(e.fmt&&e.fmt.length>0)for(let i in e.fmt){const n=e.fmt[i];if(n&&t.call(s,n.tp,n.at,n.len,n.key,i))break}},u.sanitizeEntities=function(e){if(e&&e.ent&&e.ent.length>0)for(let t in e.ent){const s=e.ent[t];if(s&&s.data){const i=S(s.data);i?e.ent[t].data=i:delete e.ent[t].data}}return e},u.getDownloadUrl=function(e){let t=null;return!u.isFormResponseType(e.mime)&&e.val?t=h(e.val,e.mime,u.logger):"string"==typeof e.ref&&(t=e.ref),t},u.isProcessing=function(e){return!!e._processing},u.getPreviewUrl=function(e){return e.val?h(e.val,e.mime,u.logger):null},u.getEntitySize=function(e){return e.size?e.size:e.val?.75*e.val.length|0:0},u.getEntityMimeType=function(e){return e.mime||"text/plain"},u.tagName=function(e){return c[e]&&c[e].html_tag},u.attrValue=function(e,t){if(t&&d[e]&&d[e].props)return d[e].props(t)},u.getContentType=function(){return t},u.contentType=t,u.isFormResponseType=function(e){return e===s||"application/json"===e},e.exports=u}},t={};function s(i){var n=t[i];if(void 0!==n)return n.exports;var r=t[i]={exports:{}};return e[i](r,r.exports,s),r.exports}s.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return s.d(t,{a:t}),t},s.d=function(e,t){for(var i in t)s.o(t,i)&&!s.o(e,i)&&Object.defineProperty(e,i,{enumerable:!0,get:t[i]})},s.g=function(){if("object"==typeof globalThis)return globalThis;try{return this||new Function("return this")()}catch(e){if("object"==typeof window)return window}}(),s.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},s.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})};var i={};s.r(i),s.d(i,{AccessMode:function(){return n},Drafty:function(){return U()},TheCard:function(){return z},Tinode:function(){return Z}});class n{constructor(e){e&&(this.given="number"==typeof e.given?e.given:n.decode(e.given),this.want="number"==typeof e.want?e.want:n.decode(e.want),this.mode=e.mode?"number"==typeof e.mode?e.mode:n.decode(e.mode):this.given&this.want)}static#e(e,t,s){if(["given","want","mode"].includes(t=t||"mode"))return 0!=(e[t]&s);throw new Error(`Invalid AccessMode component '${t}'`)}static decode(e){if(!e)return null;if("number"==typeof e)return e&n._BITMASK;if("N"===e||"n"===e)return n._NONE;const t={J:n._JOIN,R:n._READ,W:n._WRITE,P:n._PRES,A:n._APPROVE,S:n._SHARE,D:n._DELETE,O:n._OWNER};let s=n._NONE;for(let i=0;i<e.length;i++){const n=t[e.charAt(i).toUpperCase()];n&&(s|=n)}return s}static encode(e){if(null===e||e===n._INVALID)return null;if(e===n._NONE)return"N";const t=["J","R","W","P","A","S","D","O"];let s="";for(let i=0;i<t.length;i++)e&1<<i&&(s+=t[i]);return s}static update(e,t){if(!t||"string"!=typeof t)return e;let s=t.charAt(0);if("+"==s||"-"==s){let i=e;const r=t.split(/([-+])/);for(let t=1;t<r.length-1;t+=2){s=r[t];const o=n.decode(r[t+1]);if(o==n._INVALID)return e;null!=o&&("+"===s?i|=o:"-"===s&&(i&=~o))}e=i}else{const s=n.decode(t);s!=n._INVALID&&(e=s)}return e}static diff(e,t){return e=n.decode(e),t=n.decode(t),e==n._INVALID||t==n._INVALID?n._INVALID:e&~t}toString(){return'{"mode": "'+n.encode(this.mode)+'", "given": "'+n.encode(this.given)+'", "want": "'+n.encode(this.want)+'"}'}jsonHelper(){return{mode:n.encode(this.mode),given:n.encode(this.given),want:n.encode(this.want)}}setMode(e){return this.mode=n.decode(e),this}updateMode(e){return this.mode=n.update(this.mode,e),this}getMode(){return n.encode(this.mode)}setGiven(e){return this.given=n.decode(e),this}updateGiven(e){return this.given=n.update(this.given,e),this}getGiven(){return n.encode(this.given)}setWant(e){return this.want=n.decode(e),this}updateWant(e){return this.want=n.update(this.want,e),this}getWant(){return n.encode(this.want)}getMissing(){return n.encode(this.want&~this.given)}getExcessive(){return n.encode(this.given&~this.want)}updateAll(e){return e&&(this.updateGiven(e.given),this.updateWant(e.want),this.mode=this.given&this.want),this}isOwner(e){return n.#e(this,e,n._OWNER)}isPresencer(e){return n.#e(this,e,n._PRES)}isMuted(e){return!this.isPresencer(e)}isJoiner(e){return n.#e(this,e,n._JOIN)}isReader(e){return n.#e(this,e,n._READ)}isWriter(e){return n.#e(this,e,n._WRITE)}isApprover(e){return n.#e(this,e,n._APPROVE)}isAdmin(e){return this.isOwner(e)||this.isApprover(e)}isSharer(e){return this.isAdmin(e)||n.#e(this,e,n._SHARE)}isDeleter(e){return n.#e(this,e,n._DELETE)}}n._NONE=0,n._JOIN=1,n._READ=2,n._WRITE=4,n._PRES=8,n._APPROVE=16,n._SHARE=32,n._DELETE=64,n._OWNER=128,n._BITMASK=n._JOIN|n._READ|n._WRITE|n._PRES|n._APPROVE|n._SHARE|n._DELETE|n._OWNER,n._INVALID=1048576;const r="0.25.2",o="tinodejs/"+r,a="new",c="nch",h="me",l="fnd",d="grp",u=268435455,p="␡",g="alias:";class f extends Error{constructor(e,t){super(`${e} (${t})`),this.name="CommError",this.code=t}}function m(e,t){if("string"==typeof t&&t.length>=20&&t.length<=24&&["ts","touched","updated","created","when","deleted","expires"].includes(e)){const e=new Date(t);if(!isNaN(e))return e}else if("acs"===e&&"object"==typeof t)return new n(t);return t}function _(e){return e&&!/^\s*([a-z][a-z0-9+.-]*:|\/\/)/im.test(e)}function b(e){return e instanceof Date&&!isNaN(e)&&0!=e.getTime()}function w(e,t){if("object"!=typeof t){if(void 0===t)return e;if(t===p)return;return t}if(null===t)return e;if(t instanceof Date&&!isNaN(t))return!e||!(e instanceof Date)||isNaN(e)||e<t?t:e;if(t instanceof n)return new n(t);if(t instanceof Array)return t;e&&e!==p||(e=t.constructor());for(let s in t)if(t.hasOwnProperty(s)&&"_noForwarding"!=s)try{e[s]=w(e[s],t[s])}catch(e){console.warn("Error merging property:",s,e)}return e}function v(e,t,s){return e[t]=w(e[t],s),e[t]}function y(e){return Object.keys(e).forEach(t=>{"_"==t[0]?delete e[t]:e[t]?Array.isArray(e[t])&&0==e[t].length?delete e[t]:e[t]?e[t]instanceof Date?b(e[t])||delete e[t]:"object"==typeof e[t]&&(y(e[t]),0==Object.getOwnPropertyNames(e[t]).length&&delete e[t]):delete e[t]:delete e[t]}),e}function T(e,t){return Array.isArray(e)?(e.sort((e,t)=>e.low<t.low?-1:e.low==t.low?(0|t.hi)-e.hi:1),e=(e=e.reduce((e,s)=>(s.low<u&&s.low>0&&(!s.hi||s.hi<u?e.push(s):e.push({low:s.low,hi:t+1})),e),[])).reduce((e,t)=>{if(0==e.length)e.push(t);else{let s=e[e.length-1];t.low<=s.hi?s.hi=Math.max(s.hi,t.hi):e.push(t)}return e},[])):[]}function M(e){return e.sort((e,t)=>e-t),e.reduce((e,t)=>{if(0==e.length)e.push({low:t});else{let s=e[e.length-1];!s.hi&&t!=s.low+1||t>s.hi?e.push({low:t}):s.hi=s.hi?Math.max(s.hi,t+1):t+1}return e},[])}let x,P;const S="Connection failed",E=418,A="Disconnected by client";function D(e,t,s,i){let n=null;return["http","https","ws","wss"].includes(t)&&(n=`${t}://${e}`,"/"!==n.charAt(n.length-1)&&(n+="/"),n+="v"+s+"/channels",["http","https"].includes(t)&&(n+="/lp"),n+="?apikey="+i),n}class C{static#t=e=>{};#s=null;#i=0;#n=!1;#r=null;host;secure;apiKey;version;autoreconnect;initialized;constructor(e,t,s){if(this.host=e.host,this.secure=e.secure,this.apiKey=e.apiKey,this.version=t,this.autoreconnect=s,"lp"===e.transport?(this.#o(),this.initialized="lp"):"ws"===e.transport&&(this.#a(),this.initialized="ws"),!this.initialized)throw C.#t("Unknown or invalid network transport. Running under Node? Call 'Tinode.setNetworkProviders()'."),new Error("Unknown or invalid network transport. Running under Node? Call 'Tinode.setNetworkProviders()'.")}static setNetworkProviders(e,t){x=e,P=t}static set logger(e){C.#t=e}connect(e,t){return Promise.reject(null)}reconnect(e){}disconnect(){}sendText(e){}isConnected(){return!1}transport(){return this.initialized}probe(){this.sendText("1")}backoffReset(){this.#c()}#h(){clearTimeout(this.#s);const e=Math.pow(2,this.#i)*(1+.3*Math.random())*2e3;this.#i=this.#i>=10?this.#i:this.#i+1,this.onAutoreconnectIteration&&this.onAutoreconnectIteration(e),this.#s=setTimeout(t=>{if(C.#t(`Reconnecting, iter=${this.#i}, timeout=${e}`),this.#n)this.onAutoreconnectIteration&&this.onAutoreconnectIteration(-1);else{const e=this.connect();this.onAutoreconnectIteration?this.onAutoreconnectIteration(0,e):e.catch(e=>{})}},e)}#l(){clearTimeout(this.#s),this.#s=null}#c(){this.#i=0}#o(){let e=null,t=null,s=null,i=(t,s,n)=>{let r=new P,o=!1;return r.onreadystatechange=a=>{if(4==r.readyState)if(201==r.status){let n=JSON.parse(r.responseText,m);e=t+"&sid="+n.ctrl.params.sid,r=i(e),r.send(null),this.onOpen&&this.onOpen(),s&&(o=!0,s()),this.autoreconnect&&this.#l()}else if(r.status>0&&r.status<400)this.onMessage&&this.onMessage(r.responseText),r=i(e),r.send(null);else{if(n&&!o&&(o=!0,n(r.responseText)),this.onMessage&&r.responseText&&this.onMessage(r.responseText),this.onDisconnect){const e=r.status||(this.#n?E:503),t=r.responseText||(this.#n?A:S);this.onDisconnect(new f(t,e),e)}r=null,!this.#n&&this.autoreconnect&&this.#h()}},r.open("POST",t,!0),r};this.connect=(e,s)=>{if(this.#n=!1,t){if(!s)return Promise.resolve();t.onreadystatechange=void 0,t.abort(),t=null}return e&&(this.host=e),new Promise((e,s)=>{const n=D(this.host,this.secure?"https":"http",this.version,this.apiKey);C.#t("LP connecting to:",n),t=i(n,e,s),t.send(null)}).catch(e=>{C.#t("LP connection failed:",e)})},this.reconnect=e=>{this.#l(),this.connect(null,e)},this.disconnect=i=>{this.#n=!0,this.#l(),s&&(s.onreadystatechange=void 0,s.abort(),s=null),t&&(t.onreadystatechange=void 0,t.abort(),t=null),this.onDisconnect&&this.onDisconnect(new f(A,E),E),e=null},this.sendText=t=>{if(s=(e=>{const t=new P;return t.onreadystatechange=e=>{if(4==t.readyState&&t.status>=400)throw new f("LP sender failed",t.status)},t.open("POST",e,!0),t})(e),!s||1!=s.readyState)throw new Error("Long poller failed to connect");s.send(t)},this.isConnected=e=>t&&!0}#a(){this.connect=(e,t)=>{if(this.#n=!1,this.#r){if(!t&&this.#r.readyState==this.#r.OPEN)return this.probe(),Promise.resolve();this.#r.close(),this.#r=null}return e&&(this.host=e),new Promise((e,t)=>{const s=D(this.host,this.secure?"wss":"ws",this.version,this.apiKey);C.#t("WS connecting to: ",s);const i=new x(s);i.onerror=e=>{t(e)},i.onopen=t=>{this.autoreconnect&&this.#l(),this.onOpen&&this.onOpen(),e()},i.onclose=e=>{if(this.#r=null,this.onDisconnect){const e=this.#n?E:503;this.onDisconnect(new f(this.#n?A:S,e),e)}!this.#n&&this.autoreconnect&&this.#h()},i.onmessage=e=>{this.onMessage&&this.onMessage(e.data)},this.#r=i})},this.reconnect=e=>{this.#l(),this.connect(null,e)},this.disconnect=e=>{this.#n=!0,this.#l(),this.#r&&(this.#r.close(),this.#r=null)},this.sendText=e=>{if(!this.#r||this.#r.readyState!=this.#r.OPEN)throw new Error("Websocket is not connected");this.#r.send(e)},this.isConnected=e=>this.#r&&this.#r.readyState==this.#r.OPEN}onMessage=void 0;onDisconnect=void 0;onOpen=void 0;onAutoreconnectIteration=void 0}C.NETWORK_ERROR=503,C.NETWORK_ERROR_TEXT=S,C.NETWORK_USER=E,C.NETWORK_USER_TEXT=A;const k="tinode-web";let N;class R{#d=e=>{};#u=e=>{};db=null;disabled=!0;constructor(e,t){this.#d=e||this.#d,this.#u=t||this.#u}#p(e,t,s){return this.db?new Promise((i,n)=>{const r=this.db.transaction([e]);r.onerror=t=>{this.#u("PCache","mapObjects",e,t.target.error),n(t.target.error)},r.objectStore(e).getAll().onsuccess=e=>{t&&e.target.result.forEach(e=>{t.call(s,e)}),i(e.target.result)}}):disabled?Promise.resolve([]):Promise.reject(new Error("not initialized"))}initDatabase(){return new Promise((e,t)=>{const s=N.open(k,3);s.onsuccess=t=>{this.db=t.target.result,this.disabled=!1,this.db.onversionchange=e=>{this.#u("PCache","another tab tries to upgrade DB, shutting down"),this.db.close(),this.db=null,this.disabled=!0},e(this.db)},s.onerror=e=>{this.#u("PCache","failed to initialize",e),t(e.target.error),this.#d(e.target.error)},s.onupgradeneeded=e=>{if(this.db=e.target.result,this.db.onerror=e=>{this.#u("PCache","failed to create storage",e),this.#d(e.target.error)},this.db.objectStoreNames.contains("topic")||this.db.createObjectStore("topic",{keyPath:"name"}),this.db.objectStoreNames.contains("user")||this.db.createObjectStore("user",{keyPath:"uid"}),this.db.objectStoreNames.contains("subscription")||this.db.createObjectStore("subscription",{keyPath:["topic","uid"]}),this.db.objectStoreNames.contains("message")||this.db.createObjectStore("message",{keyPath:["topic","seq"]}),!this.db.objectStoreNames.contains("dellog")){const e=this.db.createObjectStore("dellog",{keyPath:["topic","low","hi"]});e.indexNames.contains("topic_clear")||e.createIndex("topic_clear",["topic","clear"],{unique:!1})}}})}deleteDatabase(){return this.db&&(this.db.close(),this.db=null),new Promise((e,t)=>{const s=N.deleteDatabase(k);s.onblocked=e=>{this.db&&this.db.close();const s=new Error("blocked");this.#u("PCache","deleteDatabase",s),t(s)},s.onsuccess=t=>{this.db=null,this.disabled=!0,e(!0)},s.onerror=e=>{this.#u("PCache","deleteDatabase",e.target.error),t(e.target.error)}})}isReady(){return!!this.db}updTopic(e){return this.isReady()?new Promise((t,s)=>{const i=this.db.transaction(["topic"],"readwrite");i.oncomplete=e=>{t(e.target.result)},i.onerror=e=>{this.#u("PCache","updTopic",e.target.error),s(e.target.error)};const n=i.objectStore("topic").get(e.name);n.onsuccess=t=>{i.objectStore("topic").put(R.#g(n.result,e)),i.commit()}}):this.disabled?Promise.resolve():Promise.reject(new Error("not initialized"))}markTopicAsDeleted(e,t){return this.isReady()?new Promise((s,i)=>{const n=this.db.transaction(["topic"],"readwrite");n.oncomplete=e=>{s(e.target.result)},n.onerror=e=>{this.#u("PCache","markTopicAsDeleted",e.target.error),i(e.target.error)};n.objectStore("topic").get(e).onsuccess=e=>{const s=e.target.result;s&&s._deleted!=t&&(s._deleted=t,n.objectStore("topic").put(s)),n.commit()}}):this.disabled?Promise.resolve():Promise.reject(new Error("not initialized"))}remTopic(e){return this.isReady()?new Promise((t,s)=>{const i=this.db.transaction(["topic","subscription","message"],"readwrite");i.oncomplete=e=>{t(e.target.result)},i.onerror=e=>{this.#u("PCache","remTopic",e.target.error),s(e.target.error)},i.objectStore("topic").delete(IDBKeyRange.only(e)),i.objectStore("subscription").delete(IDBKeyRange.bound([e,"-"],[e,"~"])),i.objectStore("message").delete(IDBKeyRange.bound([e,0],[e,Number.MAX_SAFE_INTEGER])),i.commit()}):this.disabled?Promise.resolve():Promise.reject(new Error("not initialized"))}mapTopics(e,t){return this.#p("topic",e,t)}deserializeTopic(e,t){R.#f(e,t)}updUser(e,t){if(!(arguments.length<2||void 0===t))return this.isReady()?new Promise((s,i)=>{const n=this.db.transaction(["user"],"readwrite");n.oncomplete=e=>{s(e.target.result)},n.onerror=e=>{this.#u("PCache","updUser",e.target.error),i(e.target.error)},n.objectStore("user").put({uid:e,public:t}),n.commit()}):this.disabled?Promise.resolve():Promise.reject(new Error("not initialized"))}remUser(e){return this.isReady()?new Promise((t,s)=>{const i=this.db.transaction(["user"],"readwrite");i.oncomplete=e=>{t(e.target.result)},i.onerror=e=>{this.#u("PCache","remUser",e.target.error),s(e.target.error)},i.objectStore("user").delete(IDBKeyRange.only(e)),i.commit()}):this.disabled?Promise.resolve():Promise.reject(new Error("not initialized"))}mapUsers(e,t){return this.#p("user",e,t)}getUser(e){return this.isReady()?new Promise((t,s)=>{const i=this.db.transaction(["user"]);i.oncomplete=e=>{const s=e.target.result;t({user:s.uid,public:s.public})},i.onerror=e=>{this.#u("PCache","getUser",e.target.error),s(e.target.error)},i.objectStore("user").get(e)}):this.disabled?Promise.resolve():Promise.reject(new Error("not initialized"))}updSubscription(e,t,s){return this.isReady()?new Promise((i,n)=>{const r=this.db.transaction(["subscription"],"readwrite");r.oncomplete=e=>{i(e.target.result)},r.onerror=e=>{this.#u("PCache","updSubscription",e.target.error),n(e.target.error)},r.objectStore("subscription").get([e,t]).onsuccess=i=>{r.objectStore("subscription").put(R.#m(i.target.result,e,t,s)),r.commit()}}):this.disabled?Promise.resolve():Promise.reject(new Error("not initialized"))}mapSubscriptions(e,t,s){return this.isReady()?new Promise((i,n)=>{const r=this.db.transaction(["subscription"]);r.onerror=e=>{this.#u("PCache","mapSubscriptions",e.target.error),n(e.target.error)},r.objectStore("subscription").getAll(IDBKeyRange.bound([e,"-"],[e,"~"])).onsuccess=e=>{t&&e.target.result.forEach(e=>{t.call(s,e)}),i(e.target.result)}}):this.disabled?Promise.resolve([]):Promise.reject(new Error("not initialized"))}addMessage(e){return this.isReady()?new Promise((t,s)=>{const i=this.db.transaction(["message"],"readwrite");i.onsuccess=e=>{t(e.target.result)},i.onerror=e=>{this.#u("PCache","addMessage",e.target.error),s(e.target.error)},i.objectStore("message").add(R.#_(null,e)),i.commit()}):this.disabled?Promise.resolve():Promise.reject(new Error("not initialized"))}updMessageStatus(e,t,s){return this.isReady()?new Promise((i,n)=>{const r=this.db.transaction(["message"],"readwrite");r.onsuccess=e=>{i(e.target.result)},r.onerror=e=>{this.#u("PCache","updMessageStatus",e.target.error),n(e.target.error)};const o=r.objectStore("message").get(IDBKeyRange.only([e,t]));o.onsuccess=i=>{const n=o.result||i.target.result;n&&n._status!=s?(r.objectStore("message").put(R.#_(n,{topic:e,seq:t,_status:s})),r.commit()):r.commit()}}):this.disabled?Promise.resolve():Promise.reject(new Error("not initialized"))}remMessages(e,t,s){return this.isReady()?new Promise((i,n)=>{t||s||(t=0,s=Number.MAX_SAFE_INTEGER);const r=s>0?IDBKeyRange.bound([e,t],[e,s],!1,!0):IDBKeyRange.only([e,t]),o=this.db.transaction(["message"],"readwrite");o.onsuccess=e=>{i(e.target.result)},o.onerror=e=>{this.#u("PCache","remMessages",e.target.error),n(e.target.error)},o.objectStore("message").delete(r),o.commit()}):this.disabled?Promise.resolve():Promise.reject(new Error("not initialized"))}readMessages(e,t,s,i){if(t=t||{},!this.isReady())return this.disabled?Promise.resolve([]):Promise.reject(new Error("not initialized"));const n=this.db.transaction(["message"]);let r=[];return Array.isArray(t.ranges)?new Promise((o,a)=>{n.onerror=e=>{this.#u("PCache","readMessages",e.target.error),a(e.target.error)};let c=0;t.ranges.forEach(a=>{const h=a.hi?IDBKeyRange.bound([e,a.low],[e,a.hi],!1,!0):IDBKeyRange.only([e,a.low]);n.objectStore("message").getAll(h).onsuccess=e=>{const n=e.target.result;n&&(s&&s.call(i,n),Array.isArray(n)?r=r.concat(n):r.push(n)),c++,c==t.ranges.length&&o(r)}})}):new Promise((o,a)=>{const c=t.since>0?t.since:0,h=t.before>0?t.before:Number.MAX_SAFE_INTEGER,l=0|t.limit;n.onerror=e=>{this.#u("PCache","readMessages",e.target.error),a(e.target.error)};const d=IDBKeyRange.bound([e,c],[e,h],!1,!0);n.objectStore("message").openCursor(d,"prev").onsuccess=e=>{const t=e.target.result;t?(s&&s.call(i,t.value),r.push(t.value),l<=0||r.length<l?t.continue():o(r)):o(r)}})}addDelLog(e,t,s){return this.isReady()?new Promise((i,n)=>{const r=this.db.transaction(["dellog"],"readwrite");r.onsuccess=e=>{i(e.target.result)},r.onerror=e=>{this.#u("PCache","addDelLog",e.target.error),n(e.target.error)},s.forEach(s=>r.objectStore("dellog").add({topic:e,clear:t,low:s.low,hi:s.hi||s.low+1})),r.commit()}):this.disabled?Promise.resolve():Promise.reject(new Error("not initialized"))}readDelLog(e,t){if(t=t||{},!this.isReady())return this.disabled?Promise.resolve([]):Promise.reject(new Error("not initialized"));const s=this.db.transaction(["dellog"]);let i=[];return Array.isArray(t.ranges)?new Promise((n,r)=>{s.onerror=e=>{this.#u("PCache","readDelLog",e.target.error),r(e.target.error)};let o=0;t.ranges.forEach(r=>{const a=r.hi||r.low+1,c=IDBKeyRange.bound([e,0,r.low],[e,a,Number.MAX_SAFE_INTEGER],!1,!0);s.objectStore("dellog").getAll(c).onsuccess=e=>{const s=e.target.result;s&&(Array.isArray(s)?i=i.concat(s.map(e=>({low:e.low,hi:e.hi}))):i.push({low:s.low,hi:s.hi})),o++,o==t.ranges.length&&n(i)}})}):new Promise((i,n)=>{const r=t.since>0?t.since:0,o=t.before>0?t.before:Number.MAX_SAFE_INTEGER,a=0|t.limit;s.onerror=e=>{this.#u("PCache","readDelLog",e.target.error),n(e.target.error)};let c=0;const h=[],l=IDBKeyRange.bound([e,0,r],[e,o,Number.MAX_SAFE_INTEGER],!1,!0);s.objectStore("dellog").openCursor(l,"prev").onsuccess=e=>{const t=e.target.result;t?(h.push({low:t.value.low,hi:t.value.hi}),c+=t.value.hi-t.value.low,a<=0||c<a?t.continue():i(h)):i(h)}})}maxDelId(e){return this.isReady()?new Promise((t,s)=>{const i=this.db.transaction(["dellog"]);i.onerror=e=>{this.#u("PCache","maxDelId",e.target.error),s(e.target.error)};i.objectStore("dellog").index("topic_clear").openCursor(IDBKeyRange.bound([e,0],[e,Number.MAX_SAFE_INTEGER]),"prev").onsuccess=e=>{e.target.result&&t(e.target.result.value)}}):this.disabled?Promise.resolve(0):Promise.reject(new Error("not initialized"))}static#b=["created","updated","deleted","touched","read","recv","seq","clear","defacs","creds","public","trusted","private","_aux","_deleted"];static#f(e,t){R.#b.forEach(s=>{t.hasOwnProperty(s)&&(e[s]=t[s])}),Array.isArray(t.tags)&&(e._tags=t.tags),t.acs&&e.setAccessMode(t.acs),e.seq|=0,e.read|=0,e.unread=Math.max(0,e.seq-e.read)}static#g(e,t){const s=e||{name:t.name};return R.#b.forEach(e=>{t.hasOwnProperty(e)&&(s[e]=t[e])}),Array.isArray(t._tags)&&(s.tags=t._tags),t.acs&&(s.acs=t.getAccessMode().jsonHelper()),s}static#m(e,t,s,i){const n=e||{topic:t,uid:s};return["updated","mode","read","recv","clear","lastSeen","userAgent"].forEach(e=>{i.hasOwnProperty(e)&&(n[e]=i[e])}),n}static#_(e,t){const s=e||{};return["topic","seq","ts","_status","from","head","content"].forEach(e=>{t.hasOwnProperty(e)&&(s[e]=t[e])}),s}static setDatabaseProvider(e){N=e}}var I=s(767),U=s.n(I);let O;class q{constructor(e,t){this._tinode=e,this._version=t,this._apiKey=e._apiKey,this._authToken=e.getAuthToken(),this.xhr=[]}uploadWithBaseUrl(e,t,s,i,n,r){let o=`/v${this._version}/file/u/`;if(e){let t=e;if(t.endsWith("/")&&(t=t.slice(0,-1)),!t.startsWith("http://")&&!t.startsWith("https://"))throw new Error(`Invalid base URL '${e}'`);o=t+o}const a=this,c=new O;this.xhr.push(c),c.open("POST",o,!0),c.setRequestHeader("X-Tinode-APIKey",this._apiKey),this._authToken&&c.setRequestHeader("X-Tinode-Auth",`Token ${this._authToken.token}`);let h=null,l=null;const d=new Promise((e,t)=>{h=e,l=t});c.upload.onprogress=e=>{e.lengthComputable&&(i&&i(e.loaded/e.total),this.onProgress&&this.onProgress(e.loaded/e.total))},c.onload=function(){let e;try{e=JSON.parse(this.response,m)}catch(t){a._tinode.logger("ERROR: Invalid server response in LargeFileHelper",this.response),e={ctrl:{code:this.status,text:this.statusText}}}this.status>=200&&this.status<300?(h&&h(e.ctrl.params.url),n&&n(e.ctrl)):this.status>=400?(l&&l(new f(e.ctrl.text,e.ctrl.code)),r&&r(e.ctrl)):a._tinode.logger("ERROR: Unexpected server response status",this.status,this.response)},c.onerror=function(e){l&&l(e||new Error("failed")),r&&r(null)},c.onabort=function(e){l&&l(new Error("upload cancelled by user")),r&&r(null)};try{const e=new FormData;e.append("file",t),e.set("id",this._tinode.getNextUniqueId()),s&&e.set("topic",s),c.send(e)}catch(e){l&&l(e),r&&r(null)}return d}upload(e,t,s,i,n){const r=(this._tinode._secure?"https://":"http://")+this._tinode._host;return this.uploadWithBaseUrl(r,e,t,s,i,n)}download(e,t,s,i,n){if(!_(e))return void(n&&n(`The URL '${e}' must be relative, not absolute`));if(!this._authToken)return void(n&&n("Must authenticate first"));const r=this,o=new O;this.xhr.push(o),e=function(e,t,s){const i=new URL(e,window.location.origin);return i.searchParams.append(t,s),i.toString().substring(window.location.origin.length)}(e,"asatt","1"),o.open("GET",e,!0),o.setRequestHeader("X-Tinode-APIKey",this._apiKey),o.setRequestHeader("X-Tinode-Auth","Token "+this._authToken.token),o.responseType="blob",o.onprogress=function(e){i&&i(e.loaded)};let a=null,c=null;const h=new Promise((e,t)=>{a=e,c=t});o.onload=function(){if(200==this.status){const e=document.createElement("a");e.href=window.URL.createObjectURL(new Blob([this.response],{type:s})),e.style.display="none",e.setAttribute("download",t),document.body.appendChild(e),e.click(),document.body.removeChild(e),window.URL.revokeObjectURL(e.href),a&&a()}else if(this.status>=400&&c){const e=new FileReader;e.onload=function(){try{const e=JSON.parse(this.result,m);c(new f(e.ctrl.text,e.ctrl.code))}catch(e){r._tinode.logger("ERROR: Invalid server response in LargeFileHelper",this.result),c(e)}},e.readAsText(this.response)}},o.onerror=function(e){c&&c(new Error("failed")),n&&n(e)},o.onabort=function(){c&&c(null)};try{o.send()}catch(e){c&&c(e),n&&n(e)}return h}cancel(){this.xhr.forEach(e=>{e.readyState<4&&e.abort()})}static setNetworkProvider(e){O=e}}class j{constructor(e){this.topic=e,this.what={}}#w(){return this.topic._deleted?void 0:this.topic.updated}#v(){return this.topic.isP2PType()?this.#w():this.topic._deleted?void 0:this.topic._lastSubsUpdate}withData(e,t,s){return this.what.data={since:e,before:t,limit:s},this}withLaterData(e){return this.withData(this.topic._maxSeq>0?this.topic._maxSeq+1:void 0,void 0,e)}withDataRanges(e,t){return this.what.data={ranges:T(e,this.topic._maxSeq),limit:t},this}withDataList(e){return this.withDataRanges(M(e))}withEarlierData(e){return this.withData(void 0,this.topic._minSeq>0?this.topic._minSeq:void 0,e)}withDesc(e){return this.what.desc={ims:e},this}withLaterDesc(){return this.withDesc(this.#w())}withSub(e,t,s){const i={ims:e,limit:t};return"me"==this.topic.getType()?i.topic=s:i.user=s,this.what.sub=i,this}withOneSub(e,t){return this.withSub(e,void 0,t)}withLaterOneSub(e){return this.withOneSub(this.topic._lastSubsUpdate,e)}withLaterSub(e){return this.withSub(this.#v(),e)}withTags(){return this.what.tags=!0,this}withCred(){return"me"==this.topic.getType()?this.what.cred=!0:this.topic._tinode.logger("ERROR: Invalid topic type for MetaGetBuilder:withCreds",this.topic.getType()),this}withAux(){return this.what.aux=!0,this}withDel(e,t){return(e||t)&&(this.what.del={since:e,limit:t}),this}withLaterDel(e){return this.withDel(this.topic._maxSeq>0?this.topic._maxDel+1:void 0,e)}extract(e){return this.what[e]}build(){const e=[];let t={};return["data","sub","desc","tags","cred","aux","del"].forEach(s=>{this.what.hasOwnProperty(s)&&(e.push(s),Object.getOwnPropertyNames(this.what[s]).length>0&&(t[s]=this.what[s]))}),e.length>0?t.what=e.join(" "):t=void 0,t}}class L{#y=void 0;#T=!1;buffer=[];constructor(e,t){this.#y=e||((e,t)=>e===t?0:e<t?-1:1),this.#T=t}#M(e,t,s){let i=0,n=t.length-1,r=0,o=0,a=!1;for(;i<=n;)if(r=(i+n)/2|0,o=this.#y(t[r],e),o<0)i=r+1;else{if(!(o>0)){a=!0;break}n=r-1}return a?{idx:r,exact:!0}:s?{idx:-1}:{idx:o<0?r+1:r}}#x(e,t){const s=this.#M(e,t,!1),i=s.exact&&this.#T?1:0;return t.splice(s.idx,i,e),t}getAt(e){return this.buffer[e]}getLast(e){return e?this.buffer.findLast(e):this.buffer[this.buffer.length-1]}put(){let e;e=1==arguments.length&&Array.isArray(arguments[0])?arguments[0]:arguments;for(let t in e)this.#x(e[t],this.buffer)}delAt(e){e|=0;let t=this.buffer.splice(e,1);if(t&&t.length>0)return t[0]}delRange(e,t){return this.buffer.splice(e,t-e)}length(){return this.buffer.length}reset(){this.buffer=[]}forEach(e,t,s,i){t=Math.max(0,0|t),s=Math.min(s||this.buffer.length,this.buffer.length);for(let n=t;n<s;n++)e.call(i,this.buffer[n],n>t?this.buffer[n-1]:void 0,n<s-1?this.buffer[n+1]:void 0,n)}find(e,t){const{idx:s}=this.#M(e,this.buffer,!t);return s}filter(e,t){let s=0;for(let i=0;i<this.buffer.length;i++)e.call(t,this.buffer[i],i)&&(this.buffer[s]=this.buffer[i],s++);this.buffer.splice(s)}isEmpty(){return 0==this.buffer.length}}class G{constructor(e,t){this._tinode=null,this.name=e,this.created=null,this.updated=null,this.touched=new Date(0),this.acs=new n(null),this.private=null,this.public=null,this.trusted=null,this._users={},this._queuedSeqId=u,this._maxSeq=0,this._minSeq=0,this._noEarlierMsgs=!1,this._maxDel=0,this._recvNotificationTimer=null,this._tags=[],this._credentials=[],this._aux={},this._messageVersions={},this._messages=new L((e,t)=>e.seq-t.seq,!0),this._attached=!1,this._lastSubsUpdate=new Date(0),this._new=!0,this._deleted=!1,this._delayedLeaveTimer=null,t&&(this.onData=t.onData,this.onMeta=t.onMeta,this.onPres=t.onPres,this.onInfo=t.onInfo,this.onMetaDesc=t.onMetaDesc,this.onMetaSub=t.onMetaSub,this.onSubsUpdated=t.onSubsUpdated,this.onTagsUpdated=t.onTagsUpdated,this.onCredsUpdated=t.onCredsUpdated,this.onAuxUpdated=t.onAuxUpdated,this.onDeleteTopic=t.onDeleteTopic,this.onAllMessagesReceived=t.onAllMessagesReceived)}static topicType(e){return{me:h,fnd:l,grp:d,new:d,nch:d,chn:d,usr:"p2p",sys:"sys",slf:"slf"}["string"==typeof e?e.substring(0,3):"xxx"]}static isMeTopicName(e){return G.topicType(e)==h}static isSelfTopicName(e){return"slf"==G.topicType(e)}static isGroupTopicName(e){return G.topicType(e)==d}static isP2PTopicName(e){return"p2p"==G.topicType(e)}static isCommTopicName(e){return G.isP2PTopicName(e)||G.isGroupTopicName(e)||G.isSelfTopicName(e)}static isNewGroupTopicName(e){return"string"==typeof e&&(e.substring(0,3)==a||e.substring(0,3)==c)}static isChannelTopicName(e){return"string"==typeof e&&("chn"==e.substring(0,3)||e.substring(0,3)==c)}static#P(e){return e.head&&e.head.replace}isSubscribed(){return this._attached}subscribe(e,t){return clearTimeout(this._delayedLeaveTimer),this._delayedLeaveTimer=null,this._attached?Promise.resolve(this):this._tinode.subscribe(this.name||a,e,t).then(e=>{if(e.code>=300)return e;if(this._attached=!0,this._deleted=!1,this.acs=e.params&&e.params.acs?e.params.acs:this.acs,this._new){if(delete this._new,this.name!=e.topic&&(this._cacheDelSelf(),this.name=e.topic),this._cachePutSelf(),this.created=e.ts,this.updated=e.ts,this.name!=h&&this.name!=l){const e=this._tinode.getMeTopic();e.onMetaSub&&e.onMetaSub(this),e.onSubsUpdated&&e.onSubsUpdated([this.name],1)}t&&t.desc&&(t.desc._noForwarding=!0,this._processMetaDesc(t.desc))}return e})}createMessage(e,t){return this._tinode.createMessage(this.name,e,t)}publish(e,t){return this.publishMessage(this.createMessage(e,t))}publishMessage(e){if(!this._attached)return Promise.reject(new Error("Cannot publish on inactive topic"));if(this._sending)return Promise.reject(new Error("The message is already being sent"));e._sending=!0,e._failed=!1;let t=null;return U().hasEntities(e.content)&&(t=[],U().entities(e.content,e=>{e&&(e.ref&&t.push(e.ref),e.preref&&t.push(e.preref))}),0==t.length&&(t=null)),this._tinode.publishMessage(e,t).then(t=>(e._sending=!1,e.ts=t.ts,this.swapMessageId(e,t.params.seq),this._maybeUpdateMessageVersionsCache(e),this._routeData(e),t)).catch(t=>{this._tinode.logger("WARNING: Message rejected by the server",t),e._sending=!1,e._failed=!0,this.onData&&this.onData()})}publishDraft(e,t){const s=e.seq||this._getQueuedSeqId();return e._noForwarding||(e._noForwarding=!0,e.seq=s,e.ts=new Date,e.from=this._tinode.getCurrentUserID(),e.noecho=!0,this._messages.put(e),this._tinode._db.addMessage(e),this.onData&&this.onData(e)),(t||Promise.resolve()).then(t=>e._cancelled?{code:300,text:"cancelled"}:this.publishMessage(e)).catch(t=>{throw this._tinode.logger("WARNING: Message draft rejected",t),e._sending=!1,e._failed=!0,e._fatal=t instanceof f&&(t.code>=400&&t.code<500),this.onData&&this.onData(),t})}leave(e){return this._attached||e?this._tinode.leave(this.name,e).then(t=>(this._resetSub(),e&&this._gone(),t)):Promise.reject(new Error("Cannot leave inactive topic"))}leaveDelayed(e,t){clearTimeout(this._delayedLeaveTimer),this._delayedLeaveTimer=setTimeout(t=>{this._delayedLeaveTimer=null,this.leave(e)},t)}getMeta(e){return this._tinode.getMeta(this.name,e)}getMessagesPage(e,t,s,i,n){let r=t?this.startMetaQuery().withDataRanges(t,e):n?this.startMetaQuery().withData(s,void 0,e):this.startMetaQuery().withData(void 0,i,e);return this._loadMessages(this._tinode._db,r.extract("data")).then(o=>0==(t=this.msgHasMoreMessages(s,i,n)).length?Promise.resolve({topic:this.name,code:200,params:{count:o}}):(e-=o,r=this.startMetaQuery().withDataRanges(t,e),this.getMeta(r.build())))}getPinnedMessages(){const e=this.aux("pins");if(!Array.isArray(e))return Promise.resolve(0);const t=[];let s=e;return this._tinode._db.readMessages(this.name,{ranges:M(s)}).then(i=>(i.forEach(e=>{e&&(t.push(e.seq),this._messages.put(e),this._maybeUpdateMessageVersionsCache(e))}),t.length<e.length?(s=e.filter(e=>!t.includes(e)),this._tinode._db.readMessages(this.name,{ranges:M(s)})):null)).then(i=>(i&&s.forEach(e=>{i.find(t=>t.low<=e&&t.hi>e)&&t.push(e)}),t.length==e.length?Promise.resolve({topic:this.name,code:200,params:{count:t.length}}):(s=e.filter(e=>!t.includes(e)),this.getMeta(this.startMetaQuery().withDataList(s).build()))))}setMeta(e){return e.tags&&(e.tags=function(e){let t=[];if(Array.isArray(e)){for(let s=0,i=e.length;s<i;s++){let i=e[s];i&&(i=i.trim().toLowerCase(),i.length>1&&t.push(i))}t=t.sort().filter((e,t,s)=>!t||e!=s[t-1])}return 0==t.length&&t.push(p),t}(e.tags)),this._tinode.setMeta(this.name,e).then(t=>(t&&t.code>=300||(e.sub&&(e.sub.topic=this.name,t.params&&t.params.acs&&(e.sub.acs=t.params.acs,e.sub.updated=t.ts),e.sub.user||(e.sub.user=this._tinode.getCurrentUserID(),e.desc||(e.desc={})),e.sub._noForwarding=!0,this._processMetaSubs([e.sub])),e.desc&&(t.params&&t.params.acs&&(e.desc.acs=t.params.acs,e.desc.updated=t.ts),this._processMetaDesc(e.desc)),e.tags&&this._processMetaTags(e.tags),e.cred&&this._processMetaCreds([e.cred],!0),e.aux&&this._processMetaAux(e.aux)),t))}updateMode(e,t){const s=e?this.subscriber(e):null,i=s?s.acs.updateGiven(t).getGiven():this.getAccessMode().updateWant(t).getWant();return this.setMeta({sub:{user:e,mode:i}})}invite(e,t){return this.setMeta({sub:{user:e,mode:t}})}archive(e){return this.private&&!this.private.arch==!e?Promise.resolve(e):this.setMeta({desc:{private:{arch:!!e||p}}})}pinMessage(e,t){let s=this.aux("pins");Array.isArray(s)||(s=[]);let i=!1;return t?s.includes(e)||(i=!0,5==s.length&&s.shift(),s.push(e)):s.includes(e)&&(i=!0,s=s.filter(t=>t!=e),0==s.length&&(s=p)),i?this.setMeta({aux:{pins:s}}):Promise.resolve()}pinTopic(e,t){return Promise.reject(new Error("Pinning topics is not supported here"))}pinnedTopicRank(e){return 0}delMessages(e,t){if(!this._attached)return Promise.reject(new Error("Cannot delete messages in inactive topic"));const s=T(e,this._maxSeq);let i;return i=s.length>0?this._tinode.delMessages(this.name,s,t):Promise.resolve({params:{del:0}}),i.then(t=>(t.params.del>this._maxDel&&(this._maxDel=Math.max(t.params.del,this._maxDel),this.clear=Math.max(t.params.del,this.clear)),e.forEach(e=>{e.hi?this.flushMessageRange(e.low,e.hi):this.flushMessage(e.low),this._messages.put({seq:e.low,low:e.low,hi:e.hi,_deleted:!0})}),this._tinode._db.addDelLog(this.name,t.params.del,e),this.onData&&this.onData(),t))}delMessagesAll(e){return!this._maxSeq||this._maxSeq<=0?Promise.resolve():this.delMessages([{low:1,hi:this._maxSeq+1,_all:!0}],e)}delMessagesList(e,t){return this.delMessages(M(e),t)}delMessagesEdits(e,t){const s=[e];return this.messageVersions(e,e=>s.push(e.seq)),this.delMessagesList(s,t)}delTopic(e){return this._deleted?(this._gone(),Promise.resolve(null)):this._tinode.delTopic(this.name,e).then(e=>(this._deleted=!0,this._resetSub(),this._gone(),e))}delSubscription(e){return this._attached?this._tinode.delSubscription(this.name,e).then(t=>(delete this._users[e],this.onSubsUpdated&&this.onSubsUpdated(Object.keys(this._users)),t)):Promise.reject(new Error("Cannot delete subscription in inactive topic"))}note(e,t){if(!this._attached)return;const s=this._users[this._tinode.getCurrentUserID()];let i=!1;if(s?(!s[e]||s[e]<t)&&(s[e]=t,i=!0):i=(0|this[e])<t,i&&(this._tinode.note(this.name,e,t),this._updateMyReadRecv(e,t),null!=this.acs&&!this.acs.isMuted())){this._tinode.getMeTopic()._refreshContact(e,this)}}noteRecv(e){this.note("recv",e)}noteRead(e){(e=e||this._maxSeq)>0&&this.note("read",e)}noteKeyPress(){this._attached?this._tinode.noteKeyPress(this.name):this._tinode.logger("INFO: Cannot send notification in inactive topic")}noteRecording(e){this._attached?this._tinode.noteKeyPress(this.name,e?"kpa":"kpv"):this._tinode.logger("INFO: Cannot send notification in inactive topic")}videoCall(e,t,s){if(this._attached||["ringing","hang-up"].includes(e))return this._tinode.videoCall(this.name,t,e,s)}_updateMyReadRecv(e,t,s){let i,n=!1;switch(t|=0,this.seq=0|this.seq,this.read=0|this.read,this.recv=0|this.recv,e){case"recv":i=this.recv,this.recv=Math.max(this.recv,t),n=i!=this.recv;break;case"read":i=this.read,this.read=Math.max(this.read,t),n=i!=this.read;break;case"msg":i=this.seq,this.seq=Math.max(this.seq,t),(!this.touched||this.touched<s)&&(this.touched=s),n=i!=this.seq}return this.recv<this.read&&(this.recv=this.read,n=!0),this.seq<this.recv&&(this.seq=this.recv,(!this.touched||this.touched<s)&&(this.touched=s),n=!0),this.unread=this.seq-this.read,n}userDesc(e){const t=this._cacheGetUser(e);if(t)return t}p2pPeerDesc(){if(this.isP2PType())return this._users[this.name]}subscribers(e,t){const s=e||this.onMetaSub;if(s)for(let e in this._users)s.call(t,this._users[e],e,this._users)}tags(){return this._tags.slice(0)}aux(e){return this._aux[e]}alias(){const e=this._tags&&this._tags.find(e=>e.startsWith(g));if(e)return e.substring(6)}subscriber(e){return this._users[e]}messageVersions(e,t,s){if(!t)return;const i=this._messageVersions[e];i&&i.forEach(t,void 0,void 0,s)}messages(e,t,s,i){const n=e||this.onData;if(n){const e="number"==typeof t?this._messages.find({seq:t},!0):void 0,r="number"==typeof s?this._messages.find({seq:s},!0):void 0;if(-1!=e&&-1!=r){let t=[];this._messages.forEach((e,s,i,n)=>{if(G.#P(e))return;if(e._deleted)return;const r=this.latestMsgVersion(e.seq)||e;r._origTs||(r._origTs=r.ts,r._origSeq=r.seq,r.ts=e.ts,r.seq=e.seq),t.push({data:r,idx:n})},e,r,{}),t.forEach((e,s)=>{n.call(i,e.data,s>0?t[s-1].data:void 0,s<t.length-1?t[s+1].data:void 0,e.idx)})}}}findMessage(e){const t=this._messages.find({seq:e});if(t>=0)return this._messages.getAt(t)}latestMessage(){return this._messages.getLast(e=>!e._deleted)}latestMsgVersion(e){const t=this._messageVersions[e];return t?t.getLast():null}maxMsgSeq(){return this._maxSeq}minMsgSeq(){return this._minSeq}maxClearId(){return this._maxDel}messageCount(){return this._messages.length()}queuedMessages(e,t){if(!e)throw new Error("Callback must be provided");this.messages(e,u,void 0,t)}msgReceiptCount(e,t){let s=0;if(t>0){const i=this._tinode.getCurrentUserID();for(let n in this._users){const r=this._users[n];r.user!==i&&r[e]>=t&&s++}}return s}msgReadCount(e){return this.msgReceiptCount("read",e)}msgRecvCount(e){return this.msgReceiptCount("recv",e)}msgHasMoreMessages(e,t,s){const i=[];if(e>=t)return i;let n,r=0;return this._messages.forEach((o,a)=>{const c=a||{seq:0},h=c._deleted?c.hi:c.seq+1;n=o.seq>h?{low:h,hi:o.seq}:null,n&&(s?n.hi>=e:n.low<t)&&i.push(n),r=h}),r<this.seq&&(n={low:r+1,hi:this.seq+1},(s?n.hi>=e:n.low<t)&&i.push(n)),i}isNewMessage(e){return this._maxSeq<=e}flushMessage(e){const t=this._messages.find({seq:e});if(delete this._messageVersions[e],t>=0)return this._tinode._db.remMessages(this.name,e),this._messages.delAt(t)}flushMessageRange(e,t){this._tinode._db.remMessages(this.name,e,t);for(let s=e;s<t;s++)delete this._messageVersions[s];const s=this._messages.find({seq:e},!0);return s>=0?this._messages.delRange(s,this._messages.find({seq:t},!0)):[]}swapMessageId(e,t){const s=this._messages.find(e),i=this._messages.length();0<=s&&s<i&&(this._messages.delAt(s),this._tinode._db.remMessages(this.name,e.seq),e.seq=t,this._messages.put(e),this._tinode._db.addMessage(e))}cancelSend(e){const t=this._messages.find({seq:e});if(t>=0){const s=this._messages.getAt(t),i=this.msgStatus(s);if(10==i||30==i||40==i)return this._tinode._db.remMessages(this.name,e),s._cancelled=!0,this._messages.delAt(t),this.onData&&this.onData(),!0}return!1}getType(){return G.topicType(this.name)}getAccessMode(){return this.acs}setAccessMode(e){return this.acs=new n(e)}getDefaultAccess(){return this.defacs}startMetaQuery(){return new j(this)}isArchived(){return this.private&&!!this.private.arch}isMeType(){return G.isMeTopicName(this.name)}isSelfType(){return G.isSelfTopicName(this.name)}isChannelType(){return G.isChannelTopicName(this.name)}isGroupType(){return G.isGroupTopicName(this.name)}isP2PType(){return G.isP2PTopicName(this.name)}isCommType(){return G.isCommTopicName(this.name)}msgStatus(e,t){let s=0;return this._tinode.isMe(e.from)?e._sending?s=20:e._fatal||e._cancelled?s=40:e._failed?s=30:e.seq>=u?s=10:this.msgReadCount(e.seq)>0?s=70:this.msgRecvCount(e.seq)>0?s=60:e.seq>0&&(s=50):s=80,t&&e._status!=s&&(e._status=s,this._tinode._db.updMessageStatus(this.name,e.seq,s)),s}_maybeUpdateMessageVersionsCache(e){if(!G.#P(e))return void(this._messageVersions[e.seq]&&(this._messageVersions[e.seq].filter(t=>t.from==e.from),this._messageVersions[e.seq].isEmpty()&&delete this._messageVersions[e.seq]));const t=parseInt(e.head.replace.split(":")[1]);if(t>e.seq)return;const s=this.findMessage(t);if(s&&s.from!=e.from)return;const i=this._messageVersions[t]||new L((e,t)=>e.seq-t.seq,!0);i.put(e),this._messageVersions[t]=i}_routeData(e){e.content&&(!this.touched||this.touched<e.ts)&&(this.touched=e.ts,this._tinode._db.updTopic(this)),e.seq>this._maxSeq&&(this._maxSeq=e.seq,this.msgStatus(e,!0),clearTimeout(this._recvNotificationTimer),this._recvNotificationTimer=setTimeout(e=>{this._recvNotificationTimer=null,this.noteRecv(this._maxSeq)},100)),(e.seq<this._minSeq||0==this._minSeq)&&(this._minSeq=e.seq);const t=!this.isChannelType()&&!e.from||this._tinode.isMe(e.from);if(e.head&&e.head.webrtc&&e.head.mime==U().getContentType()&&e.content){const s={state:e.head.webrtc,duration:e.head["webrtc-duration"],incoming:!t};e.head.vc&&(s.vc=!0),e.content=U().updateVideoCall(e.content,s)}e._noForwarding||(this._messages.put(e),this._tinode._db.addMessage(e),this._maybeUpdateMessageVersionsCache(e)),this.onData&&this.onData(e);const s=t?"read":"msg";this._updateMyReadRecv(s,e.seq,e.ts),!t&&e.from&&this._routeInfo({what:"read",from:e.from,seq:e.seq,_noForwarding:!0}),this._tinode.getMeTopic()._refreshContact(s,this)}_routeMeta(e){e.desc&&this._processMetaDesc(e.desc),e.sub&&e.sub.length>0&&this._processMetaSubs(e.sub,!0),e.del&&this._processDelMessages(e.del.clear,e.del.delseq),e.tags&&this._processMetaTags(e.tags),e.cred&&this._processMetaCreds(e.cred),e.aux&&this._processMetaAux(e.aux),this.onMeta&&this.onMeta(e)}_routePres(e){let t,s;switch(e.what){case"del":this._processDelMessages(e.clear,e.delseq);break;case"on":case"off":t=this._users[e.src],t?t.online="on"==e.what:this._tinode.logger("WARNING: Presence update for an unknown user",this.name,e.src);break;case"term":this._resetSub();break;case"upd":e.src&&!this._tinode.isTopicCached(e.src)&&this.getMeta(this.startMetaQuery().withOneSub(void 0,e.src).build());break;case"aux":this.getMeta(this.startMetaQuery().withAux().build());break;case"acs":if(s=e.src||this._tinode.getCurrentUserID(),t=this._users[s],t)t.acs.updateAll(e.dacs),this._processMetaSubs([{user:s,updated:new Date,acs:t.acs}]);else{const i=(new n).updateAll(e.dacs);i&&i.mode!=n._NONE&&(t=this._cacheGetUser(s),t?t.acs=i:(t={user:s,acs:i},this.getMeta(this.startMetaQuery().withOneSub(void 0,s).build())),t.updated=new Date,this._processMetaSubs([t]))}break;default:this._tinode.logger("INFO: Ignored presence update",e.what)}this.onPres&&this.onPres(e)}_routeInfo(e){switch(e.what){case"recv":case"read":const t=this._users[e.from];t&&(t[e.what]=e.seq,t.recv<t.read&&(t.recv=t.read));const s=this.latestMessage();s&&this.msgStatus(s,!0),this._tinode.isMe(e.from)&&!e._noForwarding&&this._updateMyReadRecv(e.what,e.seq),this._tinode.getMeTopic()._refreshContact(e.what,this);break;case"kp":case"kpa":case"kpv":case"call":break;default:this._tinode.logger("INFO: Ignored info update",e.what)}this.onInfo&&this.onInfo(e)}_processMetaDesc(e){if(this.isP2PType()&&(delete e.defacs,this._tinode._db.updUser(this.name,e.public)),w(this,e),this._tinode._db.updTopic(this),this.name!==h&&!e._noForwarding){const e=this._tinode.getMeTopic();e.onMetaSub&&e.onMetaSub(this),e.onSubsUpdated&&e.onSubsUpdated([this.name],1)}this.onMetaDesc&&this.onMetaDesc(this)}_processMetaSubs(e,t){for(let s in e){const i=e[s];i.online=!!i.online,this._lastSubsUpdate=new Date(Math.max(this._lastSubsUpdate,i.updated));let n=null;i.deleted?(delete this._users[i.user],t||this.subcnt--,n=i):(this._tinode.isMe(i.user)&&i.acs&&this._processMetaDesc({updated:i.updated,touched:i.touched,acs:i.acs}),this._users[i.user]||t||this.subcnt++,n=this._updateCachedUser(i.user,i)),this.onMetaSub&&this.onMetaSub(n)}this.onSubsUpdated&&this.onSubsUpdated(Object.keys(this._users))}_processMetaTags(e){(e==p||1==e.length&&e[0]==p)&&(e=[]),this._tags=e,this._tinode._db.updTopic(this),this.onTagsUpdated&&this.onTagsUpdated(e)}_processMetaCreds(e){}_processMetaAux(e){e=e&&e!=p?e:{},this._aux=w(this._aux,e),this._tinode._db.updTopic(this),this.onAuxUpdated&&this.onAuxUpdated(this._aux)}_processDelMessages(e,t){this._maxDel=Math.max(e,this._maxDel),this.clear=Math.max(e,this.clear);let s=0;Array.isArray(t)&&(t.forEach(e=>{e.hi?(s+=e.hi-e.low,this.flushMessageRange(e.low,e.hi)):(s++,this.flushMessage(e.low)),this._messages.put({seq:e.low,low:e.low,hi:e.hi,_deleted:!0})}),this._tinode._db.addDelLog(this.name,e,t)),s>0&&this.onData&&this.onData()}_allMessagesReceived(e){this.onAllMessagesReceived&&this.onAllMessagesReceived(e)}_resetSub(){this._attached=!1}_gone(){this._messages.reset(),this._tinode._db.remMessages(this.name),this._users={},this.acs=new n(null),this.private=null,this.public=null,this.trusted=null,this._maxSeq=0,this._minSeq=0,this._attached=!1;const e=this._tinode.getMeTopic();e&&e._routePres({_noForwarding:!0,what:"gone",topic:h,src:this.name}),this.onDeleteTopic&&this.onDeleteTopic()}_updateCachedUser(e,t){let s=this._cacheGetUser(e);return s=w(s||{},t),this._cachePutUser(e,s),v(this._users,e,s)}_getQueuedSeqId(){return this._queuedSeqId++}_loadMessages(e,t){(t=t||{}).limit=t.limit||24;let s=0;return e.readMessages(this.name,t).then(e=>{e.forEach(e=>{e.seq>this._maxSeq&&(this._maxSeq=e.seq),(e.seq<this._minSeq||0==this._minSeq)&&(this._minSeq=e.seq),this._messages.put(e),this._maybeUpdateMessageVersionsCache(e)}),s=e.length}).then(s=>e.readDelLog(this.name,t)).then(e=>e.forEach(e=>{this._messages.put({seq:e.low,low:e.low,hi:e.hi,_deleted:!0})})).then(e=>s)}_updateReceived(e,t){this.touched=new Date,this.seq=0|e,t&&!this._tinode.isMe(t)||(this.read=this.read?Math.max(this.read,this.seq):this.seq,this.recv=this.recv?Math.max(this.read,this.recv):this.read),this.unread=this.seq-(0|this.read),this._tinode._db.updTopic(this)}}class V extends G{_contacts={};constructor(e){super(l,e)}_processMetaSubs(e){let t=Object.getOwnPropertyNames(this._contacts).length;this._contacts={};for(let s in e){let i=e[s];const n=i.topic?i.topic:i.user;i=v(this._contacts,n,i),t++,this.onMetaSub&&this.onMetaSub(i)}t>0&&this.onSubsUpdated&&this.onSubsUpdated(Object.keys(this._contacts))}publish(){return Promise.reject(new Error("Publishing to 'fnd' is not supported"))}setMeta(e){return Object.getPrototypeOf(V.prototype).setMeta.call(this,e).then(e=>{Object.keys(this._contacts).length>0&&(this._contacts={},this.onSubsUpdated&&this.onSubsUpdated([]))})}checkTagUniqueness(e,t){return new Promise((s,i)=>{this.subscribe().then(t=>this.setMeta({desc:{public:e}})).then(e=>this.getMeta(this.startMetaQuery().withTags().build())).then(e=>{e&&Array.isArray(e.tags)&&0!=e.tags.length||s(!0);const i=e.tags.filter(e=>e!==t);s(0==i.length)}).catch(e=>{i(e)})})}contacts(e,t){const s=e||this.onMetaSub;if(s)for(let e in this._contacts)s.call(t,this._contacts[e],e,this._contacts)}}class W extends G{onContactUpdate;constructor(e){super(h,e),e&&(this.onContactUpdate=e.onContactUpdate)}_processMetaDesc(e){const t=e.acs&&!e.acs.isPresencer()&&this.acs&&this.acs.isPresencer();w(this,e),this._tinode._db.updTopic(this),this._updateCachedUser(this._tinode._myUID,e),t&&this._tinode.mapTopics(e=>{e.online&&(e.online=!1,e.seen=Object.assign(e.seen||{},{when:new Date}),this._refreshContact("off",e))}),this.onMetaDesc&&this.onMetaDesc(this)}_processMetaSubs(e){let t=0;if(e.forEach(e=>{const s=e.topic;if(s==l||s==h)return;e.online=!!e.online;let i=null;if(e.deleted)i=e,this._tinode.cacheRemTopic(s),this._tinode._db.remTopic(s);else{void 0!==e.seq&&(e.seq=0|e.seq,e.recv=0|e.recv,e.read=0|e.read,e.unread=e.seq-e.read);const t=this._tinode.getTopic(s);t._new&&delete t._new,i=w(t,e),this._tinode._db.updTopic(i),G.isP2PTopicName(s)&&(this._cachePutUser(s,i),this._tinode._db.updUser(s,i.public)),!e._noForwarding&&t&&(e._noForwarding=!0,t._processMetaDesc(e))}t++,this.onMetaSub&&this.onMetaSub(i)}),this.onSubsUpdated&&t>0){const s=[];e.forEach(e=>{s.push(e.topic)}),this.onSubsUpdated(s,t)}}_processMetaCreds(e,t){1==e.length&&e[0]==p&&(e=[]),t?e.forEach(e=>{if(e.val){let t=this._credentials.findIndex(t=>t.meth==e.meth&&t.val==e.val);t<0?(e.done||(t=this._credentials.findIndex(t=>t.meth==e.meth&&!t.done),t>=0&&this._credentials.splice(t,1)),this._credentials.push(e)):this._credentials[t].done=e.done}else if(e.resp){const t=this._credentials.findIndex(t=>t.meth==e.meth&&!t.done);t>=0&&(this._credentials[t].done=!0)}}):this._credentials=e,this.onCredsUpdated&&this.onCredsUpdated(this._credentials)}_routePres(e){if("term"==e.what)return void this._resetSub();if("upd"==e.what&&e.src==h)return void this.getMeta(this.startMetaQuery().withDesc().build());const t=this._tinode.cacheGetTopic(e.src);if(t){switch(e.what){case"on":t.online=!0;break;case"off":t.online&&(t.online=!1,t.seen=Object.assign(t.seen||{},{when:new Date}));break;case"msg":t._updateReceived(e.seq,e.act);break;case"upd":this.getMeta(this.startMetaQuery().withLaterOneSub(e.src).build());break;case"acs":e.tgt||(t.acs?t.acs.updateAll(e.dacs):t.acs=(new n).updateAll(e.dacs),t.touched=new Date);break;case"ua":t.seen={when:new Date,ua:e.ua};break;case"recv":e.seq=0|e.seq,t.recv=t.recv?Math.max(t.recv,e.seq):e.seq;break;case"read":e.seq=0|e.seq,t.read=t.read?Math.max(t.read,e.seq):e.seq,t.recv=t.recv?Math.max(t.read,t.recv):t.recv,t.unread=t.seq-t.read;break;case"gone":this._tinode.cacheRemTopic(e.src),t._deleted?this._tinode._db.remTopic(e.src):(t._deleted=!0,t._attached=!1,this._tinode._db.markTopicAsDeleted(e.src,!0));break;case"del":break;default:this._tinode.logger("INFO: Unsupported presence update in 'me'",e.what)}this._refreshContact(e.what,t)}else{if("acs"==e.what){const t=new n(e.dacs);if(!t||t.mode==n._INVALID)return void this._tinode.logger("ERROR: Invalid access mode update",e.src,e.dacs);if(t.mode==n._NONE)return void this._tinode.logger("WARNING: Removing non-existent subscription",e.src,e.dacs);{this.getMeta(this.startMetaQuery().withOneSub(void 0,e.src).build());const s=this._tinode.getTopic(e.src);s.topic=e.src,s.online=!1,s.acs=t,this._tinode._db.updTopic(s)}}else if("tags"==e.what)this.getMeta(this.startMetaQuery().withTags().build());else if("msg"==e.what){this.getMeta(this.startMetaQuery().withOneSub(void 0,e.src).build());const t=this._tinode.getTopic(e.src);t._deleted=!1,this._tinode._db.updTopic(t)}this._refreshContact(e.what,t)}this.onPres&&this.onPres(e)}_refreshContact(e,t){this.onContactUpdate&&this.onContactUpdate(e,t)}publish(){return Promise.reject(new Error("Publishing to 'me' is not supported"))}delCredential(e,t){return this._attached?this._tinode.delCredential(e,t).then(s=>{const i=this._credentials.findIndex(s=>s.meth==e&&s.val==t);return i>-1&&this._credentials.splice(i,1),this.onCredsUpdated&&this.onCredsUpdated(this._credentials),s}):Promise.reject(new Error("Cannot delete credential in inactive 'me' topic"))}contacts(e,t,s){this._tinode.mapTopics((i,n)=>{!i.isCommType()||t&&!t(i)||e.call(s,i,n)})}getContact(e){return this._tinode.cacheGetTopic(e)}getAccessMode(e){if(e){const t=this._tinode.cacheGetTopic(e);return t?t.acs:null}return this.acs}isArchived(e){const t=this._tinode.cacheGetTopic(e);return t&&t.private&&!!t.private.arch}getCredentials(){return this._credentials}pinTopic(e,t){if(!this._attached)return Promise.reject(new Error("Cannot pin topic in inactive 'me' topic"));if(!G.isCommTopicName(e))return Promise.reject(new Error("Invalid topic to pin"));const s=Array.isArray(this.private&&this.private.tpin)?this.private.tpin:[],i=s.includes(e);return t&&i||!t&&!i?Promise.resolve(s):(t?s.unshift(e):s.splice(s.indexOf(e),1),this.setMeta({desc:{private:{tpin:s.length>0?s:p}}}))}pinnedTopicRank(e){if(!this.private||!this.private.tpin)return 0;const t=this.private.tpin.indexOf(e);return t<0?0:this.private.tpin.length-t}}const F="text/x-the-card";class z{constructor(e,t,s,i){Object.assign(this,function(e,t,s,i){let n=null;e=e&&e.trim(),i=i&&i.trim(),e&&(n={fn:e});"string"==typeof i&&(n=n||{},n.note=i||p);if(t){n=n||{};let e=s;const i=/^data:(image\/[-a-z0-9+.]+)?(;base64)?,/i.exec(t);i?(e=i[1],n.photo={data:t.substring(t.indexOf(",")+1),ref:p}):n.photo={data:p,ref:t},n.photo.type=(e||"image/jpeg").substring(6)}return n}(e,t,s,i)||{})}merge(e){Object.assign(this,e)}get contentType(){return F}get size(){return JSON.stringify(this).length}}function $(e,t,s,i,n){return t=t&&t.trim(),s=s&&s.trim(),t&&s&&((e=e||{}).comm=e.comm||[],n&&(e.comm=e.comm.filter(e=>e.proto!=t||!e.des.includes(i))),e.comm.push({proto:t,des:[i],value:s})),e}function B(e,t,s,i){return e&&Array.isArray(e.comm)&&(e.comm=e.comm.filter(e=>e.proto!=t||(!(!s||e.value==s)||!!i&&!e.des.includes(i)))),e}let K,H,Q;function X(e){return btoa(encodeURIComponent(e).replace(/%([0-9A-F]{2})/g,function(e,t){return String.fromCharCode("0x"+t)}))}function J(e,t){if(t instanceof Date)t=function(e){if(!b(e))return;const t=function(e,t){return"0".repeat((t=t||2)-(""+e).length)+e},s=e.getUTCMilliseconds();return e.getUTCFullYear()+"-"+t(e.getUTCMonth()+1)+"-"+t(e.getUTCDate())+"T"+t(e.getUTCHours())+":"+t(e.getUTCMinutes())+":"+t(e.getUTCSeconds())+(s?"."+t(s,3):"")+"Z"}(t);else if(t instanceof n)t=t.jsonHelper();else if(null==t||!1===t||Array.isArray(t)&&0==t.length||"object"==typeof t&&0==Object.keys(t).length)return;return t}function Y(e,t){return"string"==typeof t&&t.length>128?"<"+t.length+", bytes: "+t.substring(0,12)+"..."+t.substring(t.length-12)+">":J(0,t)}z.contentType=F,z.setFn=function(e,t){return t=t&&t.trim(),(e=e||{}).fn=t||void 0,e},z.getFn=function(e){return e&&e.fn?e.fn:null},z.setNote=function(e,t){return t=t&&t.trim(),(e=e||{}).note=t||p,e},z.setPhoto=function(e,t,s){if(t){e=e||{};let i=s;const n=/^data:(image\/[-a-z0-9+.]+)?(;base64)?,/i.exec(t);if(n)i=n[1],e.photo={data:t.substring(t.indexOf(",")+1),ref:p};else if(e.photo={data:p,ref:t},!i){const e=/\.([a-z0-9]+)$/i.exec(t);if(e){i={jpg:"image/jpeg",jpeg:"image/jpeg",png:"image/png",gif:"image/gif",bmp:"image/bmp",webp:"image/webp",svg:"image/svg+xml"}[e[1].toLowerCase()]||null}}e.photo.type=(i||"image/jpeg").substring(6)}else(e=e||{}).photo=p;return e},z.getPhotoUrl=function(e){if(e&&e.photo){if(e.photo.ref&&e.photo.ref!=p)return e.photo.ref;if(e.photo.data&&e.photo.data!=p)return"data:image/"+(e.photo.type||"jpeg")+";base64,"+e.photo.data}return null},z.getOrg=function(e){return e&&e.org&&e.org.fn||null},z.setPhone=function(e,t,s="voice"){return $(e,"tel",t,s,!0)},z.setEmail=function(e,t,s="home"){return $(e,"email",t,s,!0)},z.setTinodeID=function(e,t,s="home"){return $(e,"tinode",t,s,!0)},z.addPhone=function(e,t,s="voice"){return $(e,"tel",t,s,!1)},z.addEmail=function(e,t,s="home"){return $(e,"email",t,s,!1)},z.addTinodeID=function(e,t,s="home"){return $(e,"tinode",t,s,!1)},z.clearPhone=function(e,t,s){return B(e,"tel",t,s)},z.clearEmail=function(e,t,s){return B(e,"email",t,s)},z.clearTinodeID=function(e,t,s){return B(e,"tinode",t,s)},z.getComm=function(e,t){return e&&Array.isArray(e.comm)?e.comm.filter(e=>e.proto==t):[]},z.getEmails=function(e){return z.getComm(e,"email").map(e=>e.value)},z.getPhones=function(e){return z.getComm(e,"tel").map(e=>e.value)},z.getFirstTinodeID=function(e){const t=z.getComm(e,"tinode");return t.length>0?t[0].value:null},z.exportVCard=function(e){if(!e)return null;let t="BEGIN:VCARD\r\nVERSION:3.0\r\n";if(e.fn&&(t+=`FN:${e.fn}\r\n`),e.n&&(t+=`N:${e.n.surname||""};${e.n.given||""};${e.n.additional||""};${e.n.prefix||""};${e.n.suffix||""}\r\n`),e.org&&(e.org.fn&&(t+=`ORG:${e.org.fn}\r\n`),e.org.title&&(t+=`TITLE:${e.org.title}\r\n`)),e.note&&e.note!=p&&(t+=`NOTE:${e.note}\r\n`),e.bday&&e.bday.m&&e.bday.d){const s=e.bday.y?String(e.bday.y).padStart(4,"0"):"--",i=String(e.bday.m).padStart(2,"0"),n=String(e.bday.d).padStart(2,"0");t+=`BDAY:${s}-${i}-${n}\r\n`}return e.photo&&(e.photo.ref&&e.photo.ref!=p?t+=`PHOTO;VALUE=URI:${e.photo.ref}\r\n`:e.photo.data&&e.photo.data!=p&&(t+=`PHOTO;TYPE=${e.photo.type.toUpperCase()};ENCODING=b:${e.photo.data}\r\n`)),Array.isArray(e.comm)&&e.comm.forEach(e=>{const s=e.des.join(",").toUpperCase();"tel"===e.proto?t+=`TEL;TYPE=${s}:${e.value}\r\n`:"email"===e.proto?t+=`EMAIL;TYPE=${s}:${e.value}\r\n`:"tinode"===e.proto?t+=`IMPP;TYPE=${s}:${e.value}\r\n`:"http"===e.proto&&(t+=`URL;TYPE=${s}:${e.value}\r\n`)}),t+="END:VCARD\r\n",t},z.importVCard=function(e){if(!e||"string"!=typeof e)return null;const t=e.split(/\r\n|\n/),s=[];let i="";for(let e=0;e<t.length;e++){const n=t[e];n.startsWith(" ")||n.startsWith("\t")?i+=n.substring(1):i.endsWith("=")?i=i.substring(0,i.length-1)+n:(i&&s.push(i),i=n)}i&&s.push(i);let n={};const r=new Map,o=e=>e.replace(/\\([,;\\n])/g,(e,t)=>"n"===t?"\n":t),a=e=>{const t=[];let s=0;for(;s<e.length;)if("="===e[s]&&s+2<e.length){const i=e.substring(s+1,s+3);/^[0-9A-F]{2}$/i.test(i)?(t.push(parseInt(i,16)),s+=3):(t.push(e.charCodeAt(s)),s++)}else t.push(e.charCodeAt(s)),s++;try{const e=new Uint8Array(t);return new TextDecoder("utf-8").decode(e)}catch(t){return e.replace(/=([0-9A-F]{2})/gi,(e,t)=>String.fromCharCode(parseInt(t,16)))}};return s.forEach(e=>{const[t,...s]=e.split(":");if(!t||0===s.length)return;const i=s.join(":"),c=t.split(";"),h=c[0].trim().toUpperCase(),l=c.some(e=>"QUOTED-PRINTABLE"===e.trim().toUpperCase()||"ENCODING=QUOTED-PRINTABLE"===e.trim().toUpperCase());if("FN"===h){let e=i;l&&(e=a(e)),n.fn=o(e)}else if("N"===h){let e=i;l&&(e=a(e));const t=e.split(";");n.n={surname:t[0]?o(t[0]):void 0,given:t[1]?o(t[1]):void 0,additional:t[2]?o(t[2]):void 0,prefix:t[3]?o(t[3]):void 0,suffix:t[4]?o(t[4]):void 0},Object.keys(n.n).forEach(e=>void 0===n.n[e]&&delete n.n[e]),0===Object.keys(n.n).length&&delete n.n}else if("ORG"===h){let e=i;l&&(e=a(e));const t=e.split(";");n.org=n.org||{},n.org.fn=t[0]?o(t[0]):void 0,n.org.fn||delete n.org.fn}else if("TITLE"===h){let e=i;l&&(e=a(e)),n.org=n.org||{},n.org.title=e?o(e):void 0,n.org.title||delete n.org.title}else if("NOTE"===h){let e=i;l&&(e=a(e)),n.note=o(e)}else if("BDAY"===h){let e=i.split(/[T ]/)[0].trim(),t=null,s=null,r=null;const o=e.replace(/-/g,"");if(6===o.length&&/^\d{6}$/.test(o)){const e=parseInt(o.substring(0,2),10);s=parseInt(o.substring(2,4),10),r=parseInt(o.substring(4,6),10),t=e>=35?1900+e:2e3+e}else if(e.startsWith("--")||e.startsWith("----")){const t=e.replace(/^-+/,"");if(4===t.length&&/^\d{4}$/.test(t))s=parseInt(t.substring(0,2),10),r=parseInt(t.substring(2,4),10);else if(t.includes("-")){const e=t.split("-");e.length>=2&&(s=parseInt(e[0],10),r=parseInt(e[1],10))}}else if(8===o.length&&/^\d{8}$/.test(o))t=parseInt(o.substring(0,4),10),s=parseInt(o.substring(4,6),10),r=parseInt(o.substring(6,8),10);else if(e.includes("-")){const i=e.split("-");i[0]&&""!==i[0]&&!/^-+$/.test(i[0])&&(t=parseInt(i[0],10)),i.length>=2&&(s=parseInt(i[1],10)),i.length>=3&&(r=parseInt(i[2],10))}s&&s>=1&&s<=12&&(r&&r>=1&&r<=31)&&(!t||t>=1800&&t<=2200)&&(n.bday={m:s,d:r},t&&(n.bday.y=t))}else if("PHOTO"===h){const e=t.split(";").slice(1);let s="jpeg",r=null;e.forEach(e=>{const[t,i]=e.split("=");t&&"TYPE"===t.trim().toUpperCase()?s=i?i.trim().toLowerCase():"jpeg":t&&"ENCODING"===t.trim().toUpperCase()&&(r=i?i.trim().toLowerCase():null)}),n.photo="b"===r?{type:s,data:i,ref:p}:{type:s,data:p,ref:i}}else if("TEL"===h){const e=t.split(";").filter(e=>e.trim().toUpperCase().startsWith("TYPE=")).flatMap(e=>{const t=e.indexOf("=");return e.substring(t+1).split(",").map(e=>{const t=e.trim().toLowerCase();return t.startsWith("type=")?t.substring(5):t})}).filter(e=>"internet"!==e),s=`tel|${i}`;r.has(s)||r.set(s,new Set),e.forEach(e=>r.get(s).add(e))}else if("EMAIL"===h){const e=t.split(";").filter(e=>e.trim().toUpperCase().startsWith("TYPE=")).flatMap(e=>{const t=e.indexOf("=");return e.substring(t+1).split(",").map(e=>{const t=e.trim().toLowerCase();return t.startsWith("type=")?t.substring(5):t})}).filter(e=>"internet"!==e),s=`email|${i}`;r.has(s)||r.set(s,new Set),e.forEach(e=>r.get(s).add(e))}else if("IMPP"===h){const e=t.split(";").filter(e=>e.trim().toUpperCase().startsWith("TYPE=")).flatMap(e=>{const t=e.indexOf("=");return e.substring(t+1).split(",").map(e=>{const t=e.trim().toLowerCase();return t.startsWith("type=")?t.substring(5):t})}).filter(e=>"internet"!==e),s=i.startsWith("tinode:")?`tinode|${i}`:`impp|${i}`;r.has(s)||r.set(s,new Set),e.forEach(e=>r.get(s).add(e))}else if("URL"===h){const e=t.split(";").filter(e=>e.trim().toUpperCase().startsWith("TYPE=")).flatMap(e=>{const t=e.indexOf("=");return e.substring(t+1).split(",").map(e=>{const t=e.trim().toLowerCase();return t.startsWith("type=")?t.substring(5):t})}).filter(e=>"internet"!==e),s=`http|${i}`;r.has(s)||r.set(s,new Set),e.forEach(e=>r.get(s).add(e))}}),r.size>0&&(n.comm=[],r.forEach((e,t)=>{const[s,i]=t.split("|",2);n.comm.push({proto:s,des:Array.from(e),value:i})})),n},z.isFileSupported=function(e,t){return"text/vcard"==e||(t||"").endsWith(".vcf")||(t||"").endsWith(".vcard")},"undefined"!=typeof WebSocket&&(K=WebSocket),"undefined"!=typeof XMLHttpRequest&&(H=XMLHttpRequest),"undefined"!=typeof indexedDB&&(Q=indexedDB),function(){const e="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";"undefined"==typeof btoa&&(s.g.btoa=function(t=""){let s=t,i="";for(let t,n=0,r=0,o=e;s.charAt(0|r)||(o="=",r%1);i+=o.charAt(63&n>>8-r%1*8)){if(t=s.charCodeAt(r+=3/4),t>255)throw new Error("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");n=n<<8|t}return i});"undefined"==typeof atob&&(s.g.atob=function(t=""){let s=t.replace(/=+$/,""),i="";if(s.length%4==1)throw new Error("'atob' failed: The string to be decoded is not correctly encoded.");for(let t,n=0,r=0,o=0;t=s.charAt(o++);~t&&(r=n%4?64*r+t:t,n++%4)?i+=String.fromCharCode(255&r>>(-2*n&6)):0)t=e.indexOf(t);return i});"undefined"==typeof window&&(s.g.window={WebSocket:K,XMLHttpRequest:H,indexedDB:Q,URL:{createObjectURL:function(){throw new Error("Unable to use URL.createObjectURL in a non-browser application")}}});C.setNetworkProviders(K,H),q.setNetworkProvider(H),R.setDatabaseProvider(Q)}();class Z{_host;_secure;_appName;_apiKey;_browser="";_platform;_hwos="undefined";_humanLanguage="xx";_loggingEnabled=!1;_trimLongStrings=!1;_myUID=null;_authenticated=!1;_login=null;_authToken=null;_inPacketCount=0;_messageId=Math.floor(65535*Math.random()+65535);_serverInfo=null;_deviceToken=null;_pendingPromises={};_expirePromises=null;_connection=null;_persist=!1;_db=null;_cache={};constructor(e,t){if(this._host=e.host,this._secure=e.secure,this._appName=e.appName||"Undefined",this._apiKey=e.apiKey,this._platform=e.platform||"web","undefined"!=typeof navigator&&(this._browser=function(e,t){e=e||"";let s,i="";/reactnative/i.test(t)&&(i="ReactNative; ");let n=(e=e.replace(" (KHTML, like Gecko)","")).match(/(AppleWebKit\/[.\d]+)/i);if(n){const t=["edg","chrome","safari","mobile","version"];let i,r=e.substr(n.index+n[0].length).split(" "),o=[];for(let e=0;e<r.length;e++){let s=/([\w.]+)[\/]([\.\d]+)/.exec(r[e]);s&&(o.push([s[1],s[2],t.findIndex(e=>s[1].toLowerCase().startsWith(e))]),"Version"==s[1]&&(i=s[2]))}o.sort((e,t)=>e[2]-t[2]),o.length>0?(o[0][0].toLowerCase().startsWith("edg")?o[0][0]="Edge":"OPR"==o[0][0]?o[0][0]="Opera":"Safari"==o[0][0]&&i&&(o[0][1]=i),s=o[0][0]+"/"+o[0][1]):s=n[1]}else/firefox/i.test(e)?(n=/Firefox\/([.\d]+)/g.exec(e),s=n?"Firefox/"+n[1]:"Firefox/?"):(n=/([\w.]+)\/([.\d]+)/.exec(e),n?s=n[1]+"/"+n[2]:(n=e.split(" "),s=n[0]));if(n=s.split("/"),n.length>1){const e=n[1].split("."),t=e[1]?"."+e[1].substr(0,2):"";s=`${n[0]}/${e[0]}${t}`}return i+s}(navigator.userAgent,navigator.product),this._hwos=navigator.platform,this._humanLanguage=navigator.language||"en-US"),C.logger=this.logger,U().logger=this.logger,"lp"!=e.transport&&"ws"!=e.transport&&(e.transport=function(){if("object"==typeof window){if(window.WebSocket)return"ws";if(window.XMLHttpRequest)return"lp"}return null}()),this._connection=new C(e,"0",!0),this._connection.onMessage=e=>{this.#S(e)},this._connection.onOpen=e=>this.#E(),this._connection.onDisconnect=(e,t)=>this.#A(e,t),this._connection.onAutoreconnectIteration=(e,t)=>{this.onAutoreconnectIteration&&this.onAutoreconnectIteration(e,t)},this._persist=e.persist,this._db=new R(this.logger,this.logger),this._persist){const e=[];this._db.initDatabase().then(t=>this._db.mapTopics(t=>{let s=this.#D("topic",t.name);s||(s=t.name==h?new W:t.name==l?new V:new G(t.name),this._db.deserializeTopic(s,t),this.#C(s),s._cachePutSelf(),this._db.maxDelId(s.name).then(e=>{s._maxDel=Math.max(s._maxDel,e||0)}),delete s._new,e.push(s._loadMessages(this._db)))})).then(e=>this._db.mapUsers(e=>{this.#k("user",e.uid,w({},e.public))})).then(t=>Promise.all(e)).then(e=>{t&&t(),this.logger("Persistent cache initialized.")}).catch(e=>{t&&t(e),this.logger("Failed to initialize persistent cache:",e)})}else this._db.deleteDatabase().then(e=>{t&&t()})}logger(e,...t){if(this._loggingEnabled){const s=new Date,i=("0"+s.getUTCHours()).slice(-2)+":"+("0"+s.getUTCMinutes()).slice(-2)+":"+("0"+s.getUTCSeconds()).slice(-2)+"."+("00"+s.getUTCMilliseconds()).slice(-3);console.log("["+i+"]",e,t.join(" "))}}#N(e){let t=null;return e&&(t=new Promise((t,s)=>{this._pendingPromises[e]={resolve:t,reject:s,ts:new Date}})),t}#R(e,t,s,i){const n=this._pendingPromises[e];n&&(delete this._pendingPromises[e],t>=200&&t<400?n.resolve&&n.resolve(s):n.reject&&n.reject(new f(i,t)))}#I(e,t){let s;t&&(s=this.#N(t)),e=y(e);let i=JSON.stringify(e);this.logger("out: "+(this._trimLongStrings?JSON.stringify(e,Y):i));try{this._connection.sendText(i)}catch(e){if(!t)throw e;this.#R(t,C.NETWORK_ERROR,null,e.message)}return s}#S(e){if(!e)return;if(this._inPacketCount++,this.onRawMessage&&this.onRawMessage(e),"0"===e)return void(this.onNetworkProbe&&this.onNetworkProbe());let t=JSON.parse(e,m);t?(this.logger("in: "+(this._trimLongStrings?JSON.stringify(t,Y):e)),this.onMessage&&this.onMessage(t),t.ctrl?(this.onCtrlMessage&&this.onCtrlMessage(t.ctrl),t.ctrl.id&&this.#R(t.ctrl.id,t.ctrl.code,t.ctrl,t.ctrl.text),setTimeout(e=>{if(205==t.ctrl.code&&"evicted"==t.ctrl.text){const e=this.#D("topic",t.ctrl.topic);e&&(e._resetSub(),t.ctrl.params&&t.ctrl.params.unsub&&e._gone())}else if(t.ctrl.code<300&&t.ctrl.params)if("data"==t.ctrl.params.what){const e=this.#D("topic",t.ctrl.topic);e&&e._allMessagesReceived(t.ctrl.params.count)}else if("sub"==t.ctrl.params.what){const e=this.#D("topic",t.ctrl.topic);e&&e._processMetaSubs([])}},0)):setTimeout(e=>{if(t.meta){const e=this.#D("topic",t.meta.topic);e&&e._routeMeta(t.meta),t.meta.id&&this.#R(t.meta.id,200,t.meta,"META"),this.onMetaMessage&&this.onMetaMessage(t.meta)}else if(t.data){const e=this.#D("topic",t.data.topic);e&&e._routeData(t.data),this.onDataMessage&&this.onDataMessage(t.data)}else if(t.pres){const e=this.#D("topic",t.pres.topic);e&&e._routePres(t.pres),this.onPresMessage&&this.onPresMessage(t.pres)}else if(t.info){const e=this.#D("topic",t.info.topic);e&&e._routeInfo(t.info),this.onInfoMessage&&this.onInfoMessage(t.info)}else this.logger("ERROR: Unknown packet received.")},0)):(this.logger("in: "+e),this.logger("ERROR: failed to parse data"))}#E(){this._expirePromises||(this._expirePromises=setInterval(e=>{const t=new f("timeout",504),s=new Date((new Date).getTime()-5e3);for(let e in this._pendingPromises){let i=this._pendingPromises[e];i&&i.ts<s&&(this.logger("Promise expired",e),delete this._pendingPromises[e],i.reject&&i.reject(t))}},1e3)),this.hello()}#A(e,t){this._inPacketCount=0,this._serverInfo=null,this._authenticated=!1,this._expirePromises&&(clearInterval(this._expirePromises),this._expirePromises=null),this.#U("topic",(e,t)=>{e._resetSub()});for(let t in this._pendingPromises){const s=this._pendingPromises[t];s&&s.reject&&s.reject(e)}this._pendingPromises={},this.onDisconnect&&this.onDisconnect(e)}#O(){return this._appName+" ("+(this._browser?this._browser+"; ":"")+this._hwos+"); "+o}#q(e,t){switch(e){case"hi":return{hi:{id:this.getNextUniqueId(),ver:r,ua:this.#O(),dev:this._deviceToken,lang:this._humanLanguage,platf:this._platform}};case"acc":return{acc:{id:this.getNextUniqueId(),user:null,scheme:null,secret:null,tmpscheme:null,tmpsecret:null,login:!1,tags:null,desc:{},cred:{}}};case"login":return{login:{id:this.getNextUniqueId(),scheme:null,secret:null}};case"sub":return{sub:{id:this.getNextUniqueId(),topic:t,set:{},get:{}}};case"leave":return{leave:{id:this.getNextUniqueId(),topic:t,unsub:!1}};case"pub":return{pub:{id:this.getNextUniqueId(),topic:t,noecho:!1,head:null,content:{}}};case"get":return{get:{id:this.getNextUniqueId(),topic:t,what:null,desc:{},sub:{},data:{}}};case"set":return{set:{id:this.getNextUniqueId(),topic:t,desc:{},sub:{},tags:[],aux:{}}};case"del":return{del:{id:this.getNextUniqueId(),topic:t,what:null,delseq:null,user:null,hard:!1}};case"note":return{note:{topic:t,what:null,seq:void 0}};default:throw new Error(`Unknown packet type requested: ${e}`)}}#k(e,t,s){this._cache[e+":"+t]=s}#D(e,t){return this._cache[e+":"+t]}#j(e,t){delete this._cache[e+":"+t]}#U(e,t,s){const i=e?e+":":void 0;for(let e in this._cache)if((!i||0==e.indexOf(i))&&t.call(s,this._cache[e],e))break}#C(e){e._tinode=this,e._cacheGetUser=e=>{const t=this.#D("user",e);if(t)return{user:e,public:w({},t)}},e._cachePutUser=(e,t)=>{this.#k("user",e,w({},t.public))},e._cacheDelUser=e=>{this.#j("user",e)},e._cachePutSelf=t=>{this.#k("topic",e.name,e)},e._cacheDelSelf=t=>{this.#j("topic",e.name)}}#L(e){return e.params&&e.params.user?(this._myUID=e.params.user,this._authenticated=e&&e.code>=200&&e.code<300,e.params&&e.params.token&&e.params.expires?this._authToken={token:e.params.token,expires:e.params.expires}:this._authToken=null,this.onLogin&&this.onLogin(e.code,e.text),e):e}static credential(e,t,s,i){return"object"==typeof e&&({val:t,params:s,resp:i,meth:e}=e),e&&(t||i)?[{meth:e,val:t,resp:i,params:s}]:null}static topicType(e){return G.topicType(e)}static isMeTopicName(e){return G.isMeTopicName(e)}static isSelfTopicName(e){return G.isSelfTopicName(e)}static isGroupTopicName(e){return G.isGroupTopicName(e)}static isP2PTopicName(e){return G.isP2PTopicName(e)}static isCommTopicName(e){return G.isCommTopicName(e)}static isNewGroupTopicName(e){return G.isNewGroupTopicName(e)}static isChannelTopicName(e){return G.isChannelTopicName(e)}static getVersion(){return r}static setNetworkProviders(e,t){K=e,H=t,C.setNetworkProviders(K,H),q.setNetworkProvider(H)}static setDatabaseProvider(e){Q=e,R.setDatabaseProvider(Q)}static getLibrary(){return o}static isNullValue(e){return e===p}static isServerAssignedSeq(e){return e>0&&e<u}static parseTinodeUrl(e){if(!e||"string"!=typeof e)return null;if(!e.startsWith("tinode:"))return e;const t=e.substring(7).split("/");return t.length<2||"id"!==t[t.length-2]?e:t[t.length-1]}static isValidTagValue(e){return e&&"string"==typeof e&&e.length>3&&e.length<24&&/^[a-z0-9][a-z0-9_\-]{3,23}$/i.test(e)}static tagSplit(e){if(!e)return null;const t=(e=e.trim()).indexOf(":");if(t<=0)return null;const s=e.substring(t+1);return s?{prefix:e.substring(0,t),value:s}:null}static setUniqueTag(e,t){if(!e||0==e.length)return[t];const s=Z.tagSplit(t);return s?((e=e.filter(e=>e&&!e.startsWith(s.prefix))).push(t),e):e}static clearTagPrefix(e,t){return e&&0!=e.length?e.filter(e=>e&&!e.startsWith(t)):[]}static tagByPrefix(e,t){if(e)return e.find(e=>e&&e.startsWith(t))}getNextUniqueId(){return 0!=this._messageId?""+this._messageId++:void 0}connect(e){return this._connection.connect(e)}reconnect(e){this._connection.reconnect(e)}disconnect(){this._connection.disconnect()}clearStorage(){return this._db.isReady()?this._db.deleteDatabase():Promise.resolve()}initStorage(){return this._db.isReady()?Promise.resolve():this._db.initDatabase()}networkProbe(){this._connection.probe()}isConnected(){return this._connection.isConnected()}isAuthenticated(){return this._authenticated}authorizeURL(e){if("string"!=typeof e)return e;if(_(e)){const t="scheme://host/",s=new URL(e,t);this._apiKey&&s.searchParams.append("apikey",this._apiKey),this._authToken&&this._authToken.token&&(s.searchParams.append("auth","token"),s.searchParams.append("secret",this._authToken.token)),e=s.toString().substring(t.length-1)}return e}account(e,t,s,i,n){const r=this.#q("acc");return r.acc.user=e,r.acc.scheme=t,r.acc.secret=s,r.acc.login=i,n&&(r.acc.desc.defacs=n.defacs,r.acc.desc.public=n.public,r.acc.desc.private=n.private,r.acc.desc.trusted=n.trusted,r.acc.tags=n.tags,r.acc.cred=n.cred,r.acc.tmpscheme=n.scheme,r.acc.tmpsecret=n.secret,Array.isArray(n.attachments)&&n.attachments.length>0&&(r.extra={attachments:n.attachments.filter(e=>_(e))})),this.#I(r,r.acc.id)}createAccount(e,t,s,i){let n=this.account("new",e,t,s,i);return s&&(n=n.then(e=>this.#L(e))),n}createAccountBasic(e,t,s){return e=e||"",t=t||"",this.createAccount("basic",X(e+":"+t),!0,s)}updateAccountBasic(e,t,s,i){return t=t||"",s=s||"",this.account(e,"basic",X(t+":"+s),!1,i)}hello(){const e=this.#q("hi");return this.#I(e,e.hi.id).then(e=>(this._connection.backoffReset(),e.params&&(this._serverInfo=e.params),this.onConnect&&this.onConnect(),e)).catch(e=>{this._connection.reconnect(!0),this.onDisconnect&&this.onDisconnect(e)})}setDeviceToken(e){let t=!1;return(e=e||null)!=this._deviceToken&&(this._deviceToken=e,this.isConnected()&&this.isAuthenticated()&&(this.#I({hi:{dev:e||Z.DEL_CHAR}}),t=!0)),t}login(e,t,s){const i=this.#q("login");return i.login.scheme=e,i.login.secret=t,i.login.cred=s,this.#I(i,i.login.id).then(e=>this.#L(e))}loginBasic(e,t,s){return this.login("basic",X(e+":"+t),s).then(t=>(this._login=e,t))}loginToken(e,t){return this.login("token",e,t)}requestResetAuthSecret(e,t,s){return this.login("reset",X(e+":"+t+":"+s))}getAuthToken(){return this._authToken&&this._authToken.expires.getTime()>Date.now()?this._authToken:(this._authToken=null,null)}setAuthToken(e){this._authToken=e}subscribe(e,t,s){const i=this.#q("sub",e);if(e||(e=a),i.sub.get=t,s){if(s.sub&&(i.sub.set.sub=s.sub),s.desc){const t=s.desc;Z.isNewGroupTopicName(e)?i.sub.set.desc=t:Z.isP2PTopicName(e)&&t.defacs&&(i.sub.set.desc={defacs:t.defacs})}Array.isArray(s.attachments)&&s.attachments.length>0&&(i.extra={attachments:s.attachments.filter(e=>_(e))}),s.tags&&(i.sub.set.tags=s.tags),s.aux&&(i.sub.set.aux=s.aux)}return this.#I(i,i.sub.id)}leave(e,t){const s=this.#q("leave",e);return s.leave.unsub=t,this.#I(s,s.leave.id)}createMessage(e,t,s){const i=this.#q("pub",e);let n="string"==typeof t?U().parse(t):t;return n&&!U().isPlainText(n)&&(i.pub.head={mime:U().getContentType()},t=n),i.pub.noecho=s,i.pub.content=t,i.pub}publish(e,t,s){return this.publishMessage(this.createMessage(e,t,s))}publishMessage(e,t){(e=Object.assign({},e)).seq=void 0,e.from=void 0,e.ts=void 0;const s={pub:e};return t&&(s.extra={attachments:t.filter(e=>_(e))}),this.#I(s,e.id)}oobNotification(e){switch(this.logger("oob: "+(this._trimLongStrings?JSON.stringify(e,Y):e)),e.what){case"msg":if(!e.seq||e.seq<1||!e.topic)break;if(!this.isConnected())break;const t=this.#D("topic",e.topic);if(!t)break;if(t.isSubscribed())break;t.maxMsgSeq()<e.seq&&(t.isChannelType()&&t._updateReceived(e.seq,"fake-uid"),e.xfrom&&!this.#D("user",e.xfrom)&&this.getMeta(e.xfrom,(new j).withDesc().build()).catch(e=>{this.logger("Failed to get the name of a new sender",e)}),t.subscribe(null).then(e=>t.getMeta(new j(t).withLaterData(24).withLaterDel(24).build())).then(e=>{t.leaveDelayed(!1,1e3)}).catch(e=>{this.logger("On push data fetch failed",e)}).finally(e=>{this.getMeTopic()._refreshContact("msg",t)}));break;case"read":this.getMeTopic()._routePres({what:"read",seq:e.seq});break;case"sub":if(!this.isMe(e.xfrom))break;const s={given:e.modeGiven,want:e.modeWant},i=new n(s),r=i.mode&&i.mode!=n._NONE?{what:"acs",src:e.topic,dacs:s}:{what:"gone",src:e.topic};this.getMeTopic()._routePres(r);break;default:this.logger("Unknown push type ignored",e.what)}}getMeta(e,t){const s=this.#q("get",e);return s.get=w(s.get,t),this.#I(s,s.get.id)}setMeta(e,t){const s=this.#q("set",e),i=[];return t&&(["desc","sub","tags","cred","aux"].forEach(e=>{t.hasOwnProperty(e)&&(i.push(e),s.set[e]=t[e])}),Array.isArray(t.attachments)&&t.attachments.length>0&&(s.extra={attachments:t.attachments.filter(e=>_(e))})),0==i.length?Promise.reject(new Error("Invalid {set} parameters")):this.#I(s,s.set.id)}delMessages(e,t,s){const i=this.#q("del",e);return i.del.what="msg",i.del.delseq=t,i.del.hard=s,this.#I(i,i.del.id)}delTopic(e,t){const s=this.#q("del",e);return s.del.what="topic",s.del.hard=t,this.#I(s,s.del.id)}delSubscription(e,t){const s=this.#q("del",e);return s.del.what="sub",s.del.user=t,this.#I(s,s.del.id)}delCredential(e,t){const s=this.#q("del",h);return s.del.what="cred",s.del.cred={meth:e,val:t},this.#I(s,s.del.id)}delCurrentUser(e){const t=this.#q("del",null);return t.del.what="user",t.del.hard=e,this.#I(t,t.del.id).then(e=>{this._myUID=null})}note(e,t,s){if(s<=0||s>=u)throw new Error(`Invalid message id ${s}`);const i=this.#q("note",e);i.note.what=t,i.note.seq=s,this.#I(i)}noteKeyPress(e,t){const s=this.#q("note",e);s.note.what=t||"kp",this.#I(s)}videoCall(e,t,s,i){const n=this.#q("note",e);n.note.seq=t,n.note.what="call",n.note.event=s,n.note.payload=i,this.#I(n,n.note.id)}getTopic(e){let t=this.#D("topic",e);return!t&&e&&(t=e==h?new W:e==l?new V:new G(e),this.#C(t),t._cachePutSelf()),t}cacheGetTopic(e){return this.#D("topic",e)}cacheRemTopic(e){this.#j("topic",e)}mapTopics(e,t){this.#U("topic",e,t)}isTopicCached(e){return!!this.#D("topic",e)}newGroupTopicName(e){return(e?c:a)+this.getNextUniqueId()}getMeTopic(){return this.getTopic(h)}getFndTopic(){return this.getTopic(l)}getLargeFileHelper(){return new q(this,"0")}getCurrentUserID(){return this._myUID}isMe(e){return this._myUID===e}getCurrentLogin(){return this._login}getServerInfo(){return this._serverInfo}report(e,t){return this.publish("sys",U().attachJSON(null,{action:e,target:t}))}getServerParam(e,t){return this._serverInfo&&this._serverInfo[e]||t}enableLogging(e,t){this._loggingEnabled=e,this._trimLongStrings=e&&t}setHumanLanguage(e){e&&(this._humanLanguage=e)}isTopicOnline(e){const t=this.#D("topic",e);return t&&t.online}getTopicAccessMode(e){const t=this.#D("topic",e);return t?t.acs:null}wantAkn(e){this._messageId=e?Math.floor(16777215*Math.random()+16777215):0}onWebsocketOpen=void 0;onConnect=void 0;onDisconnect=void 0;onLogin=void 0;onCtrlMessage=void 0;onDataMessage=void 0;onPresMessage=void 0;onMessage=void 0;onRawMessage=void 0;onNetworkProbe=void 0;onAutoreconnectIteration=void 0}return Z.MESSAGE_STATUS_NONE=0,Z.MESSAGE_STATUS_QUEUED=10,Z.MESSAGE_STATUS_SENDING=20,Z.MESSAGE_STATUS_FAILED=30,Z.MESSAGE_STATUS_FATAL=40,Z.MESSAGE_STATUS_SENT=50,Z.MESSAGE_STATUS_RECEIVED=60,Z.MESSAGE_STATUS_READ=70,Z.MESSAGE_STATUS_TO_ME=80,Z.DEL_CHAR=p,Z.MAX_MESSAGE_SIZE="maxMessageSize",Z.MAX_SUBSCRIBER_COUNT="maxSubscriberCount",Z.MIN_TAG_LENGTH="minTagLength",Z.MAX_TAG_LENGTH="maxTagLength",Z.MAX_TAG_COUNT="maxTagCount",Z.MAX_FILE_UPLOAD_SIZE="maxFileUploadSize",Z.REQ_CRED_VALIDATORS="reqCred",Z.MSG_DELETE_AGE="msgDelAge",Z.URI_TOPIC_ID_PREFIX="tinode:///id/",Z.URI_TOPIC_ALIAS_PREFIX="tinode:///alias/",Z.TAG_ALIAS=g,Z.TAG_EMAIL="email:",Z.TAG_PHONE="tel:",i}()});
+//# sourceMappingURL=tinode.prod.js.map
+
+/***/ }),
+
+/***/ "./src/config.js":
+/*!***********************!*\
+  !*** ./src/config.js ***!
+  \***********************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   API_KEY: function() { return /* binding */ API_KEY; },
+/* harmony export */   APP_NAME: function() { return /* binding */ APP_NAME; },
+/* harmony export */   AVATAR_SIZE: function() { return /* binding */ AVATAR_SIZE; },
+/* harmony export */   BROKEN_IMAGE_SIZE: function() { return /* binding */ BROKEN_IMAGE_SIZE; },
+/* harmony export */   CHANNEL_ACCESS_MODE: function() { return /* binding */ CHANNEL_ACCESS_MODE; },
+/* harmony export */   CLICKABLE_URL_SCHEMES: function() { return /* binding */ CLICKABLE_URL_SCHEMES; },
+/* harmony export */   DEFAULT_COLOR_SCHEME: function() { return /* binding */ DEFAULT_COLOR_SCHEME; },
+/* harmony export */   DEFAULT_HOST: function() { return /* binding */ DEFAULT_HOST; },
+/* harmony export */   DEFAULT_P2P_ACCESS_MODE: function() { return /* binding */ DEFAULT_P2P_ACCESS_MODE; },
+/* harmony export */   DEFAULT_TEXT_SIZE: function() { return /* binding */ DEFAULT_TEXT_SIZE; },
+/* harmony export */   DRAFTY_FR_MIME_TYPE_LEGACY: function() { return /* binding */ DRAFTY_FR_MIME_TYPE_LEGACY; },
+/* harmony export */   EDIT_PREVIEW_LENGTH: function() { return /* binding */ EDIT_PREVIEW_LENGTH; },
+/* harmony export */   FORWARDED_PREVIEW_LENGTH: function() { return /* binding */ FORWARDED_PREVIEW_LENGTH; },
+/* harmony export */   IMAGE_PREVIEW_DIM: function() { return /* binding */ IMAGE_PREVIEW_DIM; },
+/* harmony export */   IMAGE_THUMBNAIL_DIM: function() { return /* binding */ IMAGE_THUMBNAIL_DIM; },
+/* harmony export */   IMMEDIATE_P2P_SUBSCRIPTION: function() { return /* binding */ IMMEDIATE_P2P_SUBSCRIPTION; },
+/* harmony export */   KEYPRESS_DELAY: function() { return /* binding */ KEYPRESS_DELAY; },
+/* harmony export */   KNOWN_HOSTS: function() { return /* binding */ KNOWN_HOSTS; },
+/* harmony export */   LINK_CONTACT_US: function() { return /* binding */ LINK_CONTACT_US; },
+/* harmony export */   LINK_PRIVACY_POLICY: function() { return /* binding */ LINK_PRIVACY_POLICY; },
+/* harmony export */   LINK_TERMS_OF_SERVICE: function() { return /* binding */ LINK_TERMS_OF_SERVICE; },
+/* harmony export */   LOGGING_ENABLED: function() { return /* binding */ LOGGING_ENABLED; },
+/* harmony export */   MAX_AVATAR_BYTES: function() { return /* binding */ MAX_AVATAR_BYTES; },
+/* harmony export */   MAX_DURATION: function() { return /* binding */ MAX_DURATION; },
+/* harmony export */   MAX_EXTERN_ATTACHMENT_SIZE: function() { return /* binding */ MAX_EXTERN_ATTACHMENT_SIZE; },
+/* harmony export */   MAX_IMAGE_DIM: function() { return /* binding */ MAX_IMAGE_DIM; },
+/* harmony export */   MAX_INBAND_ATTACHMENT_SIZE: function() { return /* binding */ MAX_INBAND_ATTACHMENT_SIZE; },
+/* harmony export */   MAX_ONLINE_IN_TOPIC: function() { return /* binding */ MAX_ONLINE_IN_TOPIC; },
+/* harmony export */   MAX_PEER_TITLE_LENGTH: function() { return /* binding */ MAX_PEER_TITLE_LENGTH; },
+/* harmony export */   MAX_TAG_COUNT: function() { return /* binding */ MAX_TAG_COUNT; },
+/* harmony export */   MAX_TAG_LENGTH: function() { return /* binding */ MAX_TAG_LENGTH; },
+/* harmony export */   MAX_TITLE_LENGTH: function() { return /* binding */ MAX_TITLE_LENGTH; },
+/* harmony export */   MAX_TOPIC_DESCRIPTION_LENGTH: function() { return /* binding */ MAX_TOPIC_DESCRIPTION_LENGTH; },
+/* harmony export */   MEDIA_BREAKPOINT: function() { return /* binding */ MEDIA_BREAKPOINT; },
+/* harmony export */   MESSAGES_PAGE: function() { return /* binding */ MESSAGES_PAGE; },
+/* harmony export */   MESSAGE_PREVIEW_LENGTH: function() { return /* binding */ MESSAGE_PREVIEW_LENGTH; },
+/* harmony export */   MIN_DURATION: function() { return /* binding */ MIN_DURATION; },
+/* harmony export */   MIN_SWIPE_DISTANCE: function() { return /* binding */ MIN_SWIPE_DISTANCE; },
+/* harmony export */   MIN_TAG_LENGTH: function() { return /* binding */ MIN_TAG_LENGTH; },
+/* harmony export */   NEW_GRP_ACCESS_MODE: function() { return /* binding */ NEW_GRP_ACCESS_MODE; },
+/* harmony export */   NO_ACCESS_MODE: function() { return /* binding */ NO_ACCESS_MODE; },
+/* harmony export */   NO_DIMENSIONS_VIDEO: function() { return /* binding */ NO_DIMENSIONS_VIDEO; },
+/* harmony export */   QRCODE_SIZE: function() { return /* binding */ QRCODE_SIZE; },
+/* harmony export */   QUOTED_REPLY_LENGTH: function() { return /* binding */ QUOTED_REPLY_LENGTH; },
+/* harmony export */   READ_DELAY: function() { return /* binding */ READ_DELAY; },
+/* harmony export */   REM_SIZE: function() { return /* binding */ REM_SIZE; },
+/* harmony export */   SELF_AVATAR_URI: function() { return /* binding */ SELF_AVATAR_URI; },
+/* harmony export */   TOAST_DURATION: function() { return /* binding */ TOAST_DURATION; },
+/* harmony export */   VIDEO_PREVIEW_DIM: function() { return /* binding */ VIDEO_PREVIEW_DIM; },
+/* harmony export */   VIDEO_THUMBNAIL_WIDTH: function() { return /* binding */ VIDEO_THUMBNAIL_WIDTH; },
+/* harmony export */   WAKE_UP_TICK: function() { return /* binding */ WAKE_UP_TICK; },
+/* harmony export */   WAKE_UP_TIMEOUT: function() { return /* binding */ WAKE_UP_TIMEOUT; },
+/* harmony export */   WALLPAPER_DEFAULTS: function() { return /* binding */ WALLPAPER_DEFAULTS; }
+/* harmony export */ });
+/* harmony import */ var _version_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./version.js */ "./src/version.js");
+
+const APP_NAME = 'SunriseWeb/' + (_version_js__WEBPACK_IMPORTED_MODULE_0__.PACKAGE_VERSION || '0.24');
+const API_KEY = 'AQEAAAABAAD_rAp4DJh05a1HAwFT3A6K';
+const KNOWN_HOSTS = {
+  hosted: 'web.sunrise.co',
+  local: 'localhost:6060'
+};
+const DEFAULT_HOST = KNOWN_HOSTS.hosted;
+const LOGGING_ENABLED = true;
+const KEYPRESS_DELAY = 3_000;
+const READ_DELAY = 1_500;
+const MIN_TAG_LENGTH = 2;
+const MAX_TAG_LENGTH = 96;
+const MAX_TAG_COUNT = 16;
+const DEFAULT_P2P_ACCESS_MODE = 'JRWPS';
+const NEW_GRP_ACCESS_MODE = 'JRWPSAO';
+const CHANNEL_ACCESS_MODE = 'JR';
+const NO_ACCESS_MODE = 'N';
+const MEDIA_BREAKPOINT = 640;
+const REM_SIZE = 13;
+const AVATAR_SIZE = 384;
+const MAX_AVATAR_BYTES = 4096;
+const BROKEN_IMAGE_SIZE = 32;
+const NO_DIMENSIONS_VIDEO = 128;
+const MESSAGES_PAGE = 24;
+const MAX_INBAND_ATTACHMENT_SIZE = 262_144;
+const MAX_EXTERN_ATTACHMENT_SIZE = 1 << 23;
+const MAX_IMAGE_DIM = 1024;
+const IMAGE_PREVIEW_DIM = 64;
+const VIDEO_PREVIEW_DIM = 96;
+const IMAGE_THUMBNAIL_DIM = 36;
+const VIDEO_THUMBNAIL_WIDTH = 48;
+const MAX_ONLINE_IN_TOPIC = 4;
+const MAX_TITLE_LENGTH = 60;
+const MAX_TOPIC_DESCRIPTION_LENGTH = 360;
+const MAX_PEER_TITLE_LENGTH = 24;
+const MESSAGE_PREVIEW_LENGTH = 80;
+const QUOTED_REPLY_LENGTH = 30;
+const FORWARDED_PREVIEW_LENGTH = 84;
+const EDIT_PREVIEW_LENGTH = 48;
+const MIN_DURATION = 2_000;
+const MAX_DURATION = 600_000;
+const LINK_CONTACT_US = 'mailto:support@sunrise.co';
+const LINK_PRIVACY_POLICY = 'https://sunrise.co/privacy.html';
+const LINK_TERMS_OF_SERVICE = 'https://sunrise.co/terms.html';
+const IMMEDIATE_P2P_SUBSCRIPTION = false;
+const CLICKABLE_URL_SCHEMES = ['http', 'https', 'ftp', 'ftps'];
+const QRCODE_SIZE = 128;
+const WAKE_UP_TIMEOUT = 80000;
+const WAKE_UP_TICK = 1000;
+const MIN_SWIPE_DISTANCE = REM_SIZE * 3;
+const SELF_AVATAR_URI = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48c3ZnIHZpZXdCb3g9IjAgMCAxNyAxNyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMy41NjIgMXYxNS40NTlsNC42ODYtMy4yNyA0Ljc1MiAzLjI2di0xNS40NDloLTkuNDM4ek0xMiAxNC41NTFsLTMuNzU2LTIuNTc4LTMuNjgxIDIuNTY4di0xMi41NDFoNy40Mzd2MTIuNTUxeiIgZmlsbD0iIzU1NTU1NSIgLz48L3N2Zz4=';
+const TOAST_DURATION = 3_000;
+const DEFAULT_COLOR_SCHEME = 'auto';
+const DEFAULT_TEXT_SIZE = 10;
+const DRAFTY_FR_MIME_TYPE_LEGACY = 'application/json';
+const WALLPAPER_DEFAULTS = {
+  type: 'patt',
+  index: 0,
+  path: 'img/bkg/'
+};
+
+/***/ }),
+
+/***/ "./src/constants.js":
+/*!**************************!*\
+  !*** ./src/constants.js ***!
+  \**************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   CALL_HEAD_STARTED: function() { return /* binding */ CALL_HEAD_STARTED; },
+/* harmony export */   CALL_STATE_INCOMING_RECEIVED: function() { return /* binding */ CALL_STATE_INCOMING_RECEIVED; },
+/* harmony export */   CALL_STATE_IN_PROGRESS: function() { return /* binding */ CALL_STATE_IN_PROGRESS; },
+/* harmony export */   CALL_STATE_NONE: function() { return /* binding */ CALL_STATE_NONE; },
+/* harmony export */   CALL_STATE_OUTGOING_INITATED: function() { return /* binding */ CALL_STATE_OUTGOING_INITATED; }
+/* harmony export */ });
+const CALL_STATE_NONE = 0;
+const CALL_STATE_OUTGOING_INITATED = 1;
+const CALL_STATE_INCOMING_RECEIVED = 2;
+const CALL_STATE_IN_PROGRESS = 3;
+const CALL_HEAD_STARTED = 'started';
+
+/***/ }),
+
+/***/ "./src/lib/blob-helpers.js":
+/*!*********************************!*\
+  !*** ./src/lib/blob-helpers.js ***!
+  \*********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   MIME_EXTENSIONS: function() { return /* binding */ MIME_EXTENSIONS; },
+/* harmony export */   SUPPORTED_IMAGE_FORMATS: function() { return /* binding */ SUPPORTED_IMAGE_FORMATS; },
+/* harmony export */   base64DecodedLen: function() { return /* binding */ base64DecodedLen; },
+/* harmony export */   base64EncodedLen: function() { return /* binding */ base64EncodedLen; },
+/* harmony export */   base64ReEncode: function() { return /* binding */ base64ReEncode; },
+/* harmony export */   base64ToBlob: function() { return /* binding */ base64ToBlob; },
+/* harmony export */   base64ToIntArray: function() { return /* binding */ base64ToIntArray; },
+/* harmony export */   blobToBase64: function() { return /* binding */ blobToBase64; },
+/* harmony export */   fileNameForMime: function() { return /* binding */ fileNameForMime; },
+/* harmony export */   filePasted: function() { return /* binding */ filePasted; },
+/* harmony export */   fileToBase64: function() { return /* binding */ fileToBase64; },
+/* harmony export */   fitImageSize: function() { return /* binding */ fitImageSize; },
+/* harmony export */   getMimeType: function() { return /* binding */ getMimeType; },
+/* harmony export */   imageCrop: function() { return /* binding */ imageCrop; },
+/* harmony export */   imageScaled: function() { return /* binding */ imageScaled; },
+/* harmony export */   importVCard: function() { return /* binding */ importVCard; },
+/* harmony export */   intArrayToBase64: function() { return /* binding */ intArrayToBase64; },
+/* harmony export */   makeImageUrl: function() { return /* binding */ makeImageUrl; }
+/* harmony export */ });
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_0__);
+
+const SUPPORTED_IMAGE_FORMATS = ['image/jpeg', 'image/gif', 'image/png', 'image/svg', 'image/svg+xml'];
+const MIME_EXTENSIONS = ['jpg', 'gif', 'png', 'svg', 'svg'];
+function makeImageUrl(photo) {
+  if (photo && typeof photo == 'object') {
+    if (photo.ref) {
+      return photo.ref;
+    }
+    if (photo.data && photo.type) {
+      const mime = photo.type.startsWith('image/') ? photo.type : 'image/' + photo.type;
+      return 'data:' + mime + ';base64,' + photo.data;
+    }
+  }
+  return null;
+}
+function fitImageSize(width, height, maxWidth, maxHeight, forceSquare) {
+  width = width | 0;
+  height = height | 0;
+  maxWidth = maxWidth | 0;
+  maxHeight = maxHeight | 0;
+  if (width <= 0 || height <= 0 || maxWidth <= 0 || maxHeight <= 0) {
+    return null;
+  }
+  if (forceSquare) {
+    maxWidth = maxHeight = Math.min(maxWidth, maxHeight);
+  }
+  const scale = Math.min(Math.min(width, maxWidth) / width, Math.min(height, maxHeight) / height);
+  const size = {
+    dstWidth: width * scale | 0,
+    dstHeight: height * scale | 0
+  };
+  if (forceSquare) {
+    size.dstWidth = size.dstHeight = Math.min(size.dstWidth, size.dstHeight);
+    size.srcWidth = size.srcHeight = Math.min(width, height);
+    size.xoffset = (width - size.srcWidth) / 2 | 0;
+    size.yoffset = (height - size.srcWidth) / 2 | 0;
+  } else {
+    size.xoffset = size.yoffset = 0;
+    size.srcWidth = width;
+    size.srcHeight = height;
+  }
+  return size;
+}
+function fileNameForMime(fname, mime) {
+  const idx = SUPPORTED_IMAGE_FORMATS.indexOf(mime);
+  if (idx < 0 || !fname) {
+    return fname;
+  }
+  const ext = MIME_EXTENSIONS[idx];
+  const at = fname.lastIndexOf('.');
+  if (at >= 0) {
+    fname = fname.substring(0, at);
+  }
+  return fname + '.' + ext;
+}
+function imageScaled(fileOrBlob, maxWidth, maxHeight, maxSize, forceSquare) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onerror = function (err) {
+      reject(new Error("Image format unrecognized"));
+    };
+    img.onload = async function () {
+      URL.revokeObjectURL(img.src);
+      const dim = fitImageSize(img.width, img.height, maxWidth, maxHeight, forceSquare);
+      if (!dim) {
+        reject(new Error("Invalid image"));
+        return;
+      }
+      let canvas = document.createElement('canvas');
+      canvas.width = dim.dstWidth;
+      canvas.height = dim.dstHeight;
+      let ctx = canvas.getContext('2d');
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(img, dim.xoffset, dim.yoffset, dim.srcWidth, dim.srcHeight, 0, 0, dim.dstWidth, dim.dstHeight);
+      const mime = SUPPORTED_IMAGE_FORMATS.includes(fileOrBlob.type) ? fileOrBlob.type : 'image/jpeg';
+      let blob = await new Promise(resolve => canvas.toBlob(resolve, mime));
+      if (!blob) {
+        reject(new Error("Unsupported image format"));
+        return;
+      }
+      while (maxSize > 0 && blob.length > maxSize) {
+        dim.dstWidth = dim.dstWidth * 0.70710678118 | 0;
+        dim.dstHeight = dim.dstHeight * 0.70710678118 | 0;
+        canvas.width = dim.dstWidth;
+        canvas.height = dim.dstHeight;
+        ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, dim.xoffset, dim.yoffset, dim.srcWidth, dim.srcHeight, 0, 0, dim.dstWidth, dim.dstHeight);
+        blob = await new Promise(resolve => canvas.toBlob(resolve, mime));
+      }
+      canvas = null;
+      resolve({
+        mime: mime,
+        blob: blob,
+        width: dim.dstWidth,
+        height: dim.dstHeight,
+        name: fileNameForMime(fileOrBlob.name, mime)
+      });
+    };
+    img.src = URL.createObjectURL(fileOrBlob);
+  });
+}
+function imageCrop(mime, objURL, left, top, width, height, scale) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onerror = _ => {
+      reject(new Error("Image format unrecognized"));
+    };
+    img.onload = _ => {
+      URL.revokeObjectURL(img.src);
+      let canvas = document.createElement('canvas');
+      canvas.width = width * scale;
+      canvas.height = height * scale;
+      let ctx = canvas.getContext('2d');
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(img, left, top, width, height, 0, 0, canvas.width, canvas.height);
+      mime = SUPPORTED_IMAGE_FORMATS.includes(mime) ? mime : 'image/jpeg';
+      canvas.toBlob(blob => {
+        canvas = null;
+        if (blob) {
+          resolve({
+            mime: mime,
+            blob: blob,
+            width: width,
+            height: height
+          });
+        } else {
+          reject(new Error("Unsupported image format"));
+        }
+      }, mime);
+    };
+    img.src = objURL;
+  });
+}
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = _ => {
+      reject(reader.error);
+    };
+    reader.onload = _ => {
+      resolve({
+        mime: file.type,
+        bits: reader.result.split(',')[1],
+        name: file.name
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = _ => {
+      reject(reader.error);
+    };
+    reader.onload = _ => {
+      resolve({
+        mime: blob.type,
+        bits: reader.result.split(',')[1]
+      });
+    };
+    reader.readAsDataURL(blob);
+  });
+}
+function filePasted(event, onImageSuccess, onAttachmentSuccess, onError) {
+  const items = (event.clipboardData || event.originalEvent.clipboardData || {}).items;
+  if (!items || !items.length) {
+    return false;
+  }
+  for (let i in items) {
+    const item = items[i];
+    if (item.kind === 'file') {
+      const file = item.getAsFile();
+      if (!file) {
+        console.error("Failed to get file object from pasted file item", item.kind, item.type);
+        onError("Failed to get file object from pasted file item");
+        continue;
+      }
+      if (file.type && file.type.split('/')[0] == 'image') {
+        onImageSuccess(file);
+      } else {
+        onAttachmentSuccess(file);
+      }
+      return true;
+    }
+  }
+  return false;
+}
+function getMimeType(header) {
+  const mime = /^data:(image\/[-+a-z0-9.]+);base64/.exec(header);
+  return mime && mime.length > 1 ? mime[1] : null;
+}
+function base64EncodedLen(n) {
+  return Math.floor((n + 2) / 3) * 4;
+}
+function base64DecodedLen(n) {
+  return Math.floor(n / 4) * 3;
+}
+function base64ReEncode(str) {
+  if (str) {
+    str = str.replace(/-/g, '+').replace(/_/g, '/');
+    try {
+      str = btoa(atob(str));
+    } catch (err) {
+      console.error("Failed to base64 re-encode string.", err);
+      str = null;
+    }
+  }
+  return str;
+}
+function base64ToBlob(str, mime) {
+  if (!str) {
+    return null;
+  }
+  try {
+    const bin = atob(str);
+    const length = bin.length;
+    const buf = new ArrayBuffer(length);
+    const arr = new Uint8Array(buf);
+    for (let i = 0; i < length; i++) {
+      arr[i] = bin.charCodeAt(i);
+    }
+    return new Blob([buf], {
+      type: mime
+    });
+  } catch (err) {
+    console.error("Failed to convert base64 to blob: ", err);
+  }
+  return null;
+}
+function intArrayToBase64(arr) {
+  if (!Array.isArray(arr)) {
+    return null;
+  }
+  try {
+    let bin = '';
+    new Uint8Array(arr).forEach(b => bin += String.fromCharCode(b));
+    return window.btoa(bin);
+  } catch (err) {}
+  return null;
+}
+function base64ToIntArray(b64) {
+  const arr = [];
+  try {
+    const bin = window.atob(b64);
+    [...bin].forEach(c => {
+      arr.push(c.charCodeAt(0));
+    });
+    return arr;
+  } catch (err) {}
+  return null;
+}
+function importVCard(fileOrBlob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = _ => {
+      reject(reader.error);
+    };
+    reader.onload = _ => {
+      const card = sunrise_sdk__WEBPACK_IMPORTED_MODULE_0__.TheCard.importVCard(reader.result);
+      if (!card) {
+        reject(new Error("Failed to parse vCard"));
+        return;
+      }
+      resolve(card);
+    };
+    reader.readAsText(fileOrBlob);
+  });
+}
+
+/***/ }),
+
+/***/ "./src/lib/formatters.js":
+/*!*******************************!*\
+  !*** ./src/lib/formatters.js ***!
+  \*******************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   fullFormatter: function() { return /* binding */ fullFormatter; },
+/* harmony export */   previewFormatter: function() { return /* binding */ previewFormatter; },
+/* harmony export */   replyFormatter: function() { return /* binding */ replyFormatter; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _widgets_audio_player_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../widgets/audio-player.jsx */ "./src/widgets/audio-player.jsx");
+/* harmony import */ var _widgets_call_message_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../widgets/call-message.jsx */ "./src/widgets/call-message.jsx");
+/* harmony import */ var _widgets_call_status_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../widgets/call-status.jsx */ "./src/widgets/call-status.jsx");
+/* harmony import */ var _widgets_inline_video_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../widgets/inline-video.jsx */ "./src/widgets/inline-video.jsx");
+/* harmony import */ var _widgets_lazy_image_jsx__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../widgets/lazy-image.jsx */ "./src/widgets/lazy-image.jsx");
+/* harmony import */ var _widgets_the_card_mini_jsx__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../widgets/the-card-mini.jsx */ "./src/widgets/the-card-mini.jsx");
+/* harmony import */ var _widgets_uploading_image_jsx__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../widgets/uploading-image.jsx */ "./src/widgets/uploading-image.jsx");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../config.js */ "./src/config.js");
+/* harmony import */ var _blob_helpers_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./blob-helpers.js */ "./src/lib/blob-helpers.js");
+/* harmony import */ var _strformat_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./strformat.js */ "./src/lib/strformat.js");
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./utils.js */ "./src/lib/utils.js");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
+  drafty_form: {
+    id: "drafty_form",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Form:"
+    }]
+  },
+  drafty_attachment: {
+    id: "drafty_attachment",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Attachment"
+    }]
+  },
+  drafty_image: {
+    id: "drafty_image",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Picture"
+    }]
+  },
+  drafty_video: {
+    id: "drafty_video",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Video recording"
+    }]
+  },
+  drafty_unknown: {
+    id: "drafty_unknown",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Unsupported"
+    }]
+  }
+});
+function fullFormatter(style, data, values, key, stack) {
+  if (stack.includes('QQ')) {
+    return quoteFormatter.call(this, style, data, values, key);
+  }
+  if (!style) {
+    return values;
+  }
+  let el = sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.tagName(style);
+  let attr = sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.attrValue(style, data) || {};
+  attr.key = key;
+  switch (style) {
+    case 'AU':
+      if (attr.src) {
+        attr.src = this.authorizeURL((0,_utils_js__WEBPACK_IMPORTED_MODULE_13__.sanitizeUrlForMime)(attr.src, 'audio'));
+        attr.duration = data.duration > 0 ? data.duration | 0 : undefined;
+        attr.preview = data.preview;
+        attr.loading = 'lazy';
+      }
+      el = _widgets_audio_player_jsx__WEBPACK_IMPORTED_MODULE_3__["default"];
+      values = null;
+      break;
+    case 'BR':
+      values = null;
+      break;
+    case 'EX':
+      break;
+    case 'HL':
+      attr.className = 'highlight';
+      break;
+    case 'HD':
+      el = null;
+      values = null;
+      break;
+    case 'IM':
+      el = handleImageData.call(this, el, data, attr);
+      values = null;
+      break;
+    case 'BN':
+      attr.onClick = e => this.onHandleClick(e, 'form_button');
+      let inner = react__WEBPACK_IMPORTED_MODULE_0___default().Children.map(values, child => {
+        return typeof child == 'string' ? child : undefined;
+      });
+      if (!inner || inner.length == 0) {
+        inner = [attr.name];
+      }
+      attr['data-title'] = inner.join('');
+      break;
+    case 'LN':
+      if (attr) {
+        attr.href = typeof attr.href == 'string' ? (0,_utils_js__WEBPACK_IMPORTED_MODULE_13__.sanitizeUrl)(attr.href, _config_js__WEBPACK_IMPORTED_MODULE_10__.CLICKABLE_URL_SCHEMES) : '';
+      }
+      break;
+    case 'MN':
+      attr.className = 'mention';
+      if (data) {
+        attr.className += ' ' + (0,_strformat_js__WEBPACK_IMPORTED_MODULE_12__.idToColorClass)(data.val, false, true);
+      }
+      break;
+    case 'FM':
+      attr.className = 'bot-form';
+      break;
+    case 'RW':
+      break;
+    case 'QQ':
+      attr.className = 'reply-quote';
+      attr.onClick = e => this.onHandleClick(e, 'quote');
+      break;
+    case 'TC':
+      el = _widgets_the_card_mini_jsx__WEBPACK_IMPORTED_MODULE_8__["default"];
+      attr.content = data;
+      attr.authorizeURL = this.authorizeURL;
+      attr.onChatClick = e => this.onHandleClick(e, 'contact_chat');
+      attr.onFindClick = e => this.onHandleClick(e, 'contact_find');
+      values = null;
+      break;
+    case 'VC':
+      el = _widgets_call_message_jsx__WEBPACK_IMPORTED_MODULE_4__["default"];
+      values = null;
+      if (data) {
+        attr.callState = data.state;
+        attr.incoming = data.incoming;
+        attr.duration = data.duration;
+      }
+      break;
+    case 'VD':
+      el = handleVideoData.call(this, el, data, attr);
+      values = null;
+      break;
+    default:
+      if (!el) {
+        el = (react__WEBPACK_IMPORTED_MODULE_0___default().Fragment);
+        attr = {
+          key: key
+        };
+        let body = values;
+        if (!Array.isArray(values) || !values.join('').trim()) {
+          body = [react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+            key: "x1",
+            className: "gray"
+          }, this.formatMessage(messages.drafty_unknown))];
+        }
+        values = [react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+          key: "x0",
+          className: "material-icons gray"
+        }, "extension"), ' '].concat(body);
+      }
+      break;
+  }
+  if (!el) {
+    return values;
+  }
+  return react__WEBPACK_IMPORTED_MODULE_0___default().createElement(el, attr, values);
+}
+function handleImageData(el, data, attr) {
+  if (!data) {
+    attr.src = 'img/broken_image.png';
+    attr.style = {
+      width: _config_js__WEBPACK_IMPORTED_MODULE_10__.IMAGE_THUMBNAIL_DIM + 'px',
+      height: _config_js__WEBPACK_IMPORTED_MODULE_10__.IMAGE_THUMBNAIL_DIM + 'px'
+    };
+    return el;
+  }
+  attr.className = 'inline-image';
+  const dim = (0,_blob_helpers_js__WEBPACK_IMPORTED_MODULE_11__.fitImageSize)(data.width, data.height, this.viewportWidth > 0 ? Math.min(this.viewportWidth - _config_js__WEBPACK_IMPORTED_MODULE_10__.REM_SIZE * 6.5, _config_js__WEBPACK_IMPORTED_MODULE_10__.REM_SIZE * 34.5) : _config_js__WEBPACK_IMPORTED_MODULE_10__.REM_SIZE * 34.5, _config_js__WEBPACK_IMPORTED_MODULE_10__.REM_SIZE * 24, false) || {
+    dstWidth: _config_js__WEBPACK_IMPORTED_MODULE_10__.BROKEN_IMAGE_SIZE,
+    dstHeight: _config_js__WEBPACK_IMPORTED_MODULE_10__.BROKEN_IMAGE_SIZE
+  };
+  attr.style = {
+    width: dim.dstWidth + 'px',
+    height: dim.dstHeight + 'px',
+    minWidth: dim.dstWidth + 'px',
+    minHeight: dim.dstHeight + 'px'
+  };
+  if (!sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.isProcessing(data)) {
+    attr.src = this.authorizeURL((0,_utils_js__WEBPACK_IMPORTED_MODULE_13__.sanitizeUrlForMime)(attr.src, 'image'));
+    attr.alt = data.name;
+    if (attr.src) {
+      if (Math.max(data.width || 0, data.height || 0) > _config_js__WEBPACK_IMPORTED_MODULE_10__.IMAGE_THUMBNAIL_DIM) {
+        attr.onClick = e => this.onHandleClick(e, 'image');
+        attr.className += ' image-clickable';
+      }
+      attr.loading = 'lazy';
+    } else {
+      attr.src = null;
+    }
+  } else {
+    el = _widgets_uploading_image_jsx__WEBPACK_IMPORTED_MODULE_9__["default"];
+  }
+  return el;
+}
+function handleVideoData(el, data, attr) {
+  if (!data) {
+    attr.src = 'img/broken_video.png';
+    attr.style = {
+      width: _config_js__WEBPACK_IMPORTED_MODULE_10__.IMAGE_THUMBNAIL_DIM + 'px',
+      height: _config_js__WEBPACK_IMPORTED_MODULE_10__.IMAGE_THUMBNAIL_DIM + 'px'
+    };
+    return el;
+  }
+  attr.className = 'inline-image';
+  const dim = (0,_blob_helpers_js__WEBPACK_IMPORTED_MODULE_11__.fitImageSize)(data.width, data.height, this.viewportWidth > 0 ? Math.min(this.viewportWidth - _config_js__WEBPACK_IMPORTED_MODULE_10__.REM_SIZE * 6.5, _config_js__WEBPACK_IMPORTED_MODULE_10__.REM_SIZE * 34.5) : _config_js__WEBPACK_IMPORTED_MODULE_10__.REM_SIZE * 34.5, _config_js__WEBPACK_IMPORTED_MODULE_10__.REM_SIZE * 24, false) || {
+    dstWidth: _config_js__WEBPACK_IMPORTED_MODULE_10__.NO_DIMENSIONS_VIDEO,
+    dstHeight: _config_js__WEBPACK_IMPORTED_MODULE_10__.NO_DIMENSIONS_VIDEO
+  };
+  attr.style = {
+    width: dim.dstWidth + 'px',
+    height: dim.dstHeight + 'px',
+    minWidth: dim.dstWidth + 'px',
+    minHeight: dim.dstHeight + 'px'
+  };
+  if (!sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.isProcessing(data)) {
+    attr.src = this.authorizeURL((0,_utils_js__WEBPACK_IMPORTED_MODULE_13__.sanitizeUrlForMime)(attr.src, 'image'));
+    attr.alt = data.name;
+    if (data.ref || data.val) {
+      attr.onClick = e => this.onHandleClick(e, 'video');
+      attr.loading = 'lazy';
+    }
+    el = _widgets_inline_video_jsx__WEBPACK_IMPORTED_MODULE_6__["default"];
+  } else {
+    el = _widgets_uploading_image_jsx__WEBPACK_IMPORTED_MODULE_9__["default"];
+  }
+  return el;
+}
+function previewFormatter(style, data, values, key) {
+  if (!style) {
+    return values;
+  }
+  let el = sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.tagName(style);
+  const attr = {
+    key: key
+  };
+  switch (style) {
+    case 'AU':
+      el = (react__WEBPACK_IMPORTED_MODULE_0___default().Fragment);
+      values = [react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+        key: "au",
+        className: "material-icons"
+      }, "mic"), ' ', (0,_strformat_js__WEBPACK_IMPORTED_MODULE_12__.secondsToTime)(data.duration / 1000)];
+      break;
+    case 'BR':
+      el = (react__WEBPACK_IMPORTED_MODULE_0___default().Fragment);
+      values = [' '];
+      break;
+    case 'HL':
+      attr.className = 'highlight preview';
+      break;
+    case 'LN':
+    case 'MN':
+      el = 'span';
+      break;
+    case 'IM':
+      el = (react__WEBPACK_IMPORTED_MODULE_0___default().Fragment);
+      values = [react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+        key: "im",
+        className: "material-icons"
+      }, "photo"), ' ', this.formatMessage(messages.drafty_image)];
+      break;
+    case 'BN':
+      el = 'span';
+      attr.className = 'flat-button faux';
+      break;
+    case 'FM':
+      el = (react__WEBPACK_IMPORTED_MODULE_0___default().Fragment);
+      values = [react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+        key: "fm",
+        className: "material-icons"
+      }, "dashboard"), this.formatMessage(messages.drafty_form)].concat(' ', values || []);
+      break;
+    case 'RW':
+      el = (react__WEBPACK_IMPORTED_MODULE_0___default().Fragment);
+      break;
+    case 'EX':
+      if (data) {
+        if (sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.isFormResponseType(data.mime)) {
+          return null;
+        }
+        delete data.val;
+        delete data.ref;
+      }
+      el = (react__WEBPACK_IMPORTED_MODULE_0___default().Fragment);
+      values = [react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+        key: "ex",
+        className: "material-icons"
+      }, "attachment"), ' ', this.formatMessage(messages.drafty_attachment)];
+      break;
+    case 'VC':
+      el = _widgets_call_status_jsx__WEBPACK_IMPORTED_MODULE_5__["default"];
+      if (data) {
+        attr.callState = data.state;
+        attr.incoming = data.incoming;
+        attr.duration = data.duration;
+      }
+      values = null;
+      break;
+    case 'QQ':
+    case 'HD':
+      el = null;
+      values = null;
+      break;
+    case 'TC':
+      el = (react__WEBPACK_IMPORTED_MODULE_0___default().Fragment);
+      values = [react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+        key: "tc",
+        className: "material-icons"
+      }, "contact_mail"), ' ', sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.TheCard.getFn(data) || this.formatMessage(messages.drafty_unknown)];
+      break;
+    case 'VD':
+      el = (react__WEBPACK_IMPORTED_MODULE_0___default().Fragment);
+      values = [react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+        key: "im",
+        className: "material-icons"
+      }, "play_circle_outline"), ' ', this.formatMessage(messages.drafty_video)];
+      break;
+    default:
+      if (!el) {
+        el = (react__WEBPACK_IMPORTED_MODULE_0___default().Fragment);
+        values = [react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+          key: "x0",
+          className: "material-icons gray"
+        }, "extension"), ' ', this.formatMessage(messages.drafty_unknown)];
+      }
+      break;
+  }
+  if (!el) {
+    return values;
+  }
+  return react__WEBPACK_IMPORTED_MODULE_0___default().createElement(el, attr, values);
+}
+;
+function inlineImageAttr(attr, data) {
+  attr.style = {
+    width: _config_js__WEBPACK_IMPORTED_MODULE_10__.IMAGE_THUMBNAIL_DIM + 'px',
+    height: _config_js__WEBPACK_IMPORTED_MODULE_10__.IMAGE_THUMBNAIL_DIM + 'px',
+    maxWidth: _config_js__WEBPACK_IMPORTED_MODULE_10__.IMAGE_THUMBNAIL_DIM + 'px',
+    maxHeight: _config_js__WEBPACK_IMPORTED_MODULE_10__.IMAGE_THUMBNAIL_DIM + 'px'
+  };
+  attr.className = 'inline-image';
+  attr.alt = this.formatMessage(messages.drafty_image);
+  if (!data) {
+    attr.src = 'img/broken_image.png';
+  } else {
+    attr.src = attr.src || 'img/broken_image.png';
+  }
+  attr.title = attr.alt;
+  return attr;
+}
+function inlineVideoAttr(attr, data) {
+  const dim = (0,_blob_helpers_js__WEBPACK_IMPORTED_MODULE_11__.fitImageSize)(data.width, data.height, _config_js__WEBPACK_IMPORTED_MODULE_10__.VIDEO_THUMBNAIL_WIDTH, _config_js__WEBPACK_IMPORTED_MODULE_10__.IMAGE_THUMBNAIL_DIM);
+  attr.style = {
+    width: dim.width + 'px',
+    height: dim.height + 'px',
+    maxWidth: _config_js__WEBPACK_IMPORTED_MODULE_10__.VIDEO_THUMBNAIL_WIDTH + 'px',
+    maxHeight: _config_js__WEBPACK_IMPORTED_MODULE_10__.IMAGE_THUMBNAIL_DIM + 'px'
+  };
+  attr.className = 'inline-image';
+  attr.alt = this.formatMessage(messages.drafty_video);
+  attr.title = attr.alt;
+  if (!data) {
+    attr.src = 'img/broken_video.png';
+  } else {
+    attr.src = attr.src || 'img/broken_video.png';
+  }
+  return attr;
+}
+function quoteFormatter(style, data, values, key) {
+  if (['BR', 'EX', 'IM', 'MN', 'VD'].includes(style)) {
+    let el = sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.tagName(style);
+    let attr = sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.attrValue(style, data) || {};
+    attr.key = key;
+    switch (style) {
+      case 'BR':
+        values = null;
+        break;
+      case 'IM':
+        attr = inlineImageAttr.call(this, attr, data);
+        values = [react__WEBPACK_IMPORTED_MODULE_0___default().createElement('img', attr, null), ' ', attr.alt];
+        el = (react__WEBPACK_IMPORTED_MODULE_0___default().Fragment);
+        attr = {
+          key: key
+        };
+        break;
+      case 'VD':
+        attr = inlineVideoAttr.call(this, attr, data);
+        values = [react__WEBPACK_IMPORTED_MODULE_0___default().createElement('img', attr, null), ' ', attr.alt];
+        el = (react__WEBPACK_IMPORTED_MODULE_0___default().Fragment);
+        attr = {
+          key: key
+        };
+        break;
+      case 'MN':
+        el = 'span';
+        attr.className = 'mention';
+        if (data) {
+          attr.className += ' ' + (0,_strformat_js__WEBPACK_IMPORTED_MODULE_12__.idToColorClass)(data.val, false, true);
+        }
+        break;
+      case 'EX':
+        let fname;
+        if (data) {
+          if (sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.isFormResponseType(data.mime)) {
+            return null;
+          }
+          fname = data.name;
+          delete data.val;
+          delete data.ref;
+        }
+        el = (react__WEBPACK_IMPORTED_MODULE_0___default().Fragment);
+        values = [react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+          key: "ex",
+          className: "material-icons"
+        }, "attachment"), (0,_strformat_js__WEBPACK_IMPORTED_MODULE_12__.shortenFileName)(fname, 16) || this.formatMessage(messages.drafty_attachment)];
+        break;
+    }
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement(el, attr, values);
+  }
+  return previewFormatter.call(this, style, data, values, key);
+}
+function quoteImageOrVideo(data, isVideo) {
+  let promise;
+  let bits, ref, mime;
+  if (isVideo) {
+    bits = data.preview;
+    mime = data.premime || 'image/jpeg';
+    ref = data.preref;
+  } else {
+    bits = data.val;
+    mime = data.mime;
+    ref = data.ref;
+  }
+  if (bits) {
+    const blob = (0,_blob_helpers_js__WEBPACK_IMPORTED_MODULE_11__.base64ToBlob)(bits, mime);
+    if (!blob) {
+      throw new Error("Invalid image");
+    }
+    promise = Promise.resolve(blob);
+  } else if (ref) {
+    promise = fetch(this.authorizeURL((0,_utils_js__WEBPACK_IMPORTED_MODULE_13__.sanitizeUrlForMime)(ref, 'image'))).then(evt => {
+      if (evt.ok) {
+        return evt.blob();
+      } else {
+        throw new Error(`Image fetch unsuccessful: ${evt.status} ${evt.statusText}`);
+      }
+    });
+  } else {
+    throw new Error("Missing image data");
+  }
+  return promise.then(blob => {
+    return (0,_blob_helpers_js__WEBPACK_IMPORTED_MODULE_11__.imageScaled)(blob, isVideo ? _config_js__WEBPACK_IMPORTED_MODULE_10__.VIDEO_THUMBNAIL_WIDTH : _config_js__WEBPACK_IMPORTED_MODULE_10__.IMAGE_THUMBNAIL_DIM, _config_js__WEBPACK_IMPORTED_MODULE_10__.IMAGE_THUMBNAIL_DIM, -1, !isVideo);
+  }).then(scaled => {
+    if (isVideo) {
+      data.premime = scaled.mime;
+    } else {
+      data.mime = scaled.mime;
+    }
+    data.size = scaled.blob.size;
+    data.width = scaled.width;
+    data.height = scaled.height;
+    delete data.ref;
+    delete data.preref;
+    data.src = URL.createObjectURL(scaled.blob);
+    return (0,_blob_helpers_js__WEBPACK_IMPORTED_MODULE_11__.blobToBase64)(scaled.blob);
+  }).then(b64 => {
+    if (isVideo) {
+      data.preview = b64.bits;
+    } else {
+      data.val = b64.bits;
+    }
+    return data;
+  }).catch(err => {
+    delete data.val;
+    delete data.preview;
+    delete data.src;
+    data.width = _config_js__WEBPACK_IMPORTED_MODULE_10__.IMAGE_THUMBNAIL_DIM;
+    data.height = _config_js__WEBPACK_IMPORTED_MODULE_10__.IMAGE_THUMBNAIL_DIM;
+    throw err;
+  });
+}
+function replyFormatter(style, data, values, key, stack) {
+  if (style == 'IM' || style == 'VD') {
+    const isImage = style == 'IM';
+    const attr = isImage ? inlineImageAttr.call(this, {
+      key: key
+    }, data) : inlineVideoAttr.call(this, {
+      key: key
+    }, data);
+    let loadedPromise;
+    try {
+      loadedPromise = (0,_utils_js__WEBPACK_IMPORTED_MODULE_13__.cancelablePromise)(quoteImageOrVideo.call(this, data, style == 'VD'));
+    } catch (error) {
+      console.warn("Failed to quote image:", error.message);
+      loadedPromise = (0,_utils_js__WEBPACK_IMPORTED_MODULE_13__.cancelablePromise)(error);
+    }
+    attr.whenDone = loadedPromise;
+    values = [react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_lazy_image_jsx__WEBPACK_IMPORTED_MODULE_7__["default"], attr, null), ' ', attr.alt];
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), {
+      key: key
+    }, values);
+  } else if (style == 'QQ') {
+    if (stack.includes('QQ')) {
+      return react__WEBPACK_IMPORTED_MODULE_0___default().createElement('span', {
+        key: key
+      }, [react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+        key: "qq",
+        className: "material-icons"
+      }, "format_quote"), ' ']);
+    }
+    const attr = sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.attrValue('QQ', data) || {};
+    attr.key = key;
+    attr.className = 'reply-quote';
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.tagName('QQ'), attr, values);
+  }
+  return quoteFormatter.call(this, style, data, values, key);
+}
+
+/***/ }),
+
+/***/ "./src/lib/host-name.js":
+/*!******************************!*\
+  !*** ./src/lib/host-name.js ***!
+  \******************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   detectServerAddress: function() { return /* binding */ detectServerAddress; },
+/* harmony export */   isLocalHost: function() { return /* binding */ isLocalHost; },
+/* harmony export */   isSecureConnection: function() { return /* binding */ isSecureConnection; }
+/* harmony export */ });
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../config.js */ "./src/config.js");
+
+function detectServerAddress() {
+  let host = _config_js__WEBPACK_IMPORTED_MODULE_0__.DEFAULT_HOST;
+  if (typeof window.location == 'object') {
+    if (window.location.protocol == 'file:' || window.location.hostname == 'localhost') {
+      host = _config_js__WEBPACK_IMPORTED_MODULE_0__.KNOWN_HOSTS.local;
+    } else if (window.location.hostname) {
+      host = window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+    }
+  }
+  return host;
+}
+function isSecureConnection() {
+  if (typeof window.location == 'object') {
+    return window.location.protocol == 'https:';
+  }
+  return false;
+}
+function isLocalHost() {
+  if (typeof window.location == 'object') {
+    return window.location.hostname == 'localhost';
+  }
+  return false;
+}
+
+/***/ }),
+
+/***/ "./src/lib/local-storage.js":
+/*!**********************************!*\
+  !*** ./src/lib/local-storage.js ***!
+  \**********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ LocalStorageUtil; }
+/* harmony export */ });
+class LocalStorageUtil {
+  static setObject(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
+  static getObject(key) {
+    const value = localStorage.getItem(key);
+    return value && JSON.parse(value);
+  }
+  static updateObject(key, value) {
+    const oldVal = this.getObject(key);
+    this.setObject(key, Object.assign(oldVal || {}, value));
+  }
+  static removeItem(key) {
+    localStorage.removeItem(key);
+  }
+}
+
+/***/ }),
+
+/***/ "./src/lib/navigation.js":
+/*!*******************************!*\
+  !*** ./src/lib/navigation.js ***!
+  \*******************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ HashNavigation; }
+/* harmony export */ });
+class HashNavigation {
+  static parseUrlHash(hash) {
+    const parts = hash.split('?', 2);
+    const params = {};
+    let path = [];
+    if (parts[0]) {
+      path = parts[0].replace('#', '').split('/');
+    }
+    if (parts[1]) {
+      parts[1].split('&').forEach(arg => {
+        const eq = arg.indexOf('=');
+        if (eq > 0) {
+          params[arg.slice(0, eq)] = decodeURIComponent(arg.slice(eq + 1));
+        }
+      });
+    }
+    return {
+      path: path,
+      params: params
+    };
+  }
+  static navigateTo(url) {
+    window.location.hash = url;
+  }
+  static composeUrlHash(path, params) {
+    let url = path.join('/');
+    const args = [];
+    for (const key in params) {
+      if (params.hasOwnProperty(key)) {
+        if (params[key] !== undefined) {
+          args.push(key + '=' + encodeURIComponent(params[key]));
+        }
+      }
+    }
+    if (args.length > 0) {
+      url += '?' + args.join('&');
+    }
+    return url;
+  }
+  static addUrlParam(hash, key, value) {
+    const parsed = HashNavigation.parseUrlHash(hash);
+    parsed.params[key] = value;
+    return HashNavigation.composeUrlHash(parsed.path, parsed.params);
+  }
+  static removeUrlParam(hash, key) {
+    const parsed = HashNavigation.parseUrlHash(hash);
+    delete parsed.params[key];
+    return HashNavigation.composeUrlHash(parsed.path, parsed.params);
+  }
+  static removeUrlParams(hash, keys) {
+    if (!Array.isArray(keys)) {
+      keys = [keys];
+    }
+    const parsed = HashNavigation.parseUrlHash(hash);
+    for (const key of keys) {
+      delete parsed.params[key];
+    }
+    return HashNavigation.composeUrlHash(parsed.path, parsed.params);
+  }
+  static setUrlSidePanel(hash, sidepanel) {
+    const parsed = HashNavigation.parseUrlHash(hash);
+    parsed.path[0] = sidepanel;
+    return HashNavigation.composeUrlHash(parsed.path, parsed.params);
+  }
+  static setUrlInfoPanel(hash, infopanel) {
+    const parsed = HashNavigation.parseUrlHash(hash);
+    if (infopanel) {
+      parsed.params.info = infopanel;
+    } else {
+      delete parsed.params.info;
+    }
+    return HashNavigation.composeUrlHash(parsed.path, parsed.params);
+  }
+  static setUrlTopic(hash, topic) {
+    const parsed = HashNavigation.parseUrlHash(hash);
+    parsed.path[1] = topic;
+    delete parsed.params.info;
+    return HashNavigation.composeUrlHash(parsed.path, parsed.params);
+  }
+}
+
+/***/ }),
+
+/***/ "./src/lib/strformat.js":
+/*!******************************!*\
+  !*** ./src/lib/strformat.js ***!
+  \******************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   bytesToHumanSize: function() { return /* binding */ bytesToHumanSize; },
+/* harmony export */   flagEmoji: function() { return /* binding */ flagEmoji; },
+/* harmony export */   idToColorClass: function() { return /* binding */ idToColorClass; },
+/* harmony export */   letterTileColorId: function() { return /* binding */ letterTileColorId; },
+/* harmony export */   relativeDateFormat: function() { return /* binding */ relativeDateFormat; },
+/* harmony export */   secondsToTime: function() { return /* binding */ secondsToTime; },
+/* harmony export */   shortDateFormat: function() { return /* binding */ shortDateFormat; },
+/* harmony export */   shortenFileName: function() { return /* binding */ shortenFileName; },
+/* harmony export */   truncateString: function() { return /* binding */ truncateString; }
+/* harmony export */ });
+function shortDateFormat(then, locale) {
+  locale = locale || window.navigator.userLanguage || window.navigator.language;
+  const now = new Date();
+  if (then.getFullYear() == now.getFullYear()) {
+    if (then.getMonth() == now.getMonth() && then.getDate() == now.getDate()) {
+      return then.toLocaleTimeString(locale, {
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    return then.toLocaleDateString(locale, {
+      hour12: false,
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+  return then.toLocaleDateString(locale, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+}
+function relativeDateFormat(then, locale) {
+  locale = locale || window.navigator.userLanguage || window.navigator.language;
+  const now = new Date();
+  const thenDays = Math.floor((then.getTime() - then.getTimezoneOffset() * 60_000) / 86_400_000);
+  const nowDays = Math.floor((now.getTime() - now.getTimezoneOffset() * 60_000) / 86_400_000);
+  const diff = thenDays - nowDays;
+  if (Math.abs(diff) < 2) {
+    return new Intl.RelativeTimeFormat(locale, {
+      numeric: 'auto'
+    }).format(diff, 'day');
+  }
+  return new Intl.DateTimeFormat(locale).format(then);
+}
+function secondsToTime(seconds, fixedMin) {
+  if (typeof seconds != 'number') {
+    return '';
+  }
+  let min = (Math.floor(seconds / 60) | 0) % 60;
+  let hours = Math.floor(seconds / 3600) | 0;
+  if (fixedMin || hours > 0) {
+    min = min < 10 ? `0${min}` : min;
+  }
+  let sec = (seconds | 0) % 60;
+  sec = sec < 10 ? `0${sec}` : sec;
+  if (hours == 0) {
+    return `${min}:${sec}`;
+  }
+  return `${hours}:${min}:${sec}`;
+}
+function bytesToHumanSize(bytes) {
+  if (!bytes || bytes == 0) {
+    return '0 Bytes';
+  }
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+  const bucket = Math.min(Math.floor(Math.log2(bytes) / 10) | 0, sizes.length - 1);
+  const count = bytes / Math.pow(1024, bucket);
+  const round = bucket > 0 ? count < 3 ? 2 : count < 30 ? 1 : 0 : 0;
+  return count.toFixed(round) + ' ' + sizes[bucket];
+}
+function shortenFileName(filename, maxLength) {
+  if (typeof filename != 'string') {
+    return filename;
+  }
+  return filename.length > maxLength ? filename.slice(0, maxLength / 2 - 1) + '…' + filename.slice(1 - maxLength / 2) : filename;
+}
+function stringToColorHash(value) {
+  let hash = 0;
+  value = '' + value;
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash << 5) - hash + value.charCodeAt(i);
+    hash = hash & hash;
+  }
+  return hash;
+}
+function letterTileColorId(userId) {
+  return Math.abs(stringToColorHash(userId)) % 16;
+}
+function idToColorClass(id, light, fg) {
+  return (light ? 'lt-' : 'dk-') + (fg ? 'fg-' : 'bg-') + letterTileColorId(id);
+}
+function flagEmoji(countryCode) {
+  const codePoints = countryCode.toUpperCase().split('').map(char => 0x1F1A5 + char.charCodeAt());
+  return String.fromCodePoint(...codePoints);
+}
+function truncateString(str, maxLength) {
+  if (typeof str !== 'string') {
+    return str;
+  }
+  if (str.length <= maxLength) {
+    return str;
+  }
+  const isRTL = /[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(str);
+  return isRTL ? '…' + str.slice(0, maxLength - 1) : str.slice(0, maxLength - 1) + '…';
+}
+
+/***/ }),
+
+/***/ "./src/lib/utils.js":
+/*!**************************!*\
+  !*** ./src/lib/utils.js ***!
+  \**************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   arrayEqual: function() { return /* binding */ arrayEqual; },
+/* harmony export */   asEmail: function() { return /* binding */ asEmail; },
+/* harmony export */   asPhone: function() { return /* binding */ asPhone; },
+/* harmony export */   cancelablePromise: function() { return /* binding */ cancelablePromise; },
+/* harmony export */   defaultWallpaper: function() { return /* binding */ defaultWallpaper; },
+/* harmony export */   deliveryMarker: function() { return /* binding */ deliveryMarker; },
+/* harmony export */   isUrlRelative: function() { return /* binding */ isUrlRelative; },
+/* harmony export */   sanitizeUrl: function() { return /* binding */ sanitizeUrl; },
+/* harmony export */   sanitizeUrlForMime: function() { return /* binding */ sanitizeUrlForMime; },
+/* harmony export */   theCard: function() { return /* binding */ theCard; },
+/* harmony export */   updateFavicon: function() { return /* binding */ updateFavicon; },
+/* harmony export */   urlAsAttachment: function() { return /* binding */ urlAsAttachment; },
+/* harmony export */   wallpaperNameFromUrl: function() { return /* binding */ wallpaperNameFromUrl; },
+/* harmony export */   wallpaperTypeFromUrl: function() { return /* binding */ wallpaperTypeFromUrl; }
+/* harmony export */ });
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../config.js */ "./src/config.js");
+
+
+function updateFavicon(count) {
+  const oldIcon = document.getElementById('shortcut-icon');
+  const head = document.head || document.getElementsByTagName('head')[0];
+  const newIcon = document.createElement('link');
+  newIcon.type = 'image/png';
+  newIcon.id = 'shortcut-icon';
+  newIcon.rel = 'shortcut icon';
+  newIcon.href = 'img/logo32x32' + (count > 0 ? 'a' : '') + '.png';
+  if (oldIcon) {
+    head.removeChild(oldIcon);
+  }
+  head.appendChild(newIcon);
+  document.title = (count > 0 ? '(' + count + ') ' : '') + 'Sunrise';
+}
+function theCard(fn, imageUrl, imageMimeType, note) {
+  let card = null;
+  fn = fn && fn.trim();
+  note = note && note.trim();
+  if (fn) {
+    card = {
+      fn: fn
+    };
+  }
+  if (typeof note == 'string') {
+    card = card || {};
+    card.note = note ? note : sunrise_sdk__WEBPACK_IMPORTED_MODULE_0__.Sunrise.DEL_CHAR;
+  }
+  if (imageUrl) {
+    card = card || {};
+    let mimeType = imageMimeType;
+    const matches = /^data:(image\/[-a-z0-9+.]+)?(;base64)?,/i.exec(imageUrl);
+    if (matches) {
+      mimeType = matches[1];
+      card.photo = {
+        data: imageUrl.substring(imageUrl.indexOf(',') + 1),
+        ref: sunrise_sdk__WEBPACK_IMPORTED_MODULE_0__.Sunrise.DEL_CHAR
+      };
+    } else {
+      card.photo = {
+        data: sunrise_sdk__WEBPACK_IMPORTED_MODULE_0__.Sunrise.DEL_CHAR,
+        ref: imageUrl
+      };
+    }
+    card.photo.type = (mimeType || 'image/jpeg').substring('image/'.length);
+  }
+  return card;
+}
+function arrayEqual(a, b) {
+  if (a === b) {
+    return true;
+  }
+  if (!Array.isArray(a) || !Array.isArray(b)) {
+    return false;
+  }
+  if (a.length != b.length) {
+    return false;
+  }
+  a.sort();
+  b.sort();
+  for (let i = 0, l = a.length; i < l; i++) {
+    if (a[i] !== b[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+function asPhone(val) {
+  val = val.trim();
+  if (/^(?:\+?(\d{1,3}))?[- (.]*(\d{3})[- ).]*(\d{3})[- .]*(\d{2})[- .]*(\d{2})?$/.test(val)) {
+    return val.replaceAll(/[- ().]*/g, '');
+  }
+  return null;
+}
+function asEmail(val) {
+  val = val.trim();
+  if (/^[a-z0-9_.+-]+@[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(val)) {
+    return val;
+  }
+  return null;
+}
+function isUrlRelative(url) {
+  return url && !/^\s*([a-z][a-z0-9+.-]*:|\/\/)/im.test(url.replace(/\\/g, '/'));
+}
+function sanitizeUrl(url, allowedSchemes) {
+  if (typeof url != 'string') {
+    return url;
+  }
+  url = url.replace(/[^\x21-\x7E]/gmi, '').trim();
+  url = url.replace(/\\/g, '/');
+  if (!/^([a-z][a-z0-9+.-]*:|\/\/)/i.test(url)) {
+    return url;
+  }
+  if (/^blob:http/.test(url)) {
+    return url;
+  }
+  const schemes = Array.isArray(allowedSchemes) ? allowedSchemes.join('|') : 'http|https';
+  const re = new RegExp('^((' + schemes + '):|//)', 'i');
+  if (!re.test(url)) {
+    return null;
+  }
+  return url;
+}
+function sanitizeUrlForMime(url, mimeMajor) {
+  if (!url) {
+    return null;
+  }
+  const sanitizedUrl = sanitizeUrl(url);
+  if (sanitizedUrl) {
+    return sanitizedUrl;
+  }
+  const re = new RegExp(`data:${mimeMajor}\/[-+.a-z0-9]+;base64,`, 'i');
+  if (re.test(url.trim())) {
+    return url;
+  }
+  return null;
+}
+function urlAsAttachment(url) {
+  if (url.startsWith('data:') || url.startsWith('blob:')) {
+    return url;
+  }
+  let query = '',
+    fragment = '';
+  const idxF = url.indexOf('#');
+  if (idxF > 0) {
+    fragment = url.substring(idxF + 1);
+    url = url.substring(0, idxF);
+  }
+  const idxQ = url.indexOf('?');
+  if (idxQ > 0) {
+    query = url.substring(idxQ + 1);
+    url = url.substring(0, idxQ);
+  }
+  const params = new URLSearchParams(query);
+  params.append('asatt', '1');
+  return `${url}?${params.toString()}` + (fragment ? `#${fragment}` : '');
+}
+function deliveryMarker(received) {
+  switch (received) {
+    case sunrise_sdk__WEBPACK_IMPORTED_MODULE_0__.Sunrise.MESSAGE_STATUS_SENDING:
+      return {
+        name: 'access_time'
+      };
+    case sunrise_sdk__WEBPACK_IMPORTED_MODULE_0__.Sunrise.MESSAGE_STATUS_FAILED:
+    case sunrise_sdk__WEBPACK_IMPORTED_MODULE_0__.Sunrise.MESSAGE_STATUS_FATAL:
+      return {
+        name: 'warning',
+        color: 'danger-color'
+      };
+    case sunrise_sdk__WEBPACK_IMPORTED_MODULE_0__.Sunrise.MESSAGE_STATUS_SENT:
+      return {
+        name: 'done'
+      };
+    case sunrise_sdk__WEBPACK_IMPORTED_MODULE_0__.Sunrise.MESSAGE_STATUS_RECEIVED:
+      return {
+        name: 'done_all'
+      };
+    case sunrise_sdk__WEBPACK_IMPORTED_MODULE_0__.Sunrise.MESSAGE_STATUS_READ:
+      return {
+        name: 'done_all',
+        color: 'blue'
+      };
+  }
+  return null;
+}
+function cancelablePromise(promise) {
+  let hasCanceled = false;
+  const wrappedPromise = promise instanceof Error ? Promise.reject(promise) : new Promise((resolve, reject) => {
+    promise.then(result => hasCanceled ? reject({
+      isCanceled: true
+    }) : resolve(result), error => hasCanceled ? reject({
+      isCanceled: true
+    }) : reject(error));
+  });
+  return {
+    promise: wrappedPromise,
+    cancel() {
+      hasCanceled = true;
+    }
+  };
+}
+;
+function defaultWallpaper() {
+  const wallpaperIndex = __webpack_require__(/*! ../../img/bkg/index.json */ "./img/bkg/index.json");
+  const wp = wallpaperIndex[_config_js__WEBPACK_IMPORTED_MODULE_1__.WALLPAPER_DEFAULTS.type][_config_js__WEBPACK_IMPORTED_MODULE_1__.WALLPAPER_DEFAULTS.index];
+  return {
+    name: `../${_config_js__WEBPACK_IMPORTED_MODULE_1__.WALLPAPER_DEFAULTS.path}${wp.name}`,
+    size: wp.size
+  };
+}
+function wallpaperNameFromUrl(wallpaperUrl) {
+  const parts = wallpaperUrl.split('/');
+  return parts[parts.length - 1];
+}
+function wallpaperTypeFromUrl(wallpaperUrl) {
+  const fname = wallpaperNameFromUrl(wallpaperUrl);
+  const wallpaperIndex = __webpack_require__(/*! ../../img/bkg/index.json */ "./img/bkg/index.json");
+  for (const type in wallpaperIndex) {
+    for (let i = 0; i < wallpaperIndex[type].length; i++) {
+      if (wallpaperIndex[type][i].name == fname) {
+        return type;
+      }
+    }
+  }
+  return null;
+}
+
+/***/ }),
+
+/***/ "./src/version.js":
+/*!************************!*\
+  !*** ./src/version.js ***!
+  \************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   PACKAGE_VERSION: function() { return /* binding */ PACKAGE_VERSION; }
+/* harmony export */ });
+const PACKAGE_VERSION = "0.25.2";
+
+/***/ }),
+
+/***/ "./src/views/acc-general-view.jsx":
+/*!****************************************!*\
+  !*** ./src/views/acc-general-view.jsx ***!
+  \****************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ AccGeneralView; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+
+
+class AccGeneralView extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      colorSchema: props.colorSchema || 'auto',
+      textSize: props.textSize * 10 || '100',
+      sendOnEnter: props.sendOnEnter || 'plain'
+    };
+    this.isMac = (navigator.userAgentData && navigator.userAgentData.platform || navigator.platform).toLowerCase().startsWith('mac');
+    this.handleColorSchemaSelected = this.handleColorSchemaSelected.bind(this);
+    this.handleTextSizeChanged = this.handleTextSizeChanged.bind(this);
+    this.handleSendOnEnterSelected = this.handleSendOnEnterSelected.bind(this);
+  }
+  handleColorSchemaSelected(e) {
+    this.setState({
+      colorSchema: e.currentTarget.value
+    });
+    this.props.onChangeColorSchema(e.currentTarget.value);
+  }
+  handleTextSizeChanged(e) {
+    this.setState({
+      textSize: e.currentTarget.value
+    });
+    this.props.onTextSizeChanged(e.currentTarget.value / 10 | 0);
+  }
+  handleSendOnEnterSelected(e) {
+    this.setState({
+      sendOnEnter: e.currentTarget.value
+    });
+    this.props.onSendOnEnterChanged(e.currentTarget.value);
+  }
+  render() {
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      id: "settings-form",
+      className: "scrollable-panel"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-column"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      className: "small"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_color_schema",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Theme:"
+      }]
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", {
+      className: "quoted"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
+      key: "system"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+      type: "radio",
+      id: "system",
+      name: "color-scheme-select",
+      value: "auto",
+      checked: this.state.colorSchema == 'auto',
+      onChange: this.handleColorSchemaSelected
+    }), "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      htmlFor: "system"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "color_schema_system",
+      defaultMessage: [{
+        "type": 0,
+        "value": "System default"
+      }]
+    }), "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", {
+      src: "img/routine.svg",
+      style: {
+        verticalAlign: 'top',
+        width: '1.6rem',
+        height: '1.6rem'
+      }
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
+      key: "light"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+      type: "radio",
+      id: "light",
+      name: "color-scheme-select",
+      value: "light",
+      checked: this.state.colorSchema == 'light',
+      onChange: this.handleColorSchemaSelected
+    }), "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      htmlFor: "light"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "color_schema_light",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Light"
+      }]
+    }), "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons orange large"
+    }, "light_mode"))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
+      key: "dark"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+      type: "radio",
+      id: "dark",
+      name: "color-scheme-select",
+      value: "dark",
+      checked: this.state.colorSchema == 'dark',
+      onChange: this.handleColorSchemaSelected
+    }), "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      htmlFor: "dark"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "color_schema_dark",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Dark"
+      }]
+    }), "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons blue large"
+    }, "dark_mode")))))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "hr"
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row clean-clickable"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      onClick: this.props.onSelectWallpapers,
+      className: "flat-button"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "wallpaper"), "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "wallpapers",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Wallpapers"
+      }]
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "hr"
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-column"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      className: "small"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_text_size",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Text size:"
+      }]
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+      type: "range",
+      id: "text_size",
+      name: "text_size",
+      min: "80",
+      max: "120",
+      step: "10",
+      list: "text_size_options",
+      value: this.state.textSize,
+      onChange: this.handleTextSizeChanged
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("datalist", {
+      id: "text_size_options"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("option", {
+      value: "80",
+      label: "80%"
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("option", {
+      value: "90",
+      label: "90%"
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("option", {
+      value: "100",
+      label: "100%"
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("option", {
+      value: "110",
+      label: "110%"
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("option", {
+      value: "120",
+      label: "120%"
+    })))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "hr"
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      className: "small"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_keyboard",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Keyboard:"
+      }]
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", {
+      className: "quoted"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
+      key: "plain"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+      type: "radio",
+      id: "plain",
+      name: "send-select",
+      value: "plain",
+      checked: this.state.sendOnEnter == 'plain',
+      onChange: this.handleSendOnEnterSelected
+    }), "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      htmlFor: "send_plain"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "send_plain",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Send on Enter"
+      }]
+    }), "\xA0"), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      className: "small gray"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "send_plain_explained",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Press Shift + Enter for new line"
+      }]
+    })))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
+      key: "command"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+      type: "radio",
+      id: "command",
+      name: "send-select",
+      value: "command",
+      checked: this.state.sendOnEnter == 'command',
+      onChange: this.handleSendOnEnterSelected
+    }), "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      htmlFor: "send_command"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "send_command",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Send on "
+      }, {
+        "type": 1,
+        "value": "key"
+      }],
+      values: {
+        key: this.isMac ? '⌘ + Enter' : 'Ctrl + Enter'
+      }
+    }), "\xA0"), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      className: "small gray"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "send_command_explained",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Press Enter for new line"
+      }]
+    })))))));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/views/acc-notifications-view.jsx":
+/*!**********************************************!*\
+  !*** ./src/views/acc-notifications-view.jsx ***!
+  \**********************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ AccNotificationsView; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _widgets_checkbox_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../widgets/checkbox.jsx */ "./src/widgets/checkbox.jsx");
+
+
+
+class AccNotificationsView extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.handleCheckboxClick = this.handleCheckboxClick.bind(this);
+  }
+  handleCheckboxClick(what, checked) {
+    if (what == 'sound') {
+      this.props.onToggleMessageSounds(checked);
+    } else if (what == 'alert') {
+      this.props.onTogglePushNotifications(checked);
+    }
+  }
+  render() {
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "scrollable-panel"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      htmlFor: "message-sound"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_message_sound",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Message sound:"
+      }]
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_checkbox_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      name: "sound",
+      id: "message-sound",
+      checked: this.props.messageSounds,
+      onChange: this.handleCheckboxClick
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      htmlFor: "desktop-alerts"
+    }, this.props.desktopAlertsEnabled ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_push_notifications",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Notification alerts:"
+      }]
+    }) : react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_push_notifications_disabled",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Notification alerts (requires HTTPS):"
+      }]
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_checkbox_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      name: "alert",
+      id: "desktop-alerts",
+      checked: this.props.desktopAlerts,
+      onChange: this.props.desktopAlertsEnabled ? this.handleCheckboxClick : null
+    })));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/views/acc-support-view.jsx":
+/*!****************************************!*\
+  !*** ./src/views/acc-support-view.jsx ***!
+  \****************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ AccSupportView; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../config.js */ "./src/config.js");
+
+
+
+
+class AccSupportView extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  render() {
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "scrollable-panel"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-column"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: _config_js__WEBPACK_IMPORTED_MODULE_3__.LINK_CONTACT_US,
+      className: "flat-button",
+      target: "_blank"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "email"), " \xA0", react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "link_contact_us",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Contact Us"
+      }]
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: _config_js__WEBPACK_IMPORTED_MODULE_3__.LINK_TERMS_OF_SERVICE,
+      className: "flat-button",
+      target: "_blank"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "description"), " \xA0", react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "link_terms_of_service",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Terms of Service"
+      }]
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: _config_js__WEBPACK_IMPORTED_MODULE_3__.LINK_PRIVACY_POLICY,
+      className: "flat-button",
+      target: "_blank"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "policy"), " \xA0", react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "link_privacy_policy",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Privacy Policy"
+      }]
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "hr"
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-column"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      className: "small"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_client",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Client:"
+      }]
+    })), _config_js__WEBPACK_IMPORTED_MODULE_3__.APP_NAME), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      className: "small"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_sdk",
+      defaultMessage: [{
+        "type": 0,
+        "value": "SDK:"
+      }]
+    })), sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.getLibrary()), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      className: "small"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_server",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Server:"
+      }]
+    })), this.props.serverVersion), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      className: "small"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_server_address",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Server address:"
+      }]
+    })), this.props.serverAddress)));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/views/contacts-view.jsx":
+/*!*************************************!*\
+  !*** ./src/views/contacts-view.jsx ***!
+  \*************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ ContactsView; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _widgets_contact_list_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../widgets/contact-list.jsx */ "./src/widgets/contact-list.jsx");
+/* harmony import */ var _lib_utils_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../lib/utils.js */ "./src/lib/utils.js");
+
+
+
+
+const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
+  archived_contacts_title: {
+    id: "archived_contacts",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Archived contacts ("
+    }, {
+      "type": 1,
+      "value": "count"
+    }, {
+      "type": 0,
+      "value": ")"
+    }]
+  }
+});
+class ContactsView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+  constructor(props) {
+    super(props);
+    this.handleAction = this.handleAction.bind(this);
+    this.state = ContactsView.deriveStateFromProps(props);
+  }
+  static deriveStateFromProps(props) {
+    const contacts = [];
+    let unreadThreads = 0;
+    let archivedCount = 0;
+    const me = props.sunrise.getMeTopic();
+    props.chatList.forEach(c => {
+      const blocked = c.acs && !c.acs.isJoiner();
+      c.pinned = me.pinnedTopicRank(c.topic);
+      if (blocked && props.blocked) {
+        contacts.push(c);
+      }
+      if (blocked || props.blocked) {
+        return;
+      }
+      if (c.private && c.private.arch) {
+        if (props.archive) {
+          contacts.push(c);
+        } else {
+          archivedCount++;
+        }
+      } else if (!props.archive) {
+        contacts.push(c);
+        unreadThreads += c.unread > 0 ? 1 : 0;
+      }
+    });
+    contacts.sort((a, b) => {
+      const pin = b.pinned - a.pinned;
+      return pin != 0 ? pin : (b.touched || 0) - (a.touched || 0);
+    });
+    if (archivedCount > 0) {
+      contacts.push({
+        action: 'archive',
+        title: messages.archived_contacts_title,
+        values: {
+          count: archivedCount
+        }
+      });
+    }
+    return {
+      contactList: contacts,
+      unreadThreads: unreadThreads
+    };
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.chatList != this.props.chatList || prevProps.archive != this.props.archive || prevProps.blocked != this.props.blocked) {
+      const newState = ContactsView.deriveStateFromProps(this.props);
+      this.setState(newState);
+      if (newState.unreadThreads != prevState.unreadThreads) {
+        (0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_3__.updateFavicon)(newState.unreadThreads);
+      }
+    }
+  }
+  handleAction(action_ignored) {
+    this.props.onShowArchive();
+  }
+  render() {
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "contacts_not_found",
+      defaultMessage: [{
+        "type": 0,
+        "value": "You have no chats\\n¯∖_(ツ)_/¯"
+      }]
+    }, no_contacts => react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_contact_list_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      sunrise: this.props.sunrise,
+      connected: this.props.connected,
+      contacts: this.state.contactList,
+      emptyListMessage: no_contacts,
+      topicSelected: this.props.topicSelected,
+      myUserId: this.props.myUserId,
+      showOnline: true,
+      showUnread: true,
+      onTopicSelected: this.props.onTopicSelected,
+      showContextMenu: this.props.showContextMenu,
+      onAction: this.handleAction
+    }));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/views/login-view.jsx":
+/*!**********************************!*\
+  !*** ./src/views/login-view.jsx ***!
+  \**********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ LoginView; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _widgets_checkbox_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../widgets/checkbox.jsx */ "./src/widgets/checkbox.jsx");
+/* harmony import */ var _widgets_visible_password_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../widgets/visible-password.jsx */ "./src/widgets/visible-password.jsx");
+
+
+
+
+class LoginView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      login: props.login,
+      password: '',
+      hostName: props.serverAddress,
+      saveToken: props.persist
+    };
+    this.handleLoginChange = this.handleLoginChange.bind(this);
+    this.handlePasswordChange = this.handlePasswordChange.bind(this);
+    this.handleToggleSaveToken = this.handleToggleSaveToken.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+  handleLoginChange(e) {
+    this.setState({
+      login: e.target.value
+    });
+  }
+  handlePasswordChange(e) {
+    this.setState({
+      password: e.target.value
+    });
+  }
+  handleToggleSaveToken() {
+    this.props.onPersistenceChange(!this.state.saveToken);
+    this.setState({
+      saveToken: !this.state.saveToken
+    });
+  }
+  handleSubmit(e) {
+    e.preventDefault();
+    this.props.onLogin(this.state.login.trim(), this.state.password.trim());
+  }
+  render() {
+    let submitClasses = 'primary';
+    if (this.props.disabled) {
+      submitClasses += ' disabled';
+    }
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("form", {
+      id: "login-form",
+      onSubmit: this.handleSubmit
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "login_prompt",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Login"
+      }]
+    }, login_prompt => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+      type: "text",
+      id: "inputLogin",
+      placeholder: login_prompt,
+      autoComplete: "username",
+      autoCorrect: "off",
+      autoCapitalize: "none",
+      value: this.state.login,
+      onChange: this.handleLoginChange,
+      required: true,
+      autoFocus: true
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "password_prompt",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Password"
+      }]
+    }, password_prompt => react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_visible_password_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
+      type: "password",
+      id: "inputPassword",
+      placeholder: password_prompt,
+      autoComplete: "current-password",
+      value: this.state.password,
+      onChange: this.handlePasswordChange,
+      required: true
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_checkbox_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      id: "save-token",
+      name: "save-token",
+      checked: this.state.saveToken,
+      onChange: this.handleToggleSaveToken
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      htmlFor: "save-token"
+    }, "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "stay_logged_in",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Stay logged in"
+      }]
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#reset"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "forgot_password_link",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Forgot password?"
+      }]
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "dialog-buttons"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+      className: submitClasses,
+      type: "submit"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "button_sign_in",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Sign in"
+      }]
+    }))));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/views/new-topic-view.jsx":
+/*!**************************************!*\
+  !*** ./src/views/new-topic-view.jsx ***!
+  \**************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _widgets_contact_list_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../widgets/contact-list.jsx */ "./src/widgets/contact-list.jsx");
+/* harmony import */ var _widgets_new_topic_by_id_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../widgets/new-topic-by-id.jsx */ "./src/widgets/new-topic-by-id.jsx");
+/* harmony import */ var _widgets_new_topic_group_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../widgets/new-topic-group.jsx */ "./src/widgets/new-topic-group.jsx");
+/* harmony import */ var _widgets_search_contacts_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../widgets/search-contacts.jsx */ "./src/widgets/search-contacts.jsx");
+/* harmony import */ var _lib_navigation_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../lib/navigation.js */ "./src/lib/navigation.js");
+/* harmony import */ var _lib_utils_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../lib/utils.js */ "./src/lib/utils.js");
+
+
+
+
+
+
+
+
+
+const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
+  search_for_contacts: {
+    id: "search_for_contacts",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Use search to find contacts"
+    }]
+  },
+  search_no_results: {
+    id: "search_no_results",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Search returned no results"
+    }]
+  },
+  search_placeholder: {
+    id: "search_placeholder",
+    defaultMessage: [{
+      "type": 0,
+      "value": "List like alice@example.com, +17025550003..."
+    }]
+  }
+});
+class NewTopicView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+  constructor(props) {
+    super(props);
+    const urlParams = _lib_navigation_js__WEBPACK_IMPORTED_MODULE_7__["default"].parseUrlHash(window.location.hash).params;
+    const initialTab = urlParams['tab'] || 'find';
+    const initialQuery = initialTab == 'find' ? urlParams['q'] || null : null;
+    this.state = {
+      tabSelected: initialTab,
+      searchQuery: initialQuery
+    };
+    this.handleTabClick = this.handleTabClick.bind(this);
+    this.handleSearchContacts = this.handleSearchContacts.bind(this);
+    this.handleSearchResultSelected = this.handleSearchResultSelected.bind(this);
+    this.handleNewGroupSubmit = this.handleNewGroupSubmit.bind(this);
+    this.handleGroupByID = this.handleGroupByID.bind(this);
+  }
+  componentDidMount() {
+    this.props.onInitFind();
+  }
+  handleTabClick(e) {
+    e.preventDefault();
+    _lib_navigation_js__WEBPACK_IMPORTED_MODULE_7__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_7__["default"].addUrlParam(window.location.hash, 'tab', e.currentTarget.dataset.id));
+    this.setState({
+      tabSelected: e.currentTarget.dataset.id
+    });
+  }
+  handleSearchContacts(query) {
+    query = query.trim() || sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.DEL_CHAR;
+    if (!/[\s,:]/.test(query) && query != sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.DEL_CHAR) {
+      const email = (0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_8__.asEmail)(query);
+      if (email) {
+        query = `${sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.TAG_EMAIL}${email}`;
+      } else {
+        const tel = (0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_8__.asPhone)(query);
+        if (tel) {
+          query = `${sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.TAG_PHONE}${tel}`;
+        } else {
+          if (query[0] == '@') {
+            query = query.substring(1);
+          }
+          query = `${sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.TAG_ALIAS}${query},${query}`;
+        }
+      }
+    }
+    this.props.onSearchContacts(query);
+    this.setState({
+      searchQuery: sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.isNullValue(query) ? null : query
+    });
+  }
+  handleSearchResultSelected(topicName) {
+    if (this.state.tabSelected == 'find') {
+      _lib_navigation_js__WEBPACK_IMPORTED_MODULE_7__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_7__["default"].removeUrlParams(window.location.hash, ['tab', 'q']));
+      this.props.onCreateTopic(topicName);
+    }
+  }
+  handleNewGroupSubmit(name, description, dataUrl, priv, tags, isChannel) {
+    _lib_navigation_js__WEBPACK_IMPORTED_MODULE_7__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_7__["default"].removeUrlParams(window.location.hash, ['tab', 'q']));
+    this.props.onCreateTopic(undefined, {
+      public: (0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_8__.theCard)(name, dataUrl, null, description),
+      private: priv,
+      tags: tags
+    }, isChannel);
+  }
+  handleGroupByID(topicName) {
+    _lib_navigation_js__WEBPACK_IMPORTED_MODULE_7__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_7__["default"].removeUrlParams(window.location.hash, ['tab', 'q']));
+    this.props.onCreateTopic(topicName);
+  }
+  render() {
+    const {
+      formatMessage
+    } = this.props.intl;
+    const no_contacts_placeholder = formatMessage(this.state.searchQuery ? messages.search_no_results : messages.search_for_contacts);
+    const search_placeholder = formatMessage(messages.search_placeholder);
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "flex-column"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", {
+      className: "tabbar"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
+      className: this.state.tabSelected === 'find' ? 'active' : null
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      "data-id": "find",
+      onClick: this.handleTabClick
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "tabtitle_find_user",
+      defaultMessage: [{
+        "type": 0,
+        "value": "find"
+      }]
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
+      className: this.state.tabSelected === 'grp' ? 'active' : null
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      "data-id": "grp",
+      onClick: this.handleTabClick
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "tabtitle_new_group",
+      defaultMessage: [{
+        "type": 0,
+        "value": "new group"
+      }]
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
+      className: this.state.tabSelected === 'byid' ? 'active' : null
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      "data-id": "byid",
+      onClick: this.handleTabClick
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "tabtitle_group_by_id",
+      defaultMessage: [{
+        "type": 0,
+        "value": "by id"
+      }]
+    })))), this.state.tabSelected === 'grp' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_new_topic_group_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      sunrise: this.props.sunrise,
+      onSubmit: this.handleNewGroupSubmit,
+      onError: this.props.onError
+    }) : this.state.tabSelected === 'byid' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_new_topic_by_id_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      myURI: sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.URI_TOPIC_ID_PREFIX + this.props.sunrise.getCurrentUserID(),
+      onSubmit: this.handleGroupByID,
+      onError: this.props.onError
+    }) : react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "flex-column"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_search_contacts_jsx__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      placeholder: search_placeholder,
+      initialQuery: this.state.searchQuery || '',
+      onSearchContacts: this.handleSearchContacts
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_contact_list_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
+      sunrise: this.props.sunrise,
+      contacts: this.props.searchResults,
+      myUserId: this.props.myUserId,
+      emptyListMessage: no_contacts_placeholder,
+      showSelfTopic: !this.state.searchQuery,
+      showOnline: false,
+      showUnread: false,
+      showContextMenu: false,
+      onTopicSelected: this.handleSearchResultSelected
+    })));
+  }
+}
+;
+/* harmony default export */ __webpack_exports__["default"] = ((0,react_intl__WEBPACK_IMPORTED_MODULE_1__.injectIntl)(NewTopicView));
+
+/***/ }),
+
+/***/ "./src/views/settings-view.jsx":
+/*!*************************************!*\
+  !*** ./src/views/settings-view.jsx ***!
+  \*************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ SettingsView; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _widgets_checkbox_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../widgets/checkbox.jsx */ "./src/widgets/checkbox.jsx");
+/* harmony import */ var _widgets_host_selector_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../widgets/host-selector.jsx */ "./src/widgets/host-selector.jsx");
+
+
+
+
+class SettingsView extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      transport: props.transport || 'def',
+      serverAddress: props.serverAddress,
+      secureConnection: props.secureConnection
+    };
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleTransportSelected = this.handleTransportSelected.bind(this);
+    this.handleServerAddressChange = this.handleServerAddressChange.bind(this);
+    this.handleToggleSecure = this.handleToggleSecure.bind(this);
+  }
+  handleSubmit(e) {
+    e.preventDefault();
+    this.props.onUpdate({
+      transport: this.state.transport,
+      serverAddress: this.state.serverAddress,
+      secureConnection: this.state.secureConnection
+    });
+  }
+  handleTransportSelected(e) {
+    this.setState({
+      transport: e.currentTarget.value
+    });
+  }
+  handleServerAddressChange(name) {
+    this.setState({
+      serverAddress: name
+    });
+  }
+  handleToggleSecure(e) {
+    this.setState({
+      secureConnection: !this.state.secureConnection
+    });
+  }
+  render() {
+    const names = {
+      def: "default",
+      ws: "websocket",
+      lp: "long polling"
+    };
+    const transportOptions = [];
+    ['def', 'ws', 'lp'].forEach(item => {
+      const id = 'transport-' + item;
+      const name = names[item];
+      transportOptions.push(react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
+        key: item
+      }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+        type: "radio",
+        id: id,
+        name: "transport-select",
+        value: item,
+        checked: this.state.transport === item,
+        onChange: this.handleTransportSelected
+      }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+        htmlFor: id
+      }, name)));
+    });
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("form", {
+      id: "settings-form",
+      className: "panel-form",
+      onSubmit: this.handleSubmit
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      className: "small"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_server_to_use",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Server to use:"
+      }]
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_host_selector_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
+      serverAddress: this.state.serverAddress,
+      onServerAddressChange: this.handleServerAddressChange
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_checkbox_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      id: "secure-connection",
+      name: "secure-connection",
+      checked: this.state.secureConnection,
+      className: "quoted",
+      onChange: this.handleToggleSecure
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      htmlFor: "secure-connection"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_use_secure_connection",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Use secure connection"
+      }]
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      className: "small"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_wire_transport",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Wire transport:"
+      }]
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", {
+      className: "quoted"
+    }, transportOptions)), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "dialog-buttons"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+      type: "submit",
+      className: "primary"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "button_update",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Update"
+      }]
+    }))));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/views/sidepanel-view.jsx":
+/*!**************************************!*\
+  !*** ./src/views/sidepanel-view.jsx ***!
+  \**************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _widgets_error_panel_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../widgets/error-panel.jsx */ "./src/widgets/error-panel.jsx");
+/* harmony import */ var _widgets_load_spinner_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../widgets/load-spinner.jsx */ "./src/widgets/load-spinner.jsx");
+/* harmony import */ var _widgets_side_navbar_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../widgets/side-navbar.jsx */ "./src/widgets/side-navbar.jsx");
+/* harmony import */ var _topic_common_view_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./topic-common-view.jsx */ "./src/views/topic-common-view.jsx");
+/* harmony import */ var _contacts_view_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./contacts-view.jsx */ "./src/views/contacts-view.jsx");
+/* harmony import */ var _acc_general_view_jsx__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./acc-general-view.jsx */ "./src/views/acc-general-view.jsx");
+/* harmony import */ var _acc_notifications_view_jsx__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./acc-notifications-view.jsx */ "./src/views/acc-notifications-view.jsx");
+/* harmony import */ var _acc_support_view_jsx__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./acc-support-view.jsx */ "./src/views/acc-support-view.jsx");
+/* harmony import */ var _login_view_jsx__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./login-view.jsx */ "./src/views/login-view.jsx");
+/* harmony import */ var _new_topic_view_jsx__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./new-topic-view.jsx */ "./src/views/new-topic-view.jsx");
+/* harmony import */ var _settings_view_jsx__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./settings-view.jsx */ "./src/views/settings-view.jsx");
+/* harmony import */ var _validation_view_jsx__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./validation-view.jsx */ "./src/views/validation-view.jsx");
+
+
+
+
+
+
+const AccountSettingsView = react__WEBPACK_IMPORTED_MODULE_0___default().lazy(_ => Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_libphonenumber-js_mobile_exports_parsePhoneNumberWithError_js"), __webpack_require__.e("vendors-node_modules_libphonenumber-js_examples_mobile_json_js-node_modules_libphonenumber-js-883e54"), __webpack_require__.e("src_views_account-settings-view_jsx")]).then(__webpack_require__.bind(__webpack_require__, /*! ./account-settings-view.jsx */ "./src/views/account-settings-view.jsx")));
+
+const CreateAccountView = react__WEBPACK_IMPORTED_MODULE_0___default().lazy(_ => Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_libphonenumber-js_mobile_exports_parsePhoneNumberWithError_js"), __webpack_require__.e("vendors-node_modules_libphonenumber-js_examples_mobile_json_js-node_modules_libphonenumber-js-883e54"), __webpack_require__.e("src_views_create-account-view_jsx")]).then(__webpack_require__.bind(__webpack_require__, /*! ./create-account-view.jsx */ "./src/views/create-account-view.jsx")));
+
+
+const AccSecurityView = react__WEBPACK_IMPORTED_MODULE_0___default().lazy(_ => __webpack_require__.e(/*! import() */ "src_views_acc-security-view_jsx").then(__webpack_require__.bind(__webpack_require__, /*! ./acc-security-view.jsx */ "./src/views/acc-security-view.jsx")));
+
+
+
+const PasswordResetView = react__WEBPACK_IMPORTED_MODULE_0___default().lazy(_ => Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_libphonenumber-js_mobile_exports_parsePhoneNumberWithError_js"), __webpack_require__.e("vendors-node_modules_libphonenumber-js_examples_mobile_json_js-node_modules_libphonenumber-js-883e54"), __webpack_require__.e("src_views_password-reset-view_jsx")]).then(__webpack_require__.bind(__webpack_require__, /*! ./password-reset-view.jsx */ "./src/views/password-reset-view.jsx")));
+
+
+const WallpapersView = react__WEBPACK_IMPORTED_MODULE_0___default().lazy(_ => __webpack_require__.e(/*! import() */ "src_views_wallpapers_jsx").then(__webpack_require__.bind(__webpack_require__, /*! ./wallpapers.jsx */ "./src/views/wallpapers.jsx")));
+const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
+  login: {
+    id: "sidepanel_title_login",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Sign In"
+    }]
+  },
+  register: {
+    id: "sidepanel_title_register",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Create Account"
+    }]
+  },
+  settings: {
+    id: "sidepanel_title_settings",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Settings"
+    }]
+  },
+  edit: {
+    id: "sidepanel_title_account_settings",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Account Settings"
+    }]
+  },
+  general: {
+    id: "panel_title_general",
+    defaultMessage: [{
+      "type": 0,
+      "value": "General"
+    }]
+  },
+  security: {
+    id: "panel_title_security",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Security"
+    }]
+  },
+  crop: {
+    id: "panel_title_crop",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Drag to Adjust"
+    }]
+  },
+  notif: {
+    id: "sidepanel_title_acc_notifications",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Notifications"
+    }]
+  },
+  acc_general: {
+    id: "sidepanel_title_acc_general",
+    defaultMessage: [{
+      "type": 0,
+      "value": "General"
+    }]
+  },
+  support: {
+    id: "sidepanel_title_acc_support",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Support"
+    }]
+  },
+  newtpk: {
+    id: "sidepanel_title_newtpk",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Start New Chat"
+    }]
+  },
+  cred: {
+    id: "sidepanel_title_cred",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Confirm Credentials"
+    }]
+  },
+  reset: {
+    id: "sidepanel_title_reset",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Reset Password"
+    }]
+  },
+  archive: {
+    id: "sidepanel_title_archive",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Archived Chats"
+    }]
+  },
+  blocked: {
+    id: "sidepanel_title_blocked",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Blocked Chats"
+    }]
+  },
+  wallpapers: {
+    id: "wallpapers",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Wallpapers"
+    }]
+  }
+});
+class SidepanelView extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.handleNewTopic = this.handleNewTopic.bind(this);
+  }
+  handleNewTopic() {
+    this.props.onNavigate('newtpk');
+  }
+  render() {
+    const {
+      formatMessage
+    } = this.props.intl;
+    const view = this.props.state || (this.props.myUserId ? 'contacts' : 'login');
+    let title, avatar, badges;
+    if (view == 'contacts') {
+      title = this.props.title;
+      avatar = this.props.avatar ? this.props.avatar : true;
+      badges = this.props.trustedBadges;
+    } else {
+      title = formatMessage(messages[view]);
+      avatar = false;
+      badges = null;
+    }
+    let onCancel;
+    if (['login', 'contacts'].indexOf(view) == -1) {
+      onCancel = this.props.onCancel;
+    }
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      id: "sidepanel"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_side_navbar_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      state: view,
+      title: title,
+      avatar: avatar,
+      sunrise: this.props.sunrise,
+      trustedBadges: badges,
+      myUserId: this.props.myUserId,
+      onSignUp: this.props.onSignUp,
+      onSettings: this.props.onSettings,
+      onNewTopic: this.handleNewTopic,
+      onCancel: onCancel
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_error_panel_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      level: this.props.errorLevel,
+      text: this.props.errorText,
+      action: this.props.errorAction,
+      actionText: this.props.errorActionText,
+      onClearError: this.props.onError
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_load_spinner_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
+      show: this.props.loadSpinnerVisible
+    }), view === 'login' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_login_view_jsx__WEBPACK_IMPORTED_MODULE_10__["default"], {
+      login: this.props.login,
+      disabled: this.props.loginDisabled,
+      persist: this.props.persist,
+      onLogin: this.props.onLoginRequest,
+      onPersistenceChange: this.props.onPersistenceChange
+    }) : view === 'register' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react__WEBPACK_IMPORTED_MODULE_0__.Suspense, {
+      fallback: react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+        className: "panel-form-row"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+        id: "loading_note",
+        defaultMessage: [{
+          "type": 0,
+          "value": "Loading..."
+        }]
+      }))
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(CreateAccountView, {
+      sunrise: this.props.sunrise,
+      reqCredMethod: this.props.reqCredMethod,
+      onShowCountrySelector: this.props.onShowCountrySelector,
+      onCreateAccount: this.props.onCreateAccount,
+      onCancel: this.props.onCancel,
+      onError: this.props.onError
+    })) : view === 'settings' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_settings_view_jsx__WEBPACK_IMPORTED_MODULE_12__["default"], {
+      transport: this.props.transport,
+      serverAddress: this.props.serverAddress,
+      secureConnection: this.props.secureConnection,
+      onCancel: this.props.onCancel,
+      onUpdate: this.props.onGlobalSettings
+    }) : view === 'edit' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react__WEBPACK_IMPORTED_MODULE_0__.Suspense, {
+      fallback: react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+        className: "panel-form-row"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+        id: "loading_note",
+        defaultMessage: [{
+          "type": 0,
+          "value": "Loading..."
+        }]
+      }))
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(AccountSettingsView, {
+      sunrise: this.props.sunrise,
+      myUserId: this.props.myUserId,
+      trustedBadges: this.props.trustedBadges,
+      reqCredMethod: this.props.reqCredMethod,
+      onShowCountrySelector: this.props.onShowCountrySelector,
+      onNavigate: this.props.onNavigate,
+      onCredAdd: this.props.onCredAdd,
+      onCredDelete: this.props.onCredDelete,
+      onCredConfirm: this.props.onCredConfirm,
+      onError: this.props.onError
+    })) : view === 'general' || view === 'crop' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_topic_common_view_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      topic: "me",
+      sunrise: this.props.sunrise,
+      myUserId: this.props.myUserId,
+      reqCredMethod: this.props.reqCredMethod,
+      onUpdateTopicDesc: this.props.onUpdateAccountDesc,
+      onUpdateTagsRequest: this.props.onUpdateAccountTags,
+      onError: this.props.onError
+    }) : view === 'acc_general' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_acc_general_view_jsx__WEBPACK_IMPORTED_MODULE_7__["default"], {
+      colorSchema: this.props.colorSchema,
+      onSelectWallpapers: this.props.onSelectWallpapers,
+      textSize: this.props.textSize,
+      sendOnEnter: this.props.sendOnEnter,
+      onChangeColorSchema: this.props.onChangeColorSchema,
+      onTextSizeChanged: this.props.onTextSizeChanged,
+      onSendOnEnterChanged: this.props.onSendOnEnterChanged
+    }) : view === 'notif' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_acc_notifications_view_jsx__WEBPACK_IMPORTED_MODULE_8__["default"], {
+      messageSounds: this.props.messageSounds,
+      desktopAlerts: this.props.desktopAlerts,
+      desktopAlertsEnabled: this.props.desktopAlertsEnabled,
+      onTogglePushNotifications: this.props.onTogglePushNotifications,
+      onToggleMessageSounds: this.props.onToggleMessageSounds
+    }) : view === 'security' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react__WEBPACK_IMPORTED_MODULE_0__.Suspense, {
+      fallback: react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+        className: "panel-form-row"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+        id: "loading_note",
+        defaultMessage: [{
+          "type": 0,
+          "value": "Loading..."
+        }]
+      }))
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(AccSecurityView, {
+      sunrise: this.props.sunrise,
+      incognitoMode: this.props.incognitoMode,
+      onUpdateAccountDesc: this.props.onUpdateAccountDesc,
+      onUpdatePassword: this.props.onUpdatePassword,
+      onLogout: this.props.onLogout,
+      onDeleteAccount: this.props.onDeleteAccount,
+      onShowAlert: this.props.onShowAlert,
+      onShowBlocked: this.props.onShowBlocked,
+      onToggleIncognitoMode: this.props.onToggleIncognitoMode
+    })) : view === 'support' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_acc_support_view_jsx__WEBPACK_IMPORTED_MODULE_9__["default"], {
+      serverAddress: this.props.serverAddress,
+      serverVersion: this.props.serverVersion
+    }) : view === 'wallpapers' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react__WEBPACK_IMPORTED_MODULE_0__.Suspense, {
+      fallback: react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+        className: "panel-form-row"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+        id: "loading_note",
+        defaultMessage: [{
+          "type": 0,
+          "value": "Loading..."
+        }]
+      }))
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(WallpapersView, {
+      wallpaper: this.props.wallpaper,
+      wallpaperSize: this.props.wallpaperSize,
+      wallpaperBlur: this.props.wallpaperBlur,
+      colorSchema: this.props.colorSchema !== 'auto' ? this.props.colorSchema : this.props.systemColorSchema,
+      onWallpaperSelected: this.props.onWallpaperSelected
+    })) : view === 'contacts' || view == 'archive' || view == 'blocked' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_contacts_view_jsx__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      sunrise: this.props.sunrise,
+      myUserId: this.props.myUserId,
+      connected: this.props.connected,
+      topicSelected: this.props.topicSelected,
+      archive: view == 'archive',
+      blocked: view == 'blocked',
+      chatList: this.props.chatList,
+      showContextMenu: this.props.showContextMenu,
+      onTopicSelected: this.props.onTopicSelected,
+      onShowArchive: this.props.onShowArchive
+    }) : view === 'newtpk' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_new_topic_view_jsx__WEBPACK_IMPORTED_MODULE_11__["default"], {
+      sunrise: this.props.sunrise,
+      searchResults: this.props.searchResults,
+      onInitFind: this.props.onInitFind,
+      onSearchContacts: this.props.onSearchContacts,
+      onCreateTopic: this.props.onCreateTopic,
+      onError: this.props.onError
+    }) : view === 'cred' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_validation_view_jsx__WEBPACK_IMPORTED_MODULE_13__["default"], {
+      credCode: this.props.credCode,
+      credMethod: this.props.credMethod,
+      credToken: this.props.credToken,
+      onSubmit: this.props.onValidateCredentials,
+      onCancel: this.props.onCancel
+    }) : view === 'reset' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react__WEBPACK_IMPORTED_MODULE_0__.Suspense, {
+      fallback: react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+        className: "panel-form-row"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+        id: "loading_note",
+        defaultMessage: [{
+          "type": 0,
+          "value": "Loading..."
+        }]
+      }))
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(PasswordResetView, {
+      sunrise: this.props.sunrise,
+      reqCredMethod: this.props.reqCredMethod,
+      onShowCountrySelector: this.props.onShowCountrySelector,
+      onRequest: this.props.onPasswordResetRequest,
+      onReset: this.props.onResetPassword,
+      onCancel: this.props.onCancel,
+      onError: this.props.onError
+    })) : null);
+  }
+}
+;
+/* harmony default export */ __webpack_exports__["default"] = ((0,react_intl__WEBPACK_IMPORTED_MODULE_1__.injectIntl)(SidepanelView));
+
+/***/ }),
+
+/***/ "./src/views/sunrise-web.jsx":
+/*!***********************************!*\
+  !*** ./src/views/sunrise-web.jsx ***!
+  \***********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var firebase_app__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! firebase/app */ "./node_modules/firebase/app/dist/esm/index.esm.js");
+/* harmony import */ var firebase_messaging__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! firebase/messaging */ "./node_modules/firebase/messaging/dist/esm/index.esm.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _widgets_alert_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../widgets/alert.jsx */ "./src/widgets/alert.jsx");
+/* harmony import */ var _widgets_context_menu_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../widgets/context-menu.jsx */ "./src/widgets/context-menu.jsx");
+/* harmony import */ var _widgets_forward_dialog_jsx__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../widgets/forward-dialog.jsx */ "./src/widgets/forward-dialog.jsx");
+/* harmony import */ var _widgets_call_incoming_jsx__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../widgets/call-incoming.jsx */ "./src/widgets/call-incoming.jsx");
+/* harmony import */ var _sidepanel_view_jsx__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./sidepanel-view.jsx */ "./src/views/sidepanel-view.jsx");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../config.js */ "./src/config.js");
+/* harmony import */ var _constants_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../constants.js */ "./src/constants.js");
+/* harmony import */ var _version_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../version.js */ "./src/version.js");
+/* harmony import */ var _lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../lib/blob-helpers.js */ "./src/lib/blob-helpers.js");
+/* harmony import */ var _lib_host_name_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../lib/host-name.js */ "./src/lib/host-name.js");
+/* harmony import */ var _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../lib/local-storage.js */ "./src/lib/local-storage.js");
+/* harmony import */ var _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../lib/navigation.js */ "./src/lib/navigation.js");
+/* harmony import */ var _lib_strformat_js__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../lib/strformat.js */ "./src/lib/strformat.js");
+/* harmony import */ var _lib_utils_js__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../lib/utils.js */ "./src/lib/utils.js");
+
+
+
+
+
+
+
+
+
+const PhoneCountrySelector = react__WEBPACK_IMPORTED_MODULE_0___default().lazy(_ => __webpack_require__.e(/*! import() */ "src_widgets_phone-country-selector_jsx").then(__webpack_require__.bind(__webpack_require__, /*! ../widgets/phone-country-selector.jsx */ "./src/widgets/phone-country-selector.jsx")));
+const InfoView = react__WEBPACK_IMPORTED_MODULE_0___default().lazy(_ => __webpack_require__.e(/*! import() */ "src_views_info-view_jsx").then(__webpack_require__.bind(__webpack_require__, /*! ./info-view.jsx */ "./src/views/info-view.jsx")));
+const MessagesView = react__WEBPACK_IMPORTED_MODULE_0___default().lazy(_ => __webpack_require__.e(/*! import() */ "src_views_messages-view_jsx").then(__webpack_require__.bind(__webpack_require__, /*! ./messages-view.jsx */ "./src/views/messages-view.jsx")));
+
+
+
+
+
+
+
+
+
+
+const POP_SOUND = new Audio('audio/msg.m4a');
+const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
+  reconnect_countdown: {
+    id: "reconnect_countdown",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Disconnected. Reconnecting in "
+    }, {
+      "type": 1,
+      "value": "seconds"
+    }, {
+      "type": 0,
+      "value": "…"
+    }]
+  },
+  reconnect_now: {
+    id: "reconnect_now",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Try now"
+    }]
+  },
+  push_init_failed: {
+    id: "push_init_failed",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Failed to initialize push notifications"
+    }]
+  },
+  invalid_security_token: {
+    id: "invalid_security_token",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Invalid security token"
+    }]
+  },
+  no_connection: {
+    id: "no_connection",
+    defaultMessage: [{
+      "type": 0,
+      "value": "No connection"
+    }]
+  },
+  code_doesnot_match: {
+    id: "code_doesnot_match",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Code does not match"
+    }]
+  },
+  menu_item_info: {
+    id: "menu_item_info",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Info"
+    }]
+  },
+  menu_item_audio_call: {
+    id: "menu_item_audio_call",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Call"
+    }]
+  },
+  menu_item_video_call: {
+    id: "menu_item_video_call",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Video call"
+    }]
+  },
+  cred_confirmed_successfully: {
+    id: "cred_confirmed_successfully",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Confirmed successfully"
+    }]
+  },
+  password_reset_success: {
+    id: "password_reset_success",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Password reset successfully"
+    }]
+  },
+  select_country: {
+    id: "select_country",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Select country"
+    }]
+  }
+});
+class SunriseWeb extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+  constructor(props) {
+    super(props);
+    this.selfRef = react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
+    this.state = this.getBlankState();
+    this.handleResize = this.handleResize.bind(this);
+    this.handleHashRoute = this.handleHashRoute.bind(this);
+    this.handleOnline = this.handleOnline.bind(this);
+    this.handleEscapeKey = this.handleEscapeKey.bind(this);
+    this.handleColorSchemeChange = this.handleColorSchemeChange.bind(this);
+    this.checkForAppUpdate = this.checkForAppUpdate.bind(this);
+    this.handleVisibilityEvent = this.handleVisibilityEvent.bind(this);
+    this.handleError = this.handleError.bind(this);
+    this.handleLoginRequest = this.handleLoginRequest.bind(this);
+    this.handlePersistenceChange = this.handlePersistenceChange.bind(this);
+    this.handleConnected = this.handleConnected.bind(this);
+    this.handleAutoreconnectIteration = this.handleAutoreconnectIteration.bind(this);
+    this.doLogin = this.doLogin.bind(this);
+    this.handleLoginSuccessful = this.handleLoginSuccessful.bind(this);
+    this.handleDisconnect = this.handleDisconnect.bind(this);
+    this.tnMeMetaDesc = this.tnMeMetaDesc.bind(this);
+    this.tnMeContactUpdate = this.tnMeContactUpdate.bind(this);
+    this.tnMeSubsUpdated = this.tnMeSubsUpdated.bind(this);
+    this.resetContactList = this.resetContactList.bind(this);
+    this.tnInitFind = this.tnInitFind.bind(this);
+    this.tnFndSubsUpdated = this.tnFndSubsUpdated.bind(this);
+    this.handleSearchContacts = this.handleSearchContacts.bind(this);
+    this.handleTopicSelected = this.handleTopicSelected.bind(this);
+    this.handleHideMessagesView = this.handleHideMessagesView.bind(this);
+    this.handleSendMessage = this.handleSendMessage.bind(this);
+    this.handleNewChatInvitation = this.handleNewChatInvitation.bind(this);
+    this.handleNewAccount = this.handleNewAccount.bind(this);
+    this.handleNewAccountRequest = this.handleNewAccountRequest.bind(this);
+    this.handleUpdatePasswordRequest = this.handleUpdatePasswordRequest.bind(this);
+    this.handleUpdateAccountTagsRequest = this.handleUpdateAccountTagsRequest.bind(this);
+    this.handleToggleIncognitoMode = this.handleToggleIncognitoMode.bind(this);
+    this.handleChangeColorSchema = this.handleChangeColorSchema.bind(this);
+    this.handleChangeTextSize = this.handleChangeTextSize.bind(this);
+    this.handleSendOnEnter = this.handleSendOnEnter.bind(this);
+    this.handleSelectWallpapers = this.handleSelectWallpapers.bind(this);
+    this.handleWallpaperSelected = this.handleWallpaperSelected.bind(this);
+    this.handleSettings = this.handleSettings.bind(this);
+    this.handleGlobalSettings = this.handleGlobalSettings.bind(this);
+    this.handleShowArchive = this.handleShowArchive.bind(this);
+    this.handleShowBlocked = this.handleShowBlocked.bind(this);
+    this.handleToggleMessageSounds = this.handleToggleMessageSounds.bind(this);
+    this.handleCredAdd = this.handleCredAdd.bind(this);
+    this.handleCredDelete = this.handleCredDelete.bind(this);
+    this.handleCredConfirm = this.handleCredConfirm.bind(this);
+    this.initFCMessaging = this.initFCMessaging.bind(this);
+    this.toggleFCMToken = this.toggleFCMToken.bind(this);
+    this.handlePushMessage = this.handlePushMessage.bind(this);
+    this.handleSidepanelCancel = this.handleSidepanelCancel.bind(this);
+    this.handleStartTopicRequest = this.handleStartTopicRequest.bind(this);
+    this.handleNewTopicCreated = this.handleNewTopicCreated.bind(this);
+    this.handleTopicUpdateRequest = this.handleTopicUpdateRequest.bind(this);
+    this.handleUnarchive = this.handleUnarchive.bind(this);
+    this.handleChangePermissions = this.handleChangePermissions.bind(this);
+    this.handleTagsUpdateRequest = this.handleTagsUpdateRequest.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
+    this.handleDeleteAccount = this.handleDeleteAccount.bind(this);
+    this.handleDeleteTopicRequest = this.handleDeleteTopicRequest.bind(this);
+    this.handleDeleteMessagesRequest = this.handleDeleteMessagesRequest.bind(this);
+    this.handleLeaveUnsubRequest = this.handleLeaveUnsubRequest.bind(this);
+    this.handleBlockTopicRequest = this.handleBlockTopicRequest.bind(this);
+    this.handleReportTopic = this.handleReportTopic.bind(this);
+    this.handleShareTheCard = this.handleShareTheCard.bind(this);
+    this.handleShowContextMenu = this.handleShowContextMenu.bind(this);
+    this.defaultTopicContextMenu = this.defaultTopicContextMenu.bind(this);
+    this.handleHideContextMenu = this.handleHideContextMenu.bind(this);
+    this.handleShowAlert = this.handleShowAlert.bind(this);
+    this.handleShowInfoView = this.handleShowInfoView.bind(this);
+    this.handleMemberUpdateRequest = this.handleMemberUpdateRequest.bind(this);
+    this.handleValidateCredentialsRequest = this.handleValidateCredentialsRequest.bind(this);
+    this.handlePasswordResetRequest = this.handlePasswordResetRequest.bind(this);
+    this.handleResetPassword = this.handleResetPassword.bind(this);
+    this.handleContextMenuAction = this.handleContextMenuAction.bind(this);
+    this.handleShowCountrySelector = this.handleShowCountrySelector.bind(this);
+    this.handleShowForwardDialog = this.handleShowForwardDialog.bind(this);
+    this.handleHideForwardDialog = this.handleHideForwardDialog.bind(this);
+    this.handleStartVideoCall = this.handleStartVideoCall.bind(this);
+    this.handleStartAudioCall = this.handleStartAudioCall.bind(this);
+    this.handleInfoMessage = this.handleInfoMessage.bind(this);
+    this.handleDataMessage = this.handleDataMessage.bind(this);
+    this.handleCallClose = this.handleCallClose.bind(this);
+    this.handleCallInvite = this.handleCallInvite.bind(this);
+    this.handleCallRinging = this.handleCallRinging.bind(this);
+    this.handleCallHangup = this.handleCallHangup.bind(this);
+    this.handleCallSendOffer = this.handleCallSendOffer.bind(this);
+    this.handleCallIceCandidate = this.handleCallIceCandidate.bind(this);
+    this.handleCallSendAnswer = this.handleCallSendAnswer.bind(this);
+    this.handleCallAccept = this.handleCallAccept.bind(this);
+    this.sendMessageToTopic = this.sendMessageToTopic.bind(this);
+    this.callTimeoutTimer = null;
+  }
+  getBlankState() {
+    const settings = _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].getObject('settings') || {};
+    const persist = !!_lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].getObject('keep-logged-in');
+    if (!settings.wallpaper) {
+      const wallpaper = (0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_18__.defaultWallpaper)();
+      settings.wallpaper = wallpaper.name || '';
+      settings.wallpaperSize = wallpaper.size || 0;
+      settings.wallpaperBlur = 0;
+    }
+    return {
+      connected: false,
+      ready: false,
+      autoLogin: false,
+      transport: settings.transport || null,
+      serverAddress: settings.serverAddress || (0,_lib_host_name_js__WEBPACK_IMPORTED_MODULE_14__.detectServerAddress)(),
+      secureConnection: settings.secureConnection === undefined ? (0,_lib_host_name_js__WEBPACK_IMPORTED_MODULE_14__.isSecureConnection)() : settings.secureConnection,
+      serverVersion: "no connection",
+      messageSounds: !settings.messageSoundsOff,
+      incognitoMode: false,
+      colorSchema: settings.colorSchema || _config_js__WEBPACK_IMPORTED_MODULE_10__.DEFAULT_COLOR_SCHEME,
+      systemColorSchema: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+      wallpaper: settings.wallpaper,
+      wallpaperSize: settings.wallpaperSize,
+      wallpaperBlur: 0,
+      textSize: settings.textSize || _config_js__WEBPACK_IMPORTED_MODULE_10__.DEFAULT_TEXT_SIZE,
+      sendOnEnter: settings.sendOnEnter || 'plain',
+      desktopAlerts: persist && !!settings.desktopAlerts,
+      desktopAlertsEnabled: ((0,_lib_host_name_js__WEBPACK_IMPORTED_MODULE_14__.isSecureConnection)() || (0,_lib_host_name_js__WEBPACK_IMPORTED_MODULE_14__.isLocalHost)()) && typeof firebase_app__WEBPACK_IMPORTED_MODULE_2__.initializeApp != 'undefined' && typeof navigator != 'undefined' && typeof FIREBASE_INIT != 'undefined',
+      firebaseToken: persist ? _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].getObject('firebase-token') : null,
+      applicationVisible: !document.hidden,
+      errorText: '',
+      errorLevel: null,
+      errorAction: undefined,
+      errorActionText: null,
+      sidePanelSelected: 'login',
+      sidePanelTitle: null,
+      sidePanelAvatar: null,
+      myTrustedBadges: [],
+      loadSpinnerVisible: false,
+      login: '',
+      password: '',
+      persist: persist,
+      myUserId: null,
+      liveConnection: navigator.onLine,
+      topicSelected: '',
+      topicSelectedOnline: false,
+      topicSelectedAcs: null,
+      newTopicParams: null,
+      loginDisabled: false,
+      displayMobile: window.innerWidth <= _config_js__WEBPACK_IMPORTED_MODULE_10__.MEDIA_BREAKPOINT,
+      infoPanel: undefined,
+      mobilePanel: 'sidepanel',
+      callTopic: undefined,
+      callState: _constants_js__WEBPACK_IMPORTED_MODULE_11__.CALL_STATE_NONE,
+      callAudioOnly: undefined,
+      callShouldStart: false,
+      contextMenuVisible: false,
+      contextMenuBounds: null,
+      contextMenuClickAt: null,
+      contextMenuParams: null,
+      contextMenuItems: [],
+      forwardDialogVisible: false,
+      forwardMessage: null,
+      alertVisible: false,
+      alertParams: {},
+      chatList: [],
+      searchResults: [],
+      searchableContacts: [],
+      reqCredMethod: undefined,
+      credMethod: undefined,
+      credCode: undefined,
+      credToken: undefined,
+      requestedTopic: undefined
+    };
+  }
+  componentDidMount() {
+    window.addEventListener('resize', this.handleResize);
+    this.handleOnlineOn = _ => {
+      this.handleOnline(true);
+    };
+    window.addEventListener('online', this.handleOnlineOn);
+    this.handleOnlineOff = _ => {
+      this.handleOnline(false);
+    };
+    window.addEventListener('offline', this.handleOnlineOff);
+    window.addEventListener('hashchange', this.handleHashRoute);
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.handleColorSchemeChange);
+    document.addEventListener('visibilitychange', this.handleVisibilityEvent);
+    document.addEventListener('keydown', this.handleEscapeKey);
+    document.documentElement.style.colorScheme = this.state.colorSchema == 'auto' ? 'light dark' : this.state.colorSchema;
+    document.documentElement.style.setProperty('--message-text-size', `${this.state.textSize}pt`);
+    this.applyWallpaperSettings(this.state.wallpaper, this.state.wallpaperSize, this.state.wallpaperBlur, this.state.colorSchema == 'auto' ? this.state.systemColorSchema : this.state.colorSchema);
+    if (typeof BroadcastChannel == 'function') {
+      const serviceWorkerChannel = new BroadcastChannel('sunrise-sw');
+      serviceWorkerChannel.addEventListener('message', this.handlePushMessage);
+    } else {
+      console.warn("Your browser does not support BroadcastChannel. Some features will not be available");
+    }
+    this.lastWakeUpCheck = new Date().getTime();
+    this.wakeUpTicker = setInterval(_ => {
+      const now = new Date().getTime();
+      if (now - this.lastWakeUpCheck > _config_js__WEBPACK_IMPORTED_MODULE_10__.WAKE_UP_TIMEOUT) {
+        this.handleOnlineOn();
+      }
+      this.lastWakeUpCheck = now;
+    }, _config_js__WEBPACK_IMPORTED_MODULE_10__.WAKE_UP_TICK);
+    this.setState({
+      viewportWidth: document.documentElement.clientWidth,
+      viewportHeight: document.documentElement.clientHeight
+    });
+    new Promise((resolve, reject) => {
+      this.sunrise = SunriseWeb.tnSetup(this.state.serverAddress, (0,_lib_host_name_js__WEBPACK_IMPORTED_MODULE_14__.isSecureConnection)(), this.state.transport, this.props.intl.locale, this.state.persist, resolve);
+      this.sunrise.onConnect = this.handleConnected;
+      this.sunrise.onDisconnect = this.handleDisconnect;
+      this.sunrise.onAutoreconnectIteration = this.handleAutoreconnectIteration;
+      this.sunrise.onInfoMessage = this.handleInfoMessage;
+      this.sunrise.onDataMessage = this.handleDataMessage;
+    }).then(_ => {
+      if (this.state.desktopAlertsEnabled) {
+        this.initFCMessaging().catch(_ => {});
+      }
+      this.resetContactList();
+      const token = this.state.persist ? _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].getObject('auth-token') : undefined;
+      if (token) {
+        this.setState({
+          autoLogin: true
+        });
+        token.expires = new Date(token.expires);
+        this.sunrise.setAuthToken(token);
+        this.sunrise.connect().catch(err => {
+          this.handleError(err.message, 'err');
+        });
+      }
+      const parsedNav = _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].parseUrlHash(window.location.hash);
+      if (!['cred', 'reset', 'register'].includes(parsedNav.path[0])) {
+        this.setState({
+          requestedTopic: parsedNav.path[1]
+        });
+        const path = parsedNav.params && parsedNav.params.cred_done ? _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].addUrlParam('', 'cred_done', parsedNav.params.cred_done) : '';
+        _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(path);
+      } else {
+        this.handleHashRoute();
+      }
+    });
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize);
+    window.removeEventListener('hashchange', this.handleHashRoute);
+    window.removeEventListener('online', this.handleOnlineOn);
+    window.removeEventListener('offline', this.handleOnlineOff);
+    window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', this.handleColorSchemeChange);
+    document.removeEventListener('visibilitychange', this.handleVisibilityEvent);
+    document.removeEventListener('keydown', this.handleEscapeKey);
+    clearInterval(this.wakeUpTicker);
+  }
+  static tnSetup(serverAddress, secureConnection, transport, locale, persistentCache, onSetupCompleted) {
+    const sunrise = new sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Sunrise({
+      appName: _config_js__WEBPACK_IMPORTED_MODULE_10__.APP_NAME,
+      host: serverAddress,
+      apiKey: _config_js__WEBPACK_IMPORTED_MODULE_10__.API_KEY,
+      transport: transport,
+      secure: secureConnection,
+      persist: persistentCache
+    }, onSetupCompleted);
+    sunrise.setHumanLanguage(locale);
+    sunrise.enableLogging(_config_js__WEBPACK_IMPORTED_MODULE_10__.LOGGING_ENABLED, true);
+    return sunrise;
+  }
+  handlePushMessage(payload) {
+    this.sunrise.oobNotification(payload.data || {});
+  }
+  initFCMessaging() {
+    const {
+      formatMessage,
+      locale
+    } = this.props.intl;
+    const onError = (msg, err) => {
+      console.error(msg, err);
+      this.handleError(formatMessage(messages.push_init_failed), 'err');
+      this.setState({
+        firebaseToken: null
+      });
+      _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].updateObject('settings', {
+        desktopAlerts: false
+      });
+    };
+    try {
+      this.fcm = (0,firebase_messaging__WEBPACK_IMPORTED_MODULE_3__.getMessaging)((0,firebase_app__WEBPACK_IMPORTED_MODULE_2__.initializeApp)(FIREBASE_INIT, _config_js__WEBPACK_IMPORTED_MODULE_10__.APP_NAME));
+      return navigator.serviceWorker.getRegistration('/service-worker.js').then(reg => {
+        return reg || navigator.serviceWorker.register('/service-worker.js').then(reg => {
+          this.checkForAppUpdate(reg);
+          return reg;
+        });
+      }).then(reg => {
+        (reg.active || reg.installing).postMessage(JSON.stringify({
+          locale: locale,
+          version: _version_js__WEBPACK_IMPORTED_MODULE_12__.PACKAGE_VERSION
+        }));
+        return SunriseWeb.requestFCMToken(this.fcm, reg);
+      }).then(token => {
+        const persist = _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].getObject('keep-logged-in');
+        if (token != this.state.firebaseToken) {
+          this.sunrise.setDeviceToken(token);
+          if (persist) {
+            _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].setObject('firebase-token', token);
+          }
+        }
+        this.setState({
+          firebaseToken: token,
+          desktopAlerts: true
+        });
+        if (persist) {
+          _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].updateObject('settings', {
+            desktopAlerts: true
+          });
+        }
+        (0,firebase_messaging__WEBPACK_IMPORTED_MODULE_3__.onMessage)(this.fcm, payload => {
+          this.handlePushMessage(payload);
+        });
+      }).catch(err => {
+        onError(err);
+        throw err;
+      });
+    } catch (err) {
+      onError(err);
+      return Promise.reject(err);
+    }
+  }
+  static requestFCMToken(fcm, sw) {
+    return (0,firebase_messaging__WEBPACK_IMPORTED_MODULE_3__.getToken)(fcm, {
+      serviceWorkerRegistration: sw,
+      vapidKey: FIREBASE_INIT.messagingVapidKey
+    }).then(token => {
+      if (token) {
+        return token;
+      } else if (typeof Notification != 'undefined') {
+        return Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            return (0,firebase_messaging__WEBPACK_IMPORTED_MODULE_3__.getToken)(fcm, {
+              serviceWorkerRegistration: reg,
+              vapidKey: FIREBASE_INIT.messagingVapidKey
+            }).then(token => {
+              if (token) {
+                return token;
+              } else {
+                throw new Error("Failed to initialize notifications");
+              }
+            });
+          } else {
+            throw new Error("No permission to send notifications: " + permission);
+          }
+        });
+      }
+      throw new Error("Notifications are not supported");
+    });
+  }
+  handleResize() {
+    const mobile = document.documentElement.clientWidth <= _config_js__WEBPACK_IMPORTED_MODULE_10__.MEDIA_BREAKPOINT;
+    this.setState({
+      viewportWidth: document.documentElement.clientWidth,
+      viewportHeight: document.documentElement.clientHeight
+    });
+    if (this.state.displayMobile != mobile) {
+      this.setState({
+        displayMobile: mobile
+      });
+    }
+  }
+  handleEscapeKey(e) {
+    if (e.key === 'Escape' || e.keyCode === 27) {
+      this.setState({
+        topicSelected: null,
+        errorText: '',
+        errorLevel: null,
+        mobilePanel: 'sidepanel',
+        topicSelectedOnline: false,
+        topicSelectedAcs: null,
+        infoPanel: undefined,
+        forwardMessage: null,
+        contextMenuVisible: false,
+        forwardDialogVisible: false,
+        alertVisible: false
+      });
+      _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlTopic('', null));
+    }
+  }
+  checkForAppUpdate(reg) {
+    reg.onupdatefound = _ => {
+      const installingWorker = reg.installing;
+      installingWorker.onstatechange = _ => {
+        if (installingWorker.state == 'installed' && navigator.serviceWorker.controller) {
+          const msg = react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+            id: "update_available",
+            defaultMessage: [{
+              "type": 0,
+              "value": "Update available."
+            }]
+          }), " ", react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+            href: ""
+          }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+            id: "reload_update",
+            defaultMessage: [{
+              "type": 0,
+              "value": "Reload"
+            }]
+          })), ".");
+          this.handleError(msg, 'info');
+        }
+      };
+    };
+  }
+  handleHashRoute() {
+    const hash = _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].parseUrlHash(window.location.hash);
+    const newState = {
+      infoPanel: hash.params.info,
+      newTopicTabSelected: hash.params.tab
+    };
+    if (hash.path && hash.path.length > 0) {
+      if (['acc_general', 'archive', 'blocked', 'contacts', 'cred', 'crop', 'edit', 'general', 'newtpk', 'notif', 'register', 'reset', 'security', 'settings', 'support', 'wallpapers', ''].includes(hash.path[0])) {
+        newState.sidePanelSelected = hash.path[0];
+      } else {
+        console.warn("Unknown sidepanel view", hash.path[0]);
+      }
+      let topicName = hash.path[1] || null;
+      if (topicName != this.state.topicSelected) {
+        if (!sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Sunrise.topicType(topicName)) {
+          topicName = null;
+          newState.mobilePanel = 'sidepanel';
+        } else {
+          newState.mobilePanel = 'topic-view';
+        }
+        Object.assign(newState, {
+          topicSelected: topicName,
+          topicSelectedAcs: this.sunrise.getTopicAccessMode(topicName)
+        });
+      }
+    } else {
+      Object.assign(newState, {
+        sidePanelSelected: '',
+        topicSelected: null
+      });
+    }
+    if (hash.params.method) {
+      newState.credMethod = hash.params.method;
+    }
+    if (hash.params.code) {
+      newState.credCode = hash.params.code;
+    }
+    if (hash.params.token) {
+      newState.credToken = hash.params.token;
+    }
+    if (hash.params.cred_done) {
+      Object.assign(newState, SunriseWeb.stateForError(this.props.intl.formatMessage(messages.cred_confirmed_successfully), 'info'));
+    }
+    this.setState(newState);
+  }
+  handleOnline(online) {
+    if (online) {
+      this.handleError();
+      clearInterval(this.reconnectCountdown);
+      this.sunrise.reconnect();
+    } else {
+      this.handleError(this.props.intl.formatMessage(messages.no_connection), 'warn');
+    }
+    this.setState({
+      liveConnection: online
+    });
+  }
+  handleVisibilityEvent() {
+    this.setState({
+      applicationVisible: !document.hidden
+    });
+  }
+  static stateForError(err, level, action, actionText) {
+    return {
+      errorText: err,
+      errorLevel: level,
+      errorAction: action,
+      errorActionText: actionText,
+      callShouldStart: false
+    };
+  }
+  handleError(err, level, action, actionText) {
+    this.setState(SunriseWeb.stateForError(err, level, action, actionText));
+  }
+  handleLoginRequest(login, password) {
+    this.setState({
+      loginDisabled: true,
+      login: login,
+      password: password,
+      loadSpinnerVisible: true,
+      autoLogin: true
+    });
+    this.handleError('', null);
+    if (this.sunrise.isConnected()) {
+      this.doLogin(login, password, null, {
+        meth: this.state.credMethod,
+        resp: this.state.credCode
+      });
+    } else {
+      this.sunrise.connect().catch(err => {
+        this.setState({
+          loginDisabled: false,
+          autoLogin: false,
+          loadSpinnerVisible: false
+        });
+        this.handleError(err.message, 'err');
+      });
+    }
+    if (this.state.desktopAlertsEnabled && !this.state.firebaseToken) {
+      this.initFCMessaging();
+    }
+  }
+  handlePersistenceChange(persist) {
+    if (persist) {
+      this.sunrise.initStorage().then(_ => {
+        _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].setObject('keep-logged-in', true);
+        this.setState({
+          persist: true
+        });
+      });
+    } else {
+      this.sunrise.clearStorage().then(_ => {
+        _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].setObject('keep-logged-in', false);
+        this.setState({
+          persist: false
+        });
+      });
+    }
+  }
+  handleConnected() {
+    clearInterval(this.reconnectCountdown);
+    this.handleError();
+    const params = this.sunrise.getServerInfo();
+    this.setState({
+      serverVersion: params.ver + ' ' + (params.build ? params.build : 'none'),
+      reqCredMethod: ((params.reqCred || {}).auth || [])[0] || 'email'
+    });
+    if (this.state.autoLogin) {
+      this.doLogin(this.state.login, this.state.password, null, {
+        meth: this.state.credMethod,
+        resp: this.state.credCode
+      });
+    }
+  }
+  handleAutoreconnectIteration(sec, prom) {
+    clearInterval(this.reconnectCountdown);
+    if (sec < 0) {
+      this.handleError();
+      return;
+    }
+    if (prom) {
+      prom.then(_ => {
+        this.handleError();
+      }).catch(err => {
+        this.handleError(err.message, 'err');
+      });
+      return;
+    }
+    const {
+      formatMessage
+    } = this.props.intl;
+    let count = sec / 1000;
+    count = count | count;
+    this.reconnectCountdown = setInterval(_ => {
+      if (count < -10) {
+        clearInterval(this.reconnectCountdown);
+        this.sunrise.reconnect();
+        return;
+      }
+      const fmtTime = count > 99 ? (0,_lib_strformat_js__WEBPACK_IMPORTED_MODULE_17__.secondsToTime)(count) : count;
+      this.handleError(formatMessage(messages.reconnect_countdown, {
+        seconds: fmtTime
+      }), 'warn', _ => {
+        clearInterval(this.reconnectCountdown);
+        this.sunrise.reconnect();
+      }, formatMessage(messages.reconnect_now));
+      count -= 1;
+    }, 1000);
+  }
+  handleDisconnect(err) {
+    this.setState({
+      connected: false,
+      ready: false,
+      topicSelectedOnline: false,
+      errorText: err && err.message ? err.message : "Disconnected",
+      errorLevel: err && err.message ? 'err' : 'warn',
+      loginDisabled: false,
+      contextMenuVisible: false,
+      forwardDialogVisible: false,
+      serverVersion: "no connection"
+    });
+  }
+  doLogin(login, password, tmpToken, cred) {
+    if (this.sunrise.isAuthenticated()) {
+      _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo('');
+      return;
+    }
+    let token = tmpToken || (this.sunrise.getAuthToken() || {}).token;
+    if (!(login && password) && !token) {
+      _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo('');
+      this.setState({
+        loginDisabled: false
+      });
+      return;
+    }
+    cred = sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Sunrise.credential(cred);
+    let connectionPromise = this.sunrise.isConnected() ? Promise.resolve() : this.sunrise.connect();
+    let loginPromise;
+    if (login && password) {
+      token = null;
+      this.setState({
+        password: null
+      });
+      loginPromise = connectionPromise.then(_ => this.sunrise.loginBasic(login, password, cred));
+    } else {
+      loginPromise = connectionPromise.then(_ => this.sunrise.loginToken(token, cred));
+    }
+    loginPromise.then(ctrl => {
+      if (ctrl.code >= 300 && ctrl.text === 'validate credentials') {
+        this.setState({
+          loadSpinnerVisible: false
+        });
+        if (cred) {
+          this.handleError(this.props.intl.formatMessage(messages.code_doesnot_match), 'warn');
+        }
+        SunriseWeb.navigateToCredentialsView(ctrl.params);
+      } else {
+        this.handleLoginSuccessful();
+      }
+    }).catch(err => {
+      const autoLogin = err.code >= 500;
+      this.setState({
+        loginDisabled: false,
+        credMethod: undefined,
+        credCode: undefined,
+        loadSpinnerVisible: false,
+        autoLogin: autoLogin
+      });
+      this.handleError(err.message, 'err');
+      console.warn("Login failed", err);
+      if (!autoLogin) {
+        if (token) {
+          this.handleLogout();
+        }
+        _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo('');
+      }
+    });
+  }
+  static navigateToCredentialsView(params) {
+    const parsed = _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].parseUrlHash(window.location.hash);
+    parsed.path[0] = 'cred';
+    parsed.params['method'] = params.cred[0];
+    parsed.params['token'] = params.token;
+    parsed.params['code'] = params.code;
+    _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].composeUrlHash(parsed.path, parsed.params));
+  }
+  handleLoginSuccessful() {
+    this.handleError();
+    if (_lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].getObject('keep-logged-in')) {
+      _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].setObject('auth-token', this.sunrise.getAuthToken());
+    }
+    const goToTopic = this.state.requestedTopic || this.state.topicSelected;
+    const me = this.sunrise.getMeTopic();
+    me.onMetaDesc = this.tnMeMetaDesc;
+    me.onContactUpdate = this.tnMeContactUpdate;
+    me.onSubsUpdated = this.tnMeSubsUpdated;
+    this.setState({
+      connected: true,
+      credMethod: undefined,
+      credCode: undefined,
+      credToken: undefined,
+      myUserId: this.sunrise.getCurrentUserID(),
+      autoLogin: true,
+      requestedTopic: undefined
+    });
+    me.subscribe(me.startMetaQuery().withLaterSub().withDesc().withTags().withCred().build()).catch(err => {
+      this.sunrise.disconnect();
+      localStorage.removeItem('auth-token');
+      this.handleError(err.message, 'err');
+      _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo('');
+    }).finally(_ => {
+      this.setState({
+        loadSpinnerVisible: false
+      });
+    });
+    let urlHash = _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlSidePanel(window.location.hash, 'contacts');
+    if (goToTopic) {
+      urlHash = _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlTopic(urlHash, goToTopic);
+    }
+    _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(urlHash);
+  }
+  tnMeMetaDesc(desc) {
+    if (!desc) {
+      return;
+    }
+    if (desc.public) {
+      this.setState({
+        sidePanelTitle: desc.public.fn,
+        sidePanelAvatar: (0,_lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_13__.makeImageUrl)(desc.public.photo)
+      });
+    }
+    if (desc.trusted) {
+      const badges = [];
+      for (const [key, val] of Object.entries(desc.trusted)) {
+        if (val) {
+          badges.push(key);
+        }
+      }
+      this.setState({
+        myTrustedBadges: badges
+      });
+    }
+    if (desc.acs) {
+      this.setState({
+        incognitoMode: !desc.acs.isPresencer()
+      });
+    }
+    if (SunriseWeb.checkIfPinsUpdated(desc, this.state.chatList)) {
+      this.resetContactList();
+    }
+  }
+  tnMeContactUpdate(what, cont) {
+    if (what == 'on' || what == 'off') {
+      this.resetContactList();
+      if (this.state.topicSelected == cont.topic) {
+        this.setState({
+          topicSelectedOnline: what == 'on'
+        });
+      }
+    } else if (what == 'read') {
+      this.resetContactList();
+    } else if (what == 'msg' && cont) {
+      const topic = this.sunrise.getTopic(cont.topic);
+      const archived = topic && topic.isArchived();
+      if (cont.unread > 0 && this.state.messageSounds && !archived) {
+        if (document.hidden || this.state.topicSelected != cont.topic) {
+          POP_SOUND.play().catch(_ => {});
+        }
+      }
+      this.resetContactList();
+    } else if (what == 'recv') {} else if (what == 'gone' || what == 'unsub') {
+      if (this.state.topicSelected == cont.topic) {
+        this.handleTopicSelected(null);
+      }
+      this.resetContactList();
+    } else if (what == 'acs') {
+      if (this.state.topicSelected == cont.topic) {
+        this.setState({
+          topicSelectedAcs: cont.acs
+        });
+      }
+    } else if (what == 'del') {} else if (what == 'upd' || what == 'call') {} else {
+      console.info("Unsupported (yet) presence update:", what, "in", (cont || {}).topic);
+    }
+  }
+  tnMeSubsUpdated(unused) {
+    this.resetContactList();
+  }
+  static prepareSearchableContacts(chatList, foundContacts) {
+    const merged = {};
+    for (const c of chatList) {
+      if (sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Sunrise.isP2PTopicName(c.topic)) {
+        merged[c.topic] = {
+          user: c.topic,
+          updated: c.updated,
+          public: c.public,
+          private: c.private,
+          acs: c.acs
+        };
+      }
+    }
+    for (const c of foundContacts) {
+      if (!merged[c.user]) {
+        merged[c.user] = c;
+      }
+    }
+    return Object.values(merged);
+  }
+  resetContactList() {
+    const newState = {
+      chatList: []
+    };
+    if (!this.state.ready) {
+      newState.ready = true;
+    }
+    const me = this.sunrise.getMeTopic();
+    me.contacts(c => {
+      if (!c.topic && !c.user) {
+        c.topic = c.name;
+      }
+      newState.chatList.push(c);
+      if (this.state.topicSelected == c.topic) {
+        newState.topicSelectedOnline = c.online;
+        newState.topicSelectedAcs = c.acs;
+      }
+    });
+    const past = new Date(0);
+    newState.chatList.sort((a, b) => {
+      const pins = me.pinnedTopicRank(b.topic) - me.pinnedTopicRank(a.topic);
+      return pins != 0 ? pins : (b.touched || past).getTime() - (a.touched || past).getTime();
+    });
+    newState.searchableContacts = SunriseWeb.prepareSearchableContacts(newState.chatList, this.state.searchResults);
+    this.setState(newState);
+  }
+  static checkIfPinsUpdated(me, chatList) {
+    for (let i = 0; i < chatList.length; i++) {
+      const c = chatList[i];
+      if (!!me.pinnedTopicRank(c.topic) != c.pinned) {
+        return true;
+      }
+    }
+    return false;
+  }
+  tnInitFind() {
+    const fnd = this.sunrise.getFndTopic();
+    fnd.onSubsUpdated = this.tnFndSubsUpdated;
+    if (fnd.isSubscribed()) {
+      this.tnFndSubsUpdated();
+    } else {
+      fnd.subscribe(fnd.startMetaQuery().withSub().build()).catch(err => {
+        this.handleError(err.message, 'err');
+      });
+    }
+  }
+  tnFndSubsUpdated() {
+    const foundContacts = [];
+    this.sunrise.getFndTopic().contacts(s => {
+      foundContacts.push(s);
+    });
+    this.setState({
+      searchResults: foundContacts,
+      searchableContacts: SunriseWeb.prepareSearchableContacts(this.state.chatList, foundContacts)
+    });
+  }
+  handleSearchContacts(query) {
+    const fnd = this.sunrise.getFndTopic();
+    fnd.setMeta({
+      desc: {
+        public: query
+      }
+    }).then(_ => fnd.getMeta(fnd.startMetaQuery().withSub().build())).catch(err => this.handleError(err.message, 'err'));
+  }
+  handleTopicSelected(topicName) {
+    if (this.state.newTopicParams && this.state.newTopicParams._topicName != topicName) {
+      this.setState({
+        newTopicParams: null
+      });
+    }
+    if (topicName) {
+      this.setState({
+        errorText: '',
+        errorLevel: null,
+        mobilePanel: 'topic-view',
+        infoPanel: undefined
+      });
+      if (this.state.topicSelected != topicName) {
+        this.setState({
+          topicSelectedOnline: this.sunrise.isTopicOnline(topicName),
+          topicSelectedAcs: this.sunrise.getTopicAccessMode(topicName),
+          forwardMessage: null
+        });
+        _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlTopic('', topicName));
+      }
+    } else {
+      this.setState({
+        topicSelected: null,
+        errorText: '',
+        errorLevel: null,
+        mobilePanel: 'sidepanel',
+        topicSelectedOnline: false,
+        topicSelectedAcs: null,
+        infoPanel: undefined,
+        forwardMessage: null
+      });
+      _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlTopic('', null));
+    }
+  }
+  handleHideMessagesView() {
+    this.setState({
+      mobilePanel: 'sidepanel'
+    });
+    _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlTopic(window.location.hash, null));
+  }
+  handleSendMessage(msg, uploadCompletionPromise, uploader, head) {
+    const topic = this.sunrise.getTopic(this.state.topicSelected);
+    return this.sendMessageToTopic(topic, msg, uploadCompletionPromise, uploader, head);
+  }
+  sendMessageToTopic(topic, msg, uploadCompletionPromise, uploader, head) {
+    msg = topic.createMessage(msg, false);
+    msg._uploader = uploader;
+    if (head) {
+      msg.head = Object.assign(msg.head || {}, head);
+    }
+    const completion = [];
+    if (uploadCompletionPromise) {
+      completion.push(uploadCompletionPromise);
+    }
+    if (!topic.isSubscribed()) {
+      const subscribePromise = topic.subscribe().then(_ => {
+        let calls = [];
+        topic.queuedMessages(pub => {
+          if (pub._sending || pub.seq == msg.seq) {
+            return;
+          }
+          if (pub.head && pub.head.webrtc) {
+            calls.push(pub.seq);
+            return;
+          }
+          if (topic.isSubscribed()) {
+            topic.publishMessage(pub);
+          }
+        });
+        if (calls.length > 0) {
+          topic.delMessagesList(calls, true);
+        }
+      });
+      completion.push(subscribePromise);
+    }
+    return topic.publishDraft(msg, Promise.all(completion)).then(ctrl => {
+      if (topic.isArchived()) {
+        topic.archive(false);
+      }
+      return ctrl;
+    }).catch(err => this.handleError(err.message, 'err'));
+  }
+  handleNewChatInvitation(topicName, action) {
+    const topic = this.sunrise.getTopic(topicName);
+    let response = null;
+    switch (action) {
+      case 'accept':
+        const mode = topic.getAccessMode().getGiven();
+        response = topic.setMeta({
+          sub: {
+            mode: mode
+          }
+        });
+        if (topic.isP2PType()) {
+          response = response.then(_ => topic.setMeta({
+            sub: {
+              user: topicName,
+              mode: mode
+            }
+          }));
+        }
+        break;
+      case 'delete':
+        response = topic.delTopic(true);
+        break;
+      case 'block':
+        const am = topic.getAccessMode().updateWant('-JP').getWant();
+        response = topic.setMeta({
+          sub: {
+            mode: am
+          }
+        }).then(_ => this.handleTopicSelected(null));
+        break;
+      default:
+        console.warn("Unknown invitation action", '"' + action + '""');
+    }
+    if (response != null) {
+      response.catch(err => this.handleError(err.message, 'err'));
+    }
+  }
+  handleNewAccount() {
+    this.handleError();
+    _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlSidePanel(window.location.hash, 'register'));
+  }
+  handleNewAccountRequest(login_, password_, public_, cred_, tags_) {
+    this.handleError();
+    this.sunrise.connect(this.state.serverAddress).then(_ => {
+      let attachments;
+      if (public_ && public_.photo && public_.photo.ref) {
+        attachments = [public_.photo.ref];
+      }
+      return this.sunrise.createAccountBasic(login_, password_, {
+        public: public_,
+        tags: tags_,
+        cred: sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Sunrise.credential(cred_),
+        attachments: attachments
+      });
+    }).then(ctrl => {
+      if (ctrl.code >= 300 && ctrl.text == 'validate credentials') {
+        SunriseWeb.navigateToCredentialsView(ctrl.params);
+      } else {
+        this.handleLoginSuccessful(this);
+      }
+    }).catch(err => {
+      this.handleError(err.message, 'err');
+    });
+  }
+  handleToggleIncognitoMode(on) {
+    this.setState({
+      incognitoMode: null
+    });
+    const me = this.sunrise.getMeTopic();
+    const am = me.getAccessMode().updateWant(on ? '-P' : '+P').getWant();
+    me.setMeta({
+      sub: {
+        mode: am
+      }
+    }).catch(err => {
+      this.setState({
+        incognitoMode: !on
+      });
+      this.handleError(err.message, 'err');
+    });
+  }
+  handleChangeColorSchema(schema) {
+    this.setState({
+      colorSchema: schema
+    });
+    _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].updateObject('settings', {
+      colorSchema: schema
+    });
+    document.documentElement.style.colorScheme = schema == 'auto' ? 'light dark' : schema;
+    this.applyColorSchema(schema, this.state.systemColorSchema, this.state.wallpaperSize);
+  }
+  handleColorSchemeChange(event) {
+    const systemSchema = event.matches ? 'dark' : 'light';
+    this.setState({
+      systemColorSchema: systemSchema
+    });
+    this.applyColorSchema(this.state.colorSchema, systemSchema, this.state.wallpaperSize);
+  }
+  applyColorSchema(schema, systemSchema, size) {
+    const effectiveSchema = schema == 'auto' ? systemSchema : schema;
+    document.documentElement.style.setProperty('--wallpaper-invert', effectiveSchema == 'dark' && size ? '1' : '0');
+    document.documentElement.style.setProperty('--wallpaper-brightness', effectiveSchema == 'dark' && !size ? '0.5' : '1');
+  }
+  handleSelectWallpapers() {
+    this.handleError();
+    _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlSidePanel(window.location.hash, 'wallpapers'));
+  }
+  applyWallpaperSettings(wallpaper, size, blur, effectiveSchema) {
+    document.documentElement.style.setProperty('--wallpaper-url', `url('${wallpaper}')`);
+    document.documentElement.style.setProperty('--wallpaper-repeat', size ? 'repeat' : 'no-repeat');
+    document.documentElement.style.setProperty('--wallpaper-blur', size ? '0px' : `${blur}px`);
+    document.documentElement.style.setProperty('--wallpaper-size', size ? `${size}px` : 'cover');
+    document.documentElement.style.setProperty('--wallpaper-position', size ? 'unset' : 'center');
+    document.documentElement.style.setProperty('--wallpaper-invert', effectiveSchema == 'dark' && size ? '1' : '0');
+    document.documentElement.style.setProperty('--wallpaper-brightness', effectiveSchema == 'dark' && !size ? '0.5' : '1');
+  }
+  handleWallpaperSelected(wallpaper, size, blur) {
+    this.handleError();
+    _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].updateObject('settings', {
+      wallpaper: wallpaper,
+      wallpaperSize: size,
+      wallpaperBlur: blur
+    });
+    this.setState({
+      wallpaper: wallpaper,
+      wallpaperSize: size,
+      wallpaperBlur: blur
+    });
+    this.applyWallpaperSettings(wallpaper, size, blur, this.state.colorSchema == 'auto' ? this.state.systemColorSchema : this.state.colorSchema);
+  }
+  handleChangeTextSize(size) {
+    this.setState({
+      textSize: size | 0
+    });
+    _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].updateObject('settings', {
+      textSize: size
+    });
+    document.documentElement.style.setProperty('--message-text-size', `${size}pt`);
+  }
+  handleSendOnEnter(option) {
+    this.setState({
+      sendOnEnter: option
+    });
+    _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].updateObject('settings', {
+      sendOnEnter: option
+    });
+  }
+  handleUpdateAccountTagsRequest(_, tags) {
+    this.sunrise.getMeTopic().setMeta({
+      tags: tags
+    }).catch(err => this.handleError(err.message, 'err'));
+  }
+  handleSettings() {
+    this.handleError();
+    _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlSidePanel(window.location.hash, this.state.myUserId ? 'edit' : 'settings'));
+  }
+  handleGlobalSettings(settings) {
+    const serverAddress = settings.serverAddress || this.state.serverAddress;
+    const transport = settings.transport || this.state.transport;
+    const secureConnection = settings.secureConnection === undefined ? this.state.secureConnection : settings.secureConnection;
+    if (this.sunrise) {
+      this.sunrise.clearStorage();
+      this.sunrise.onDisconnect = undefined;
+      this.sunrise.disconnect();
+    }
+    this.sunrise = SunriseWeb.tnSetup(serverAddress, secureConnection, transport, this.props.intl.locale, _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].getObject('keep-logged-in'));
+    this.sunrise.onConnect = this.handleConnected;
+    this.sunrise.onDisconnect = this.handleDisconnect;
+    this.sunrise.onAutoreconnectIteration = this.handleAutoreconnectIteration;
+    this.sunrise.onInfoMessage = this.handleInfoMessage;
+    this.sunrise.onDataMessage = this.handleDataMessage;
+    this.setState({
+      serverAddress: serverAddress,
+      transport: transport,
+      secureConnection: secureConnection
+    });
+    _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].setObject('settings', {
+      serverAddress: serverAddress,
+      transport: transport,
+      secureConnection: secureConnection
+    });
+    _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlSidePanel(window.location.hash, ''));
+  }
+  handleShowArchive() {
+    _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlSidePanel(window.location.hash, this.state.myUserId ? 'archive' : ''));
+  }
+  handleShowBlocked() {
+    _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlSidePanel(window.location.hash, this.state.myUserId ? 'blocked' : ''));
+  }
+  toggleFCMToken(enabled) {
+    if (enabled) {
+      this.setState({
+        desktopAlerts: null
+      });
+      if (!this.state.firebaseToken) {
+        this.initFCMessaging();
+      } else {
+        this.setState({
+          desktopAlerts: true
+        });
+        if (_lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].getObject('keep-logged-in')) {
+          _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].updateObject('settings', {
+            desktopAlerts: true
+          });
+        }
+      }
+    } else if (this.state.firebaseToken && this.fcm) {
+      (0,firebase_messaging__WEBPACK_IMPORTED_MODULE_3__.deleteToken)(this.fcm).catch(err => {
+        console.error("Unable to delete token.", err);
+      }).finally(_ => {
+        _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].updateObject('settings', {
+          desktopAlerts: false
+        });
+        localStorage.removeItem('firebase-token');
+        this.setState({
+          desktopAlerts: false,
+          firebaseToken: null
+        });
+        this.sunrise.setDeviceToken(null);
+      });
+    } else {
+      this.setState({
+        desktopAlerts: false,
+        firebaseToken: null
+      });
+      _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].updateObject('settings', {
+        desktopAlerts: false
+      });
+    }
+  }
+  handleToggleMessageSounds(enabled) {
+    this.setState({
+      messageSounds: enabled
+    });
+    _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].updateObject('settings', {
+      messageSoundsOff: !enabled
+    });
+  }
+  handleCredAdd(method, value) {
+    const me = this.sunrise.getMeTopic();
+    me.setMeta({
+      cred: {
+        meth: method,
+        val: value
+      }
+    }).catch(err => this.handleError(err.message, 'err'));
+  }
+  handleCredDelete(method, value) {
+    const me = this.sunrise.getMeTopic();
+    me.delCredential(method, value).catch(err => this.handleError(err.message, 'err'));
+  }
+  handleCredConfirm(method, response) {
+    SunriseWeb.navigateToCredentialsView({
+      cred: [method],
+      code: response
+    });
+  }
+  handleSidepanelCancel() {
+    const parsed = _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].parseUrlHash(window.location.hash);
+    let path = '';
+    if (['security', 'support', 'general', 'notif', 'acc_general'].includes(parsed.path[0])) {
+      path = 'edit';
+    } else if ('crop' == parsed.path[0]) {
+      path = 'general';
+    } else if ('blocked' == parsed.path[0]) {
+      path = 'security';
+    } else if ('wallpapers' == parsed.path[0]) {
+      path = 'acc_general';
+    } else if (this.state.myUserId) {
+      path = 'contacts';
+    }
+    parsed.path[0] = path;
+    if (parsed.params) {
+      delete parsed.params.code;
+      delete parsed.params.method;
+      delete parsed.params.tab;
+      delete parsed.params.scheme;
+      delete parsed.params.token;
+    }
+    _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].composeUrlHash(parsed.path, parsed.params));
+    this.setState({
+      errorText: '',
+      errorLevel: null
+    });
+  }
+  basicNavigator(hash) {
+    _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlSidePanel(window.location.hash, hash));
+  }
+  infoNavigator(hash) {
+    _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlInfoPanel(window.location.hash, hash));
+  }
+  handleStartTopicRequest(topicName, newTopicParams, isChannel) {
+    if (topicName && this.sunrise.isTopicCached(topicName)) {
+      this.handleTopicSelected(topicName);
+      return;
+    }
+    const params = {};
+    if (sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Sunrise.isP2PTopicName(topicName)) {
+      params.sub = {
+        mode: _config_js__WEBPACK_IMPORTED_MODULE_10__.DEFAULT_P2P_ACCESS_MODE
+      };
+      params.desc = {
+        defacs: {
+          auth: _config_js__WEBPACK_IMPORTED_MODULE_10__.DEFAULT_P2P_ACCESS_MODE
+        }
+      };
+    } else {
+      topicName = topicName || this.sunrise.newGroupTopicName(isChannel);
+      if (newTopicParams) {
+        params.desc = {
+          public: newTopicParams.public,
+          private: {
+            comment: newTopicParams.private
+          }
+        };
+        params.tags = newTopicParams.tags;
+      }
+    }
+    params._topicName = topicName;
+    this.setState({
+      newTopicParams: params
+    }, _ => {
+      this.handleTopicSelected(topicName);
+    });
+  }
+  handleNewTopicCreated(oldName, newName) {
+    let nextState = {};
+    if (this.state.callShouldStart) {
+      nextState = {
+        callState: _constants_js__WEBPACK_IMPORTED_MODULE_11__.CALL_STATE_IN_PROGRESS,
+        callShouldStart: false
+      };
+    }
+    if (this.state.topicSelected == oldName && oldName != newName) {
+      nextState.topicSelected = newName;
+    }
+    this.setState(nextState, _ => {
+      _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlTopic('', newName));
+    });
+  }
+  handleTopicUpdateRequest(topicName, pub, priv, defacs) {
+    this.handleError();
+    const topic = this.sunrise.getTopic(topicName);
+    if (topic) {
+      const params = {};
+      let attachments;
+      if (pub) {
+        if (pub.photo) {
+          if (pub.photo.ref && pub.photo.ref != sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Sunrise.DEL_CHAR) {
+            attachments = [pub.photo.ref];
+          } else if (!pub.photo.data || pub.photo.data == sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Sunrise.DEL_CHAR) {
+            pub.photo = sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Sunrise.DEL_CHAR;
+          }
+        }
+        params.public = pub;
+      }
+      if (typeof priv == 'string') {
+        params.private = priv === sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Sunrise.DEL_CHAR ? sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Sunrise.DEL_CHAR : {
+          comment: priv
+        };
+      }
+      if (defacs) {
+        params.defacs = defacs;
+      }
+      topic.setMeta({
+        desc: params,
+        attachments: attachments
+      }).catch(err => this.handleError(err.message, 'err'));
+    }
+  }
+  handleUnarchive(topicName) {
+    const topic = this.sunrise.getTopic(topicName);
+    if (topic) {
+      topic.archive(false).catch(err => this.handleError(err.message, 'err'));
+    }
+  }
+  handleUpdatePasswordRequest(password) {
+    this.handleError();
+    if (password) {
+      this.sunrise.updateAccountBasic(null, this.sunrise.getCurrentLogin(), password).catch(err => this.handleError(err.message, 'err'));
+    }
+  }
+  handleChangePermissions(topicName, mode, uid) {
+    const topic = this.sunrise.getTopic(topicName);
+    if (topic) {
+      const am = topic.getAccessMode();
+      if (uid) {
+        am.updateGiven(mode);
+        mode = am.getGiven();
+      } else {
+        am.updateWant(mode);
+        mode = am.getWant();
+      }
+      topic.setMeta({
+        sub: {
+          user: uid,
+          mode: mode
+        }
+      }).catch(err => this.handleError(err.message, 'err'));
+    }
+  }
+  handleTagsUpdateRequest(topicName, tags) {
+    const topic = this.sunrise.getTopic(topicName);
+    if (topic) {
+      topic.setMeta({
+        tags: tags
+      }).catch(err => this.handleError(err.message, 'err'));
+    }
+  }
+  handleLogout() {
+    (0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_18__.updateFavicon)(0);
+    localStorage.removeItem('auth-token');
+    localStorage.removeItem('firebase-token');
+    localStorage.removeItem('settings');
+    if (this.state.firebaseToken) {
+      (0,firebase_messaging__WEBPACK_IMPORTED_MODULE_3__.deleteToken)(this.fcm);
+    }
+    document.documentElement.style.colorScheme = _config_js__WEBPACK_IMPORTED_MODULE_10__.DEFAULT_COLOR_SCHEME == 'auto' ? 'light dark' : _config_js__WEBPACK_IMPORTED_MODULE_10__.DEFAULT_COLOR_SCHEME;
+    document.documentElement.style.setProperty('--message-text-size', `${_config_js__WEBPACK_IMPORTED_MODULE_10__.DEFAULT_TEXT_SIZE}pt`);
+    clearInterval(this.reconnectCountdown);
+    let cleared;
+    if (this.sunrise) {
+      cleared = this.sunrise.clearStorage();
+      this.sunrise.onDisconnect = undefined;
+      this.sunrise.disconnect();
+    } else {
+      cleared = Promose.resolve();
+    }
+    this.setState(this.getBlankState());
+    cleared.then(_ => {
+      this.sunrise = SunriseWeb.tnSetup(this.state.serverAddress, (0,_lib_host_name_js__WEBPACK_IMPORTED_MODULE_14__.isSecureConnection)(), this.state.transport, this.props.intl.locale, _lib_local_storage_js__WEBPACK_IMPORTED_MODULE_15__["default"].getObject('keep-logged-in'), _ => {
+        this.sunrise.onConnect = this.handleConnected;
+        this.sunrise.onDisconnect = this.handleDisconnect;
+        this.sunrise.onAutoreconnectIteration = this.handleAutoreconnectIteration;
+        this.sunrise.onInfoMessage = this.handleInfoMessage;
+        this.sunrise.onDataMessage = this.handleDataMessage;
+        _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo('');
+      });
+    });
+  }
+  handleDeleteAccount() {
+    this.sunrise.delCurrentUser(true).then(_ => {
+      this.handleLogout();
+    });
+  }
+  handleDeleteTopicRequest(topicName) {
+    const topic = this.sunrise.getTopic(topicName);
+    if (!topic) {
+      return;
+    }
+    topic.delTopic(true).then(_ => {
+      _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlTopic(window.location.hash, ''));
+    }).catch(err => {
+      this.handleError(err.message, 'err');
+    });
+  }
+  handleDeleteMessagesRequest(topicName) {
+    const topic = this.sunrise.getTopic(topicName);
+    if (!topic) {
+      return;
+    }
+    topic.delMessagesAll(true).catch(err => this.handleError(err.message, 'err'));
+  }
+  handleLeaveUnsubRequest(topicName) {
+    const topic = this.sunrise.getTopic(topicName);
+    if (!topic) {
+      return;
+    }
+    topic.leave(true).then(_ => {
+      _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlTopic(window.location.hash, ''));
+    }).catch(err => {
+      this.handleError(err.message, 'err');
+    });
+  }
+  handleBlockTopicRequest(topicName) {
+    const topic = this.sunrise.getTopic(topicName);
+    if (!topic) {
+      return;
+    }
+    topic.updateMode(null, '-JP').then(_ => {
+      _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlTopic(window.location.hash, ''));
+    }).catch(err => this.handleError(err.message, 'err'));
+  }
+  handleReportTopic(topicName) {
+    const topic = this.sunrise.getTopic(topicName);
+    if (!topic) {
+      return;
+    }
+    this.sunrise.report('report', topicName);
+    topic.updateMode(null, '-JP').then(_ => {
+      _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlTopic(window.location.hash, ''));
+    }).catch(err => this.handleError(err.message, 'err'));
+  }
+  handleShowContextMenu(params, menuItems) {
+    this.setState({
+      contextMenuVisible: true,
+      contextMenuClickAt: {
+        x: params.x,
+        y: params.y
+      },
+      contextMenuParams: params,
+      contextMenuItems: menuItems || this.defaultTopicContextMenu(params.topicName),
+      contextMenuBounds: this.selfRef.current.getBoundingClientRect()
+    });
+  }
+  handleShowForwardDialog(params) {
+    if (this.state.sidePanelSelected == 'newtpk') {
+      this.handleSidepanelCancel();
+    }
+    const header = params.userName ? '➦ ' + params.userName : '';
+    const content = typeof params.content == 'string' ? sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Drafty.init(params.content) : sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Drafty.forwardedContent(params.content);
+    const preview = sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Drafty.preview(content, _config_js__WEBPACK_IMPORTED_MODULE_10__.FORWARDED_PREVIEW_LENGTH, true);
+    const msg = sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Drafty.append(sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Drafty.appendLineBreak(sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Drafty.mention(header, params.userFrom)), content);
+    const msgPreview = sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Drafty.quote(header, params.userFrom, preview);
+    const head = {
+      forwarded: params.topicName + ':' + params.seq
+    };
+    this.setState({
+      forwardDialogVisible: true,
+      forwardMessage: {
+        head: head,
+        msg: msg,
+        preview: msgPreview
+      }
+    });
+  }
+  handleShareTheCard(card) {
+    this.setState({
+      forwardDialogVisible: true,
+      forwardMessage: {
+        content: card,
+        type: card.contentType
+      }
+    });
+  }
+  defaultTopicContextMenu(topicName) {
+    const topic = this.sunrise.getTopic(topicName);
+    if (topic._deleted) {
+      return ['topic_delete'];
+    }
+    const me = this.sunrise.getMeTopic();
+    let muted = false,
+      blocked = false,
+      self_blocked = false,
+      subscribed = false,
+      deleter = false,
+      archived = false,
+      pinned = false,
+      webrtc = false,
+      writer = false,
+      p2p = false,
+      self = false;
+    if (topic) {
+      subscribed = topic.isSubscribed();
+      archived = topic.isArchived();
+      pinned = me.pinnedTopicRank(topicName) > 0;
+      const acs = topic.getAccessMode();
+      if (acs) {
+        muted = acs.isMuted();
+        blocked = !acs.isJoiner();
+        self_blocked = !acs.isJoiner('want');
+        deleter = acs.isDeleter();
+        writer = acs.isWriter();
+      }
+    }
+    webrtc = writer && !!this.sunrise.getServerParam('iceServers');
+    p2p = sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Sunrise.isP2PTopicName(topicName);
+    self = sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Sunrise.isSelfTopicName(topicName);
+    return [subscribed ? {
+      title: this.props.intl.formatMessage(messages.menu_item_info),
+      handler: this.handleShowInfoView
+    } : null, subscribed && p2p && webrtc ? {
+      title: this.props.intl.formatMessage(messages.menu_item_audio_call),
+      handler: this.handleStartAudioCall
+    } : null, subscribed && p2p && webrtc ? {
+      title: this.props.intl.formatMessage(messages.menu_item_video_call),
+      handler: this.handleStartVideoCall
+    } : null, subscribed ? 'messages_clear' : null, subscribed && deleter && !self ? 'messages_clear_hard' : null, self ? null : muted ? blocked ? null : 'topic_unmute' : 'topic_mute', self ? null : self_blocked ? 'topic_unblock' : 'topic_block', pinned ? 'topic_unpin' : 'topic_pin', archived ? 'topic_restore' : 'topic_archive', 'topic_delete'];
+  }
+  handleHideContextMenu() {
+    this.setState({
+      contextMenuVisible: false,
+      contextMenuClickAt: null,
+      contextMenuParams: null,
+      contextMenuBounds: null
+    });
+  }
+  handleHideForwardDialog(keepForwardedMessage) {
+    this.setState({
+      forwardDialogVisible: false,
+      forwardMessage: keepForwardedMessage ? this.state.forwardMessage : null
+    });
+  }
+  handleContextMenuAction(action, promise, params) {
+    if (action == 'topic_archive') {
+      if (promise && params.topicName && params.topicName == this.state.topicSelected) {
+        promise.then(_ => {
+          this.handleTopicSelected(null);
+        });
+      }
+    } else if (action == 'menu_item_forward') {
+      this.handleShowForwardDialog(params);
+    }
+  }
+  handleShowAlert(title, content, onConfirm, confirmText, onReject, rejectText) {
+    this.setState({
+      alertVisible: true,
+      alertParams: {
+        title: title,
+        content: content,
+        onConfirm: onConfirm,
+        confirm: confirmText,
+        onReject: onReject,
+        reject: rejectText
+      }
+    });
+  }
+  handleShowInfoView() {
+    _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].addUrlParam(window.location.hash, 'info', 'info'));
+    this.setState({
+      infoPanel: 'info'
+    });
+  }
+  handleMemberUpdateRequest(topicName, added, removed) {
+    if (!topicName) {
+      return;
+    }
+    const topic = this.sunrise.getTopic(topicName);
+    if (!topic) {
+      return;
+    }
+    if (added && added.length > 0) {
+      added.forEach(uid => {
+        topic.invite(uid, null).catch(err => this.handleError(err.message, 'err'));
+      });
+    }
+    if (removed && removed.length > 0) {
+      removed.forEach(uid => {
+        topic.delSubscription(uid).catch(err => this.handleError(err.message, 'err'));
+      });
+    }
+  }
+  handleValidateCredentialsRequest(cred, code, token) {
+    if (this.sunrise.isAuthenticated()) {
+      this.sunrise.getMeTopic().setMeta({
+        cred: {
+          meth: cred,
+          resp: code
+        }
+      }).then(_ => _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].setUrlSidePanel(window.location.hash, 'contacts'))).catch(err => this.handleError(err.message, 'err'));
+    } else {
+      this.setState({
+        credMethod: cred,
+        credCode: code,
+        credToken: token
+      });
+      this.doLogin(null, null, token, {
+        meth: cred,
+        resp: code
+      });
+    }
+  }
+  handlePasswordResetRequest(method, value) {
+    return this.sunrise.connect().then(_ => this.sunrise.requestResetAuthSecret('basic', method, value)).catch(err => {
+      this.handleError(err.message, 'err');
+    });
+  }
+  handleResetPassword(newPassword, tempAuth) {
+    const secret = (0,_lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_13__.base64ReEncode)(tempAuth.secret);
+    if (!secret || !tempAuth.scheme) {
+      this.handleError(this.props.intl.formatMessage(messages.invalid_security_token), 'err');
+    } else {
+      this.sunrise.connect().then(_ => this.sunrise.updateAccountBasic(null, null, newPassword, {
+        scheme: tempAuth.scheme,
+        secret: secret
+      })).then(_ => {
+        this.handleError(this.props.intl.formatMessage(messages.password_reset_success), 'info');
+        _lib_navigation_js__WEBPACK_IMPORTED_MODULE_16__["default"].navigateTo('');
+      }).catch(err => {
+        this.handleError(err.message, 'err');
+      });
+    }
+  }
+  handleShowCountrySelector(code, dial, selectedCallback) {
+    this.handleShowAlert(this.props.intl.formatMessage(messages.select_country), react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react__WEBPACK_IMPORTED_MODULE_0__.Suspense, {
+      fallback: react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+        id: "loading_note",
+        defaultMessage: [{
+          "type": 0,
+          "value": "Loading..."
+        }]
+      }))
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(PhoneCountrySelector, {
+      selected: code,
+      onSubmit: (c, d) => {
+        this.setState({
+          alertVisible: false
+        });
+        selectedCallback(c, d);
+      }
+    })), null, null, _ => {}, null);
+  }
+  handleStartVideoCall() {
+    this.setState({
+      callTopic: this.state.topicSelected,
+      callState: _constants_js__WEBPACK_IMPORTED_MODULE_11__.CALL_STATE_OUTGOING_INITATED,
+      callAudioOnly: false
+    });
+  }
+  handleStartAudioCall() {
+    this.setState({
+      callTopic: this.state.topicSelected,
+      callState: _constants_js__WEBPACK_IMPORTED_MODULE_11__.CALL_STATE_OUTGOING_INITATED,
+      callAudioOnly: true
+    });
+  }
+  handleCallInvite(callTopic, callSeq, callState, audioOnly) {
+    switch (callState) {
+      case _constants_js__WEBPACK_IMPORTED_MODULE_11__.CALL_STATE_OUTGOING_INITATED:
+        const head = {
+          webrtc: _constants_js__WEBPACK_IMPORTED_MODULE_11__.CALL_HEAD_STARTED,
+          aonly: !!audioOnly
+        };
+        return this.handleSendMessage(sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Drafty.videoCall(audioOnly), undefined, undefined, head).then(ctrl => {
+          if (ctrl.code < 200 || ctrl.code >= 300 || !ctrl.params || !ctrl.params.seq) {
+            this.handleCallClose();
+            return ctrl;
+          }
+          this.setState({
+            callSeq: ctrl.params['seq']
+          });
+          return ctrl;
+        });
+      case _constants_js__WEBPACK_IMPORTED_MODULE_11__.CALL_STATE_IN_PROGRESS:
+        const topic = this.sunrise.getTopic(callTopic);
+        if (!topic) {
+          return;
+        }
+        topic.videoCall('accept', callSeq);
+        break;
+    }
+  }
+  handleCallRinging(callTopic, callSeq) {
+    const topic = this.sunrise.getTopic(callTopic);
+    if (!topic) {
+      return;
+    }
+    topic.videoCall('ringing', callSeq);
+  }
+  handleCallHangup(callTopic, callSeq) {
+    const topic = this.sunrise.getTopic(callTopic);
+    if (!topic) {
+      return;
+    }
+    topic.videoCall('hang-up', callSeq);
+  }
+  handleCallSendOffer(callTopic, callSeq, sdp) {
+    const topic = this.sunrise.getTopic(callTopic);
+    if (!topic) {
+      return;
+    }
+    topic.videoCall('offer', callSeq, sdp);
+  }
+  handleCallIceCandidate(callTopic, callSeq, candidate) {
+    const topic = this.sunrise.getTopic(callTopic);
+    if (!topic) {
+      return;
+    }
+    topic.videoCall('ice-candidate', callSeq, candidate);
+  }
+  handleCallSendAnswer(callTopic, callSeq, sdp) {
+    const topic = this.sunrise.getTopic(callTopic);
+    if (!topic) {
+      return;
+    }
+    topic.videoCall('answer', callSeq, sdp);
+  }
+  handleCallClose() {
+    if (this.callTimeoutTimer) {
+      clearTimeout(this.callTimeoutTimer);
+    }
+    this.setState({
+      callTopic: undefined,
+      callState: _constants_js__WEBPACK_IMPORTED_MODULE_11__.CALL_STATE_NONE,
+      callAudioOnly: undefined
+    });
+  }
+  handleCallAccept(topicName, setCallTopic, callSeq) {
+    const topic = this.sunrise.getTopic(topicName);
+    if (!topic) {
+      return;
+    }
+    if (topic.isSubscribed()) {
+      this.handleTopicSelected(setCallTopic ? topicName : this.state.callTopic);
+      const upd = {
+        callState: _constants_js__WEBPACK_IMPORTED_MODULE_11__.CALL_STATE_IN_PROGRESS
+      };
+      if (setCallTopic) {
+        upd.callTopic = topicName;
+        upd.callSeq = callSeq;
+      }
+      this.setState(upd);
+    } else {
+      this.setState({
+        callShouldStart: true
+      }, _ => this.handleTopicSelected(this.state.callTopic));
+    }
+  }
+  handleInfoMessage(info) {
+    if (info.what != 'call') {
+      return;
+    }
+    switch (info.event) {
+      case 'accept':
+        if (sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Sunrise.isMeTopicName(info.topic) && this.sunrise.isMe(info.from)) {
+          this.setState({
+            callTopic: null,
+            callState: _constants_js__WEBPACK_IMPORTED_MODULE_11__.CALL_STATE_NONE,
+            callSeq: null,
+            callAudioOnly: undefined
+          });
+          return;
+        }
+        if (info.topic == this.state.callTopic) {
+          this.setState({
+            callState: _constants_js__WEBPACK_IMPORTED_MODULE_11__.CALL_STATE_IN_PROGRESS
+          });
+        }
+        break;
+      case 'hang-up':
+        this.handleCallClose();
+        break;
+    }
+  }
+  handleDataMessage(data) {
+    if (data.head && data.head.webrtc && data.head.webrtc == _constants_js__WEBPACK_IMPORTED_MODULE_11__.CALL_HEAD_STARTED && sunrise_sdk__WEBPACK_IMPORTED_MODULE_4__.Sunrise.isP2PTopicName(data.topic)) {
+      const topic = this.sunrise.getTopic(data.topic);
+      if (topic) {
+        const msg = topic.latestMsgVersion(data.seq) || data;
+        if (msg.head && msg.head.webrtc && msg.head.webrtc == _constants_js__WEBPACK_IMPORTED_MODULE_11__.CALL_HEAD_STARTED) {
+          if (data.from != this.state.myUserId) {
+            if (this.state.callState == _constants_js__WEBPACK_IMPORTED_MODULE_11__.CALL_STATE_NONE) {
+              this.setState({
+                callTopic: data.topic,
+                callState: _constants_js__WEBPACK_IMPORTED_MODULE_11__.CALL_STATE_INCOMING_RECEIVED,
+                callSeq: data.seq,
+                callAudioOnly: !!msg.head.aonly
+              });
+            } else {
+              this.handleCallHangup(data.topic, data.seq);
+            }
+          }
+        }
+      } else {
+        console.warn("Received vc data message from unknown topic", data.topic);
+      }
+    }
+  }
+  render() {
+    const colorSchema = this.state.colorSchema !== 'auto' ? this.state.colorSchema : this.state.systemColorSchema;
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      id: "app-container",
+      ref: this.selfRef
+    }, this.state.contextMenuVisible ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_context_menu_jsx__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      sunrise: this.sunrise,
+      bounds: this.state.contextMenuBounds,
+      clickAt: this.state.contextMenuClickAt,
+      params: this.state.contextMenuParams,
+      items: this.state.contextMenuItems,
+      hide: this.handleHideContextMenu,
+      onShowAlert: this.handleShowAlert,
+      onAction: this.handleContextMenuAction,
+      onTopicRemoved: topicName => {
+        if (topicName == this.state.topicSelected) {
+          this.handleTopicSelected(null);
+        }
+      },
+      onError: this.handleError
+    }) : null, this.state.forwardDialogVisible ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_forward_dialog_jsx__WEBPACK_IMPORTED_MODULE_7__["default"], {
+      sunrise: this.sunrise,
+      contacts: this.state.chatList,
+      topicSelected: this.state.topicSelected,
+      myUserId: this.state.myUserId,
+      hide: this.handleHideForwardDialog,
+      onInitFind: this.tnInitFind,
+      searchResults: this.state.searchResults,
+      onSearchContacts: this.handleSearchContacts,
+      onTopicSelected: this.handleStartTopicRequest
+    }) : null, this.state.callTopic && this.state.callState == _constants_js__WEBPACK_IMPORTED_MODULE_11__.CALL_STATE_INCOMING_RECEIVED ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_call_incoming_jsx__WEBPACK_IMPORTED_MODULE_8__["default"], {
+      sunrise: this.sunrise,
+      topic: this.state.callTopic,
+      seq: this.state.callSeq,
+      callState: this.state.callState,
+      audioOnly: this.state.callAudioOnly,
+      onClose: this.handleCallClose,
+      onRinging: this.handleCallRinging,
+      onAcceptCall: this.handleCallAccept,
+      onReject: this.handleCallHangup
+    }) : null, this.state.alertVisible ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_alert_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      title: this.state.alertParams.title,
+      content: this.state.alertParams.content,
+      onReject: this.state.alertParams.onReject ? _ => this.setState({
+        alertVisible: false
+      }) : null,
+      reject: this.state.alertParams.reject,
+      onConfirm: this.state.alertParams.onConfirm ? _ => {
+        this.setState({
+          alertVisible: false
+        });
+        this.state.alertParams.onConfirm();
+      } : null,
+      confirm: this.state.alertParams.confirm
+    }) : null, !this.state.displayMobile || this.state.mobilePanel == 'sidepanel' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_sidepanel_view_jsx__WEBPACK_IMPORTED_MODULE_9__["default"], {
+      sunrise: this.sunrise,
+      connected: this.state.connected,
+      displayMobile: this.state.displayMobile,
+      state: this.state.sidePanelSelected,
+      title: this.state.sidePanelTitle,
+      avatar: this.state.sidePanelAvatar,
+      trustedBadges: this.state.myTrustedBadges,
+      login: this.state.login,
+      persist: this.state.persist,
+      myUserId: this.state.myUserId,
+      loginDisabled: this.state.loginDisabled,
+      loadSpinnerVisible: this.state.loadSpinnerVisible,
+      errorText: this.state.errorText,
+      errorLevel: this.state.errorLevel,
+      errorAction: this.state.errorAction,
+      errorActionText: this.state.errorActionText,
+      topicSelected: this.state.topicSelected,
+      chatList: this.state.chatList,
+      credMethod: this.state.credMethod,
+      credCode: this.state.credCode,
+      credToken: this.state.credToken,
+      transport: this.state.transport,
+      messageSounds: this.state.messageSounds,
+      desktopAlerts: this.state.desktopAlerts,
+      desktopAlertsEnabled: this.state.desktopAlertsEnabled,
+      incognitoMode: this.state.incognitoMode,
+      serverAddress: this.state.serverAddress,
+      secureConnection: this.state.secureConnection,
+      serverVersion: this.state.serverVersion,
+      reqCredMethod: this.state.reqCredMethod,
+      textSize: this.state.textSize,
+      colorSchema: this.state.colorSchema,
+      wallpaper: this.state.wallpaper,
+      wallpaperSize: this.state.wallpaperSize,
+      wallpaperBlur: this.state.wallpaperBlur,
+      systemColorSchema: this.state.systemColorSchema,
+      sendOnEnter: this.state.sendOnEnter,
+      onGlobalSettings: this.handleGlobalSettings,
+      onSignUp: this.handleNewAccount,
+      onSettings: this.handleSettings,
+      onNavigate: this.basicNavigator,
+      onLoginRequest: this.handleLoginRequest,
+      onPersistenceChange: this.handlePersistenceChange,
+      onCreateAccount: this.handleNewAccountRequest,
+      onUpdateAccountDesc: this.handleTopicUpdateRequest,
+      onUpdatePassword: this.handleUpdatePasswordRequest,
+      onUpdateAccountTags: this.handleUpdateAccountTagsRequest,
+      onTogglePushNotifications: this.toggleFCMToken,
+      onToggleMessageSounds: this.handleToggleMessageSounds,
+      onToggleIncognitoMode: this.handleToggleIncognitoMode,
+      onChangeColorSchema: this.handleChangeColorSchema,
+      onTextSizeChanged: this.handleChangeTextSize,
+      onSendOnEnterChanged: this.handleSendOnEnter,
+      onSelectWallpapers: this.handleSelectWallpapers,
+      onWallpaperSelected: this.handleWallpaperSelected,
+      onCredAdd: this.handleCredAdd,
+      onCredDelete: this.handleCredDelete,
+      onCredConfirm: this.handleCredConfirm,
+      onTopicSelected: this.handleTopicSelected,
+      onCreateTopic: this.handleStartTopicRequest,
+      onLogout: this.handleLogout,
+      onDeleteAccount: this.handleDeleteAccount,
+      onShowAlert: this.handleShowAlert,
+      onCancel: this.handleSidepanelCancel,
+      onError: this.handleError,
+      onValidateCredentials: this.handleValidateCredentialsRequest,
+      onPasswordResetRequest: this.handlePasswordResetRequest,
+      onResetPassword: this.handleResetPassword,
+      onShowArchive: this.handleShowArchive,
+      onShowBlocked: this.handleShowBlocked,
+      onShowCountrySelector: this.handleShowCountrySelector,
+      onInitFind: this.tnInitFind,
+      searchResults: this.state.searchResults,
+      onSearchContacts: this.handleSearchContacts,
+      showContextMenu: this.handleShowContextMenu
+    }) : null, !this.state.displayMobile || this.state.mobilePanel == 'topic-view' && !this.state.infoPanel ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react__WEBPACK_IMPORTED_MODULE_0__.Suspense, {
+      fallback: react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+        id: "loading_note",
+        defaultMessage: [{
+          "type": 0,
+          "value": "Loading..."
+        }]
+      }))
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(MessagesView, {
+      sunrise: this.sunrise,
+      connected: this.state.connected,
+      ready: this.state.ready,
+      online: this.state.topicSelectedOnline,
+      acs: this.state.topicSelectedAcs,
+      displayMobile: this.state.displayMobile,
+      viewportWidth: this.state.viewportWidth,
+      viewportHeight: this.state.viewportHeight,
+      topic: this.state.topicSelected,
+      myUserId: this.state.myUserId,
+      myUserName: this.state.sidePanelTitle,
+      serverVersion: this.state.serverVersion,
+      serverAddress: this.state.serverAddress,
+      applicationVisible: this.state.applicationVisible,
+      colorSchema: colorSchema,
+      sendOnEnter: this.state.sendOnEnter,
+      wallpaper: this.state.wallpaper,
+      forwardMessage: this.state.forwardMessage,
+      onCancelForwardMessage: this.handleHideForwardDialog,
+      callTopic: this.state.callTopic,
+      callSeq: this.state.callSeq,
+      callState: this.state.callState,
+      callAudioOnly: this.state.callAudioOnly,
+      onCallHangup: this.handleCallHangup,
+      onAcceptCall: this.handleCallAccept,
+      onCallInvite: this.handleCallInvite,
+      onCallSendOffer: this.handleCallSendOffer,
+      onCallIceCandidate: this.handleCallIceCandidate,
+      onCallSendAnswer: this.handleCallSendAnswer,
+      errorText: this.state.errorText,
+      errorLevel: this.state.errorLevel,
+      errorAction: this.state.errorAction,
+      errorActionText: this.state.errorActionText,
+      newTopicParams: this.state.newTopicParams,
+      onHideMessagesView: this.handleHideMessagesView,
+      onError: this.handleError,
+      onNewTopicCreated: this.handleNewTopicCreated,
+      showContextMenu: this.handleShowContextMenu,
+      onChangePermissions: this.handleChangePermissions,
+      onNewChat: this.handleNewChatInvitation,
+      sendMessage: this.handleSendMessage,
+      onVideoCallClosed: this.handleCallClose
+    })) : null, this.state.infoPanel ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react__WEBPACK_IMPORTED_MODULE_0__.Suspense, {
+      fallback: react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+        id: "loading_note",
+        defaultMessage: [{
+          "type": 0,
+          "value": "Loading..."
+        }]
+      }))
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(InfoView, {
+      sunrise: this.sunrise,
+      connected: this.state.connected,
+      displayMobile: this.state.displayMobile,
+      topic: this.state.topicSelected,
+      searchableContacts: this.state.searchableContacts,
+      myUserId: this.state.myUserId,
+      panel: this.state.infoPanel,
+      errorText: this.state.errorText,
+      errorLevel: this.state.errorLevel,
+      errorAction: this.state.errorAction,
+      errorActionText: this.state.errorActionText,
+      onNavigate: this.infoNavigator,
+      onTopicDescUpdateRequest: this.handleTopicUpdateRequest,
+      onShowAlert: this.handleShowAlert,
+      onChangePermissions: this.handleChangePermissions,
+      onMemberUpdateRequest: this.handleMemberUpdateRequest,
+      onDeleteTopic: this.handleDeleteTopicRequest,
+      onDeleteMessages: this.handleDeleteMessagesRequest,
+      onLeaveTopic: this.handleLeaveUnsubRequest,
+      onBlockTopic: this.handleBlockTopicRequest,
+      onReportTopic: this.handleReportTopic,
+      onShareTheCard: this.handleShareTheCard,
+      onTopicTagsUpdateRequest: this.handleTagsUpdateRequest,
+      onTopicUnArchive: this.handleUnarchive,
+      onInitFind: this.tnInitFind,
+      onError: this.handleError,
+      showContextMenu: this.handleShowContextMenu
+    })) : null);
+  }
+}
+;
+/* harmony default export */ __webpack_exports__["default"] = ((0,react_intl__WEBPACK_IMPORTED_MODULE_1__.injectIntl)(SunriseWeb));
+
+/***/ }),
+
+/***/ "./src/views/topic-common-view.jsx":
+/*!*****************************************!*\
+  !*** ./src/views/topic-common-view.jsx ***!
+  \*****************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ TopicCommonView; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _widgets_topic_desc_edit_jsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../widgets/topic-desc-edit.jsx */ "./src/widgets/topic-desc-edit.jsx");
+/* harmony import */ var _lib_utils_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../lib/utils.js */ "./src/lib/utils.js");
+
+
+
+class TopicCommonView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+  constructor(props) {
+    super(props);
+    const topic = this.props.sunrise.getTopic(this.props.topic);
+    const acs = topic.getAccessMode();
+    this.state = {
+      tags: []
+    };
+    this.previousTagsUpdated = undefined;
+    this.onTagsUpdated = this.onTagsUpdated.bind(this);
+    this.handleTagsUpdated = this.handleTagsUpdated.bind(this);
+  }
+  componentDidUpdate(props) {
+    const topic = this.props.sunrise.getTopic(props.topic);
+    if (!topic) {
+      return;
+    }
+    if (topic.onTagsUpdated != this.onTagsUpdated) {
+      if (topic.getType() == 'grp') {
+        this.previousTagsUpdated = topic.onTagsUpdated;
+        topic.onTagsUpdated = this.onTagsUpdated;
+      } else {
+        this.previousTagsUpdated = undefined;
+      }
+    }
+    if (this.state.topic != props.topic) {
+      this.setState({
+        topic: props.topic
+      });
+    }
+  }
+  componentWillUnmount() {
+    const topic = this.props.sunrise.getTopic(this.props.topic);
+    topic.onTagsUpdated = this.previousTagsUpdated;
+  }
+  onTagsUpdated(tags) {
+    this.setState({
+      tags: tags
+    });
+    if (this.previousTagsUpdated && this.previousTagsUpdated != this.onTagsUpdated) {
+      this.previousTagsUpdated(tags);
+    }
+  }
+  handleTagsUpdated(tags) {
+    if (!(0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_2__.arrayEqual)(this.state.tags.slice(0), tags.slice(0))) {
+      this.props.onUpdateTagsRequest(this.props.topic, tags);
+    }
+  }
+  render() {
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "scrollable-panel"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_topic_desc_edit_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
+      sunrise: this.props.sunrise,
+      topic: this.props.topic,
+      onUpdateTopicDesc: this.props.onUpdateTopicDesc,
+      onUpdateTags: this.handleTagsUpdated,
+      onError: this.props.onError
+    }));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/views/validation-view.jsx":
+/*!***************************************!*\
+  !*** ./src/views/validation-view.jsx ***!
+  \***************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+
+
+const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
+  phone: {
+    id: "phone_dative",
+    defaultMessage: [{
+      "type": 0,
+      "value": "phone"
+    }]
+  },
+  email: {
+    id: "email_dative",
+    defaultMessage: [{
+      "type": 0,
+      "value": "email"
+    }]
+  }
+});
+class ValidationView extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      code: props.credCode || '',
+      codeReceived: props.credCode
+    };
+    this.handleCodeChange = this.handleCodeChange.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
+  }
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.credCode != prevState.codeReceived) {
+      return {
+        code: nextProps.credCode || '',
+        codeReceived: nextProps.credCode
+      };
+    }
+    return prevState;
+  }
+  componentDidMount() {
+    if (this.props.credCode) {
+      this.props.onSubmit(this.props.credMethod, this.props.credCode, this.props.credToken);
+    }
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.codeReceived && this.state.code && this.state.code != prevState.code) {
+      this.props.onSubmit(this.props.credMethod, this.state.code, this.props.credToken);
+    }
+  }
+  handleCodeChange(e) {
+    this.setState({
+      code: e.target.value.replace(/[^\d]/g, '')
+    });
+  }
+  handleKeyPress(e) {
+    if (e.key === 'Enter') {
+      this.handleSubmit(e);
+    } else if (e.key == 'Escape') {
+      this.handleCancel(e);
+    }
+  }
+  handleSubmit(e) {
+    e.preventDefault();
+    if (this.state.code && this.state.code.trim()) {
+      this.props.onSubmit(this.props.credMethod, this.state.code.trim(), this.props.credToken);
+    }
+  }
+  handleCancel(e) {
+    e.preventDefault();
+    this.props.onCancel();
+  }
+  render() {
+    const {
+      formatMessage
+    } = this.props.intl;
+    const methods = {
+      'email': formatMessage(messages.email),
+      'tel': formatMessage(messages.phone)
+    };
+    const method = methods[this.props.credMethod] || this.props.credMethod;
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      className: "small gray",
+      htmlFor: "enter-confirmation-code"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "enter_confirmation_code_prompt",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Confirmation code"
+      }],
+      values: {
+        method: method
+      }
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "numeric_confirmation_code_prompt",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Numbers only"
+      }]
+    }, numbers_only => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+      type: "text",
+      id: "enter-confirmation-code",
+      placeholder: numbers_only,
+      value: this.state.code,
+      onChange: this.handleCodeChange,
+      onKeyDown: this.handleKeyPress,
+      required: true
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "dialog-buttons"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+      className: "secondary",
+      onClick: this.handleCancel
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "button_cancel",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Cancel"
+      }]
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+      className: "primary",
+      onClick: this.handleSubmit
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "button_confirm",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Confirm"
+      }]
+    }))));
+  }
+}
+;
+/* harmony default export */ __webpack_exports__["default"] = ((0,react_intl__WEBPACK_IMPORTED_MODULE_1__.injectIntl)(ValidationView));
+
+/***/ }),
+
+/***/ "./src/widgets/alert.jsx":
+/*!*******************************!*\
+  !*** ./src/widgets/alert.jsx ***!
+  \*******************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ Alert; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+
+
+class Alert extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  render() {
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "alert-container"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "alert"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "title"
+    }, this.props.title), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "content"
+    }, this.props.content), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "dialog-buttons"
+    }, this.props.onReject ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+      className: "outline",
+      onClick: this.props.onReject
+    }, this.props.reject || react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "button_cancel",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Cancel"
+      }]
+    })) : null, this.props.onConfirm ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+      className: "primary",
+      onClick: this.props.onConfirm
+    }, this.props.confirm || react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "button_ok",
+      defaultMessage: [{
+        "type": 0,
+        "value": "OK"
+      }]
+    })) : null)));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/audio-player.jsx":
+/*!**************************************!*\
+  !*** ./src/widgets/audio-player.jsx ***!
+  \**************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _lib_strformat__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../lib/strformat */ "./src/lib/strformat.js");
+/* harmony import */ var _lib_blob_helpers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../lib/blob-helpers */ "./src/lib/blob-helpers.js");
+
+
+
+
+const CANVAS_UPSCALING = 2.0;
+const LINE_WIDTH = 3 * CANVAS_UPSCALING;
+const SPACING = 2 * CANVAS_UPSCALING;
+const BAR_COLOR = '#888A';
+const BAR_COLOR_DARK = '#666C';
+const THUMB_COLOR = '#1781d7';
+const MIN_PREVIEW_LENGTH = 16;
+const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
+  icon_title_play: {
+    id: "icon_title_play",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Play recording"
+    }]
+  }
+});
+class AudioPlayer extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    let preview = (0,_lib_blob_helpers__WEBPACK_IMPORTED_MODULE_3__.base64ToIntArray)(this.props.preview);
+    if (!Array.isArray(preview) || preview.length < MIN_PREVIEW_LENGTH) {
+      preview = null;
+    }
+    this.state = {
+      canPlay: false,
+      playing: false,
+      currentTime: '0:00',
+      duration: this.props.duration > 0 ? (0,_lib_strformat__WEBPACK_IMPORTED_MODULE_2__.secondsToTime)(this.props.duration / 1000) : '-:--',
+      longMin: this.props.duration >= 600000,
+      preview: preview
+    };
+    this.initAudio = this.initAudio.bind(this);
+    this.initCanvas = this.initCanvas.bind(this);
+    this.resampleBars = this.resampleBars.bind(this);
+    this.visualize = this.visualize.bind(this);
+    this.handlePlay = this.handlePlay.bind(this);
+    this.handleSeek = this.handleSeek.bind(this);
+    this.handleError = this.handleError.bind(this);
+    this.audioPlayer = null;
+    this.viewBuffer = [];
+    this.canvasRef = react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
+  }
+  componentDidMount() {
+    if (this.props.src) {
+      this.initAudio();
+    }
+    this.initCanvas();
+  }
+  componentWillUnmount() {
+    if (this.audioPlayer) {
+      this.audioPlayer.onloadedmetadata = null;
+      this.audioPlayer.ontimeupdate = null;
+      this.audioPlayer.onended = null;
+      this.audioPlayer.pause();
+      this.audioPlayer = null;
+    }
+  }
+  componentDidUpdate(prevProps) {
+    if (this.props.src != prevProps.src) {
+      this.initAudio();
+    }
+    if (this.props.preview != prevProps.preview) {
+      let preview = (0,_lib_blob_helpers__WEBPACK_IMPORTED_MODULE_3__.base64ToIntArray)(this.props.preview);
+      if (!Array.isArray(preview) || preview.length < MIN_PREVIEW_LENGTH) {
+        preview = null;
+      }
+      this.setState({
+        preview: preview
+      }, this.initCanvas);
+    }
+  }
+  initAudio() {
+    this.audioPlayer = new Audio(this.props.src);
+    this.audioPlayer.onloadedmetadata = _ => this.setState({
+      canPlay: true
+    });
+    this.audioPlayer.ontimeupdate = _ => this.setState({
+      currentTime: (0,_lib_strformat__WEBPACK_IMPORTED_MODULE_2__.secondsToTime)(this.audioPlayer.currentTime, this.state.longMin)
+    });
+    this.audioPlayer.onended = _ => {
+      this.audioPlayer.currentTime = 0;
+      this.setState({
+        playing: false,
+        currentTime: (0,_lib_strformat__WEBPACK_IMPORTED_MODULE_2__.secondsToTime)(0, this.state.longMin)
+      });
+    };
+  }
+  initCanvas() {
+    this.canvasRef.current.width = this.canvasRef.current.offsetWidth * CANVAS_UPSCALING;
+    this.canvasRef.current.height = this.canvasRef.current.offsetHeight * CANVAS_UPSCALING;
+    this.canvasContext = this.canvasRef.current.getContext('2d');
+    this.canvasContext.lineCap = 'round';
+    this.viewBuffer = this.resampleBars(this.state.preview);
+    this.visualize();
+  }
+  visualize() {
+    if (!this.canvasRef.current) {
+      return;
+    }
+    const width = this.effectiveWidth;
+    const height = this.canvasRef.current.height;
+    this.canvasContext.lineWidth = LINE_WIDTH;
+    const drawFrame = _ => {
+      if (!this.canvasRef.current || !this.audioPlayer) {
+        return;
+      }
+      this.canvasContext.clearRect(0, 0, this.canvasRef.current.width, height);
+      if (this.viewBuffer) {
+        if (this.state.playing) {
+          window.requestAnimationFrame(drawFrame);
+        }
+        const thumbAt = this.props.duration ? Math.max(0, Math.min(this.audioPlayer.currentTime * 1000 / this.props.duration, 1)) * (width - LINE_WIDTH * 2) : -1;
+        this.canvasContext.beginPath();
+        this.canvasContext.strokeStyle = BAR_COLOR_DARK;
+        for (let i = 0; i < this.viewBuffer.length; i++) {
+          let x = 1 + i * (LINE_WIDTH + SPACING) + LINE_WIDTH * 0.5;
+          let y = Math.max(this.viewBuffer[i] * height * 0.9, 1);
+          const color = x < thumbAt ? BAR_COLOR_DARK : BAR_COLOR;
+          if (this.canvasContext.strokeStyle != color) {
+            this.canvasContext.stroke();
+            this.canvasContext.beginPath();
+            this.canvasContext.strokeStyle = color;
+          }
+          this.canvasContext.moveTo(x, (height - y) * 0.5);
+          this.canvasContext.lineTo(x, (height + y) * 0.5);
+        }
+        this.canvasContext.stroke();
+        if (this.props.duration) {
+          this.canvasContext.beginPath();
+          this.canvasContext.arc(thumbAt + LINE_WIDTH * 2, height * 0.5, LINE_WIDTH * 2, 0, 2 * Math.PI);
+          this.canvasContext.fillStyle = THUMB_COLOR;
+          this.canvasContext.fill();
+        }
+      }
+    };
+    drawFrame();
+  }
+  resampleBars(original) {
+    const dstCount = (this.canvasRef.current.width - SPACING) / (LINE_WIDTH + SPACING) | 0;
+    this.effectiveWidth = dstCount * (LINE_WIDTH + SPACING) + SPACING;
+    if (!Array.isArray(original) || original.length == 0) {
+      return Array.apply(null, Array(dstCount)).map(_ => 0.01);
+    }
+    const factor = original.length / dstCount;
+    let amps = [];
+    let maxAmp = -1;
+    for (let i = 0; i < dstCount; i++) {
+      let lo = i * factor | 0;
+      let hi = (i + 1) * factor | 0;
+      if (hi == lo) {
+        amps[i] = original[lo];
+      } else {
+        let amp = 0.0;
+        for (let j = lo; j < hi; j++) {
+          amp += original[j];
+        }
+        amps[i] = Math.max(0, amp / (hi - lo));
+      }
+      maxAmp = Math.max(amps[i], maxAmp);
+    }
+    if (maxAmp > 0) {
+      return amps.map(a => a / maxAmp);
+    }
+    return Array.apply(null, Array(dstCount)).map(_ => 0.01);
+  }
+  handlePlay(e) {
+    e.preventDefault();
+    if (!this.state.canPlay) {
+      return;
+    }
+    if (this.state.playing) {
+      this.audioPlayer.pause();
+      this.setState({
+        playing: false
+      });
+    } else if (this.audioPlayer.readyState >= 2) {
+      this.audioPlayer.play();
+      this.setState({
+        playing: true
+      }, this.visualize);
+    }
+  }
+  handleError(err) {
+    console.error(err);
+  }
+  handleSeek(e) {
+    e.preventDefault();
+    if (e.target && this.props.duration) {
+      const rect = e.target.getBoundingClientRect();
+      const offset = (e.clientX - rect.left) / this.effectiveWidth * CANVAS_UPSCALING;
+      this.audioPlayer.currentTime = this.props.duration * offset / 1000;
+      this.setState({
+        currentTime: (0,_lib_strformat__WEBPACK_IMPORTED_MODULE_2__.secondsToTime)(this.audioPlayer.currentTime, this.state.longMin)
+      });
+      if (!this.state.playing) {
+        this.visualize();
+      }
+    }
+  }
+  render() {
+    const playClass = 'material-icons' + (this.props.short ? '' : ' large') + (this.state.canPlay ? '' : ' disabled');
+    const play = react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      onClick: this.handlePlay,
+      title: this.props.intl.formatMessage(messages.icon_title_play)
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: playClass
+    }, this.state.playing ? 'pause_circle' : this.state.canPlay ? 'play_circle' : 'not_interested'));
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "audio-player"
+    }, this.props.short ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("canvas", {
+      className: "playback",
+      ref: this.canvasRef,
+      onClick: this.handleSeek
+    }), play) : react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, play, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("canvas", {
+      className: "playback",
+      ref: this.canvasRef,
+      onClick: this.handleSeek
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "timer"
+    }, this.state.currentTime, "/", this.state.duration))));
+  }
+}
+/* harmony default export */ __webpack_exports__["default"] = ((0,react_intl__WEBPACK_IMPORTED_MODULE_1__.injectIntl)(AudioPlayer));
+
+/***/ }),
+
+/***/ "./src/widgets/avatar-crop.jsx":
+/*!*************************************!*\
+  !*** ./src/widgets/avatar-crop.jsx ***!
+  \*************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ AvatarCrop; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _cropper_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./cropper.jsx */ "./src/widgets/cropper.jsx");
+/* harmony import */ var _lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../lib/blob-helpers.js */ "./src/lib/blob-helpers.js");
+
+
+
+
+class AvatarCrop extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      top: 0,
+      left: 0,
+      width: 0,
+      height: 0,
+      scale: 1
+    };
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+  }
+  handleChange(left, top, width, height, scale) {
+    this.setState({
+      left: left,
+      top: top,
+      width: width,
+      height: height,
+      scale: scale
+    });
+  }
+  handleSubmit() {
+    (0,_lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_3__.imageCrop)(this.props.mime, this.props.avatar, this.state.left, this.state.top, this.state.width, this.state.height, this.state.scale).then(img => {
+      this.props.onSubmit(img.mime, img.blob, img.width, img.height);
+    }).catch(err => {
+      this.props.onError(err);
+    });
+  }
+  render() {
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_cropper_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      source: this.props.avatar,
+      onChange: this.handleChange
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "dialog-buttons"
+    }, this.props.onCancel ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+      className: "secondary",
+      onClick: this.props.onCancel
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "button_cancel",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Cancel"
+      }]
+    })) : null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+      className: "primary",
+      onClick: this.handleSubmit
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "button_ok",
+      defaultMessage: [{
+        "type": 0,
+        "value": "OK"
+      }]
+    }))));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/avatar-upload.jsx":
+/*!***************************************!*\
+  !*** ./src/widgets/avatar-upload.jsx ***!
+  \***************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ AvatarUpload; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _letter_tile_jsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./letter-tile.jsx */ "./src/widgets/letter-tile.jsx");
+/* harmony import */ var _load_spinner_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./load-spinner.jsx */ "./src/widgets/load-spinner.jsx");
+/* harmony import */ var _lib_utils_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../lib/utils.js */ "./src/lib/utils.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../config.js */ "./src/config.js");
+
+
+
+
+
+class AvatarUpload extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      source: props.avatar
+    };
+    this.handleFileReceived = this.handleFileReceived.bind(this);
+  }
+  componentDidUpdate(prevProps) {
+    if (this.props.avatar != prevProps.avatar) {
+      this.setState({
+        source: this.props.avatar
+      });
+    }
+  }
+  handleFileReceived(e) {
+    const image = e.target.files[0];
+    this.props.onImageUpdated(image.type, URL.createObjectURL(image), image.name);
+    e.target.value = '';
+  }
+  render() {
+    const randId = 'file-input-avatar-' + ('' + Math.random()).substring(0, 4);
+    const className = 'avatar-upload' + (this.props.readOnly ? ' read-only' : '');
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: className
+    }, this.props.readOnly || !this.state.source ? null : react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      className: "clear-avatar",
+      onClick: e => {
+        e.preventDefault();
+        this.props.onImageUpdated();
+      }
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "clear")), this.state.source ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", {
+      src: this.props.sunrise.authorizeURL((0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_3__.sanitizeUrlForMime)(this.state.source, 'image')),
+      className: "preview"
+    }) : this.props.readOnly && this.props.uid ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "avatar-box"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_letter_tile_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
+      authorizeURL: this.props.sunrise.authorizeURL,
+      avatar: true,
+      topic: this.props.uid,
+      title: this.props.title
+    })) : react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "blank"
+    }, _config_js__WEBPACK_IMPORTED_MODULE_4__.AVATAR_SIZE, "\xD7", _config_js__WEBPACK_IMPORTED_MODULE_4__.AVATAR_SIZE), this.props.readOnly ? null : react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+      type: "file",
+      id: randId,
+      className: "inputfile hidden",
+      accept: "image/*",
+      onChange: this.handleFileReceived
+    }), this.props.readOnly ? null : react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      htmlFor: randId,
+      className: "round"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "file_upload")), react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_load_spinner_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      show: this.props.uploading,
+      large: true,
+      clear: true,
+      centered: true
+    }));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/badge-list.jsx":
+/*!************************************!*\
+  !*** ./src/widgets/badge-list.jsx ***!
+  \************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+
+
+const icon_mapping = {
+  'staff': 'verified_user'
+};
+const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
+  badge_verified: {
+    id: "badge_verified",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Verified/official"
+    }]
+  },
+  badge_staff: {
+    id: "badge_staff",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Staff-managed"
+    }]
+  },
+  badge_danger: {
+    id: "badge_danger",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Untrustworthy"
+    }]
+  }
+});
+class BadgeList extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  render() {
+    const {
+      formatMessage
+    } = this.props.intl;
+    let badges = null;
+    if (this.props.trustedBadges && this.props.trustedBadges.length > 0) {
+      badges = [];
+      this.props.trustedBadges.forEach(b => {
+        const comment = this.props.short ? null : formatMessage(messages['badge_' + b]);
+        const style = 'material-icons ' + b + '-color';
+        badges.push(react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+          className: "trusted-badge",
+          key: b
+        }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+          className: style
+        }, icon_mapping[b] || b), " ", comment));
+      });
+      return react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, badges);
+    }
+    return null;
+  }
+}
+;
+/* harmony default export */ __webpack_exports__["default"] = ((0,react_intl__WEBPACK_IMPORTED_MODULE_1__.injectIntl)(BadgeList));
+
+/***/ }),
+
+/***/ "./src/widgets/button-back.jsx":
+/*!*************************************!*\
+  !*** ./src/widgets/button-back.jsx ***!
+  \*************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ ButtonBack; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+class ButtonBack extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  render() {
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      onClick: e => {
+        e.preventDefault();
+        this.props.onBack();
+      }
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "arrow_back"));
+  }
+}
+
+/***/ }),
+
+/***/ "./src/widgets/call-incoming.jsx":
+/*!***************************************!*\
+  !*** ./src/widgets/call-incoming.jsx ***!
+  \***************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ CallIncoming; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _badge_list_jsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./badge-list.jsx */ "./src/widgets/badge-list.jsx");
+/* harmony import */ var _letter_tile_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./letter-tile.jsx */ "./src/widgets/letter-tile.jsx");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../config.js */ "./src/config.js");
+/* harmony import */ var _constants_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../constants.js */ "./src/constants.js");
+/* harmony import */ var _lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../lib/blob-helpers.js */ "./src/lib/blob-helpers.js");
+/* harmony import */ var _lib_strformat_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../lib/strformat.js */ "./src/lib/strformat.js");
+
+
+
+
+
+
+
+const RING_SOUND = new Audio('audio/call-in.m4a');
+class CallIncoming extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      topic: null,
+      fullName: undefined,
+      avatar: null,
+      trustedBadges: [],
+      previousMetaDesc: undefined
+    };
+    this.resetDesc = this.resetDesc.bind(this);
+    this.onMetaDesc = this.onMetaDesc.bind(this);
+    this.handleRejectCall = this.handleRejectCall.bind(this);
+    this.handleAcceptCall = this.handleAcceptCall.bind(this);
+    this.ringTimer = null;
+  }
+  componentDidMount() {
+    const topic = this.props.sunrise.getTopic(this.props.topic);
+    if (!topic) {
+      return;
+    }
+    this.resetDesc(topic);
+    if (this.props.callState == _constants_js__WEBPACK_IMPORTED_MODULE_4__.CALL_STATE_INCOMING_RECEIVED) {
+      RING_SOUND.play().catch(_ => {});
+      this.ringTimer = setInterval(_ => {
+        RING_SOUND.play().catch(_ => {});
+      }, 2000);
+      this.props.onRinging(this.props.topic, this.props.seq);
+    }
+  }
+  componentDidUpdate(props) {
+    const topic = this.props.sunrise.getTopic(props.topic);
+    if (!topic) {
+      return;
+    }
+    if (this.onMetaDesc != topic.onMetaDesc) {
+      this.previousMetaDesc = topic.onMetaDesc;
+      topic.onMetaDesc = this.onMetaDesc;
+    }
+    if (this.state.topic != props.topic) {
+      this.setState({
+        topic: props.topic
+      });
+      this.resetDesc(topic, props);
+    }
+  }
+  componentWillUnmount() {
+    if (this.ringTimer != null) {
+      clearInterval(this.ringTimer);
+      RING_SOUND.pause();
+    }
+    const topic = this.props.sunrise.getTopic(this.props.topic);
+    if (!topic) {
+      return;
+    }
+    this.setState({
+      topic: null
+    });
+    topic.onMetaDesc = this.previousMetaDesc;
+  }
+  resetDesc(topic) {
+    const badges = [];
+    if (topic.trusted) {
+      for (const [key, val] of Object.entries(topic.trusted)) {
+        if (val) {
+          badges.push(key);
+        }
+      }
+    }
+    this.setState({
+      fullName: (0,_lib_strformat_js__WEBPACK_IMPORTED_MODULE_6__.truncateString)(topic.public ? topic.public.fn : undefined, _config_js__WEBPACK_IMPORTED_MODULE_3__.MAX_TITLE_LENGTH),
+      avatar: (0,_lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_5__.makeImageUrl)(topic.public ? topic.public.photo : null),
+      trustedBadges: badges
+    });
+  }
+  onMetaDesc(desc) {
+    const topic = this.props.sunrise.getTopic(this.props.topic);
+    if (!topic) {
+      return;
+    }
+    this.resetDesc(topic);
+    if (this.previousMetaDesc && this.previousMetaDesc != this.onMetaDesc) {
+      this.previousMetaDesc(desc);
+    }
+  }
+  handleAcceptCall() {
+    this.props.onAcceptCall(this.props.topic);
+  }
+  handleRejectCall() {
+    this.props.onReject(this.props.topic, this.props.seq);
+    this.props.onClose();
+  }
+  render() {
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "alert-container"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "incoming-call"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "caller-card incoming pulse"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "avatar-box"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_letter_tile_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      authorizeURL: this.props.sunrise.authorizeURL,
+      avatar: this.state.avatar || true,
+      topic: this.props.topic,
+      title: this.state.fullName
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "caller-name"
+    }, (0,_lib_strformat_js__WEBPACK_IMPORTED_MODULE_6__.truncateString)(this.state.fullName, _config_js__WEBPACK_IMPORTED_MODULE_3__.MAX_PEER_TITLE_LENGTH), react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_badge_list_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
+      short: true,
+      trustedBadges: this.state.trustedBadges
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      id: "controls"
+    }, this.props.callState == _constants_js__WEBPACK_IMPORTED_MODULE_4__.CALL_STATE_INCOMING_RECEIVED ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+      className: "danger",
+      onClick: this.handleRejectCall
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "call_end")), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+      className: "positive",
+      onClick: this.handleAcceptCall
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "call"))) : null)));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/call-message.jsx":
+/*!**************************************!*\
+  !*** ./src/widgets/call-message.jsx ***!
+  \**************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ CallMessage; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _lib_strformat_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../lib/strformat.js */ "./src/lib/strformat.js");
+
+
+
+class CallMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  render() {
+    const isCallDropped = ['busy', 'declined', 'disconnected', 'missed'].includes(this.props.callState);
+    const successClass = 'material-icons medium ' + (isCallDropped ? 'red' : 'green');
+    const callIcon = this.props.incoming ? isCallDropped ? 'call_missed' : 'call_received' : isCallDropped ? 'call_missed_outgoing' : 'call_made';
+    const title = this.props.incoming ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "calls_incoming",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Incoming call"
+      }]
+    }) : react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "calls_outgoing",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Outgoing call"
+      }]
+    });
+    let duration;
+    if (isCallDropped) {
+      switch (this.props.callState) {
+        case 'busy':
+          duration = react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+            id: "call_busy",
+            defaultMessage: [{
+              "type": 0,
+              "value": "busy"
+            }]
+          });
+          break;
+        case 'declined':
+          duration = react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+            id: "call_declined",
+            defaultMessage: [{
+              "type": 0,
+              "value": "declined"
+            }]
+          });
+          break;
+        case 'missed':
+          duration = this.props.incoming ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+            id: "call_missed",
+            defaultMessage: [{
+              "type": 0,
+              "value": "missed"
+            }]
+          }) : react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+            id: "call_cancelled",
+            defaultMessage: [{
+              "type": 0,
+              "value": "cancelled"
+            }]
+          });
+          break;
+        default:
+          duration = react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+            id: "call_disconnected",
+            defaultMessage: [{
+              "type": 0,
+              "value": "disconnected"
+            }]
+          });
+          break;
+      }
+    } else {
+      duration = react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", null, (0,_lib_strformat_js__WEBPACK_IMPORTED_MODULE_2__.secondsToTime)(this.props.duration / 1000));
+    }
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "call-message"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons big gray"
+    }, "call")), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "flex-column narrow"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, title), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "duration"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: successClass
+    }, callIcon), " ", duration)));
+  }
+}
+
+/***/ }),
+
+/***/ "./src/widgets/call-status.jsx":
+/*!*************************************!*\
+  !*** ./src/widgets/call-status.jsx ***!
+  \*************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ CallStatus; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _lib_strformat_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../lib/strformat.js */ "./src/lib/strformat.js");
+
+
+
+class CallStatus extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  render() {
+    const isCallDropped = ['busy', 'declined', 'disconnected', 'missed'].includes(this.props.callState);
+    const icon2 = this.props.incoming ? isCallDropped ? 'call_missed' : 'call_received' : isCallDropped ? 'call_missed_outgoing' : 'call_made';
+    let duration;
+    if (isCallDropped) {
+      switch (this.props.callState) {
+        case 'busy':
+          duration = react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+            id: "call_busy",
+            defaultMessage: [{
+              "type": 0,
+              "value": "busy"
+            }]
+          });
+          break;
+        case 'declined':
+          duration = react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+            id: "call_declined",
+            defaultMessage: [{
+              "type": 0,
+              "value": "declined"
+            }]
+          });
+          break;
+        case 'missed':
+          duration = this.props.incoming ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+            id: "call_missed",
+            defaultMessage: [{
+              "type": 0,
+              "value": "missed"
+            }]
+          }) : react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+            id: "call_cancelled",
+            defaultMessage: [{
+              "type": 0,
+              "value": "cancelled"
+            }]
+          });
+          break;
+        default:
+          duration = react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+            id: "call_disconnected",
+            defaultMessage: [{
+              "type": 0,
+              "value": "disconnected"
+            }]
+          });
+          break;
+      }
+    } else if (['accepted', 'started'].includes(this.props.callState) && !this.props.duration) {
+      duration = react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+        id: "call_in_progress",
+        defaultMessage: [{
+          "type": 0,
+          "value": "in progress"
+        }]
+      });
+    } else {
+      duration = react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", null, (0,_lib_strformat_js__WEBPACK_IMPORTED_MODULE_2__.secondsToTime)(this.props.duration / 1000));
+    }
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "composed-material"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "call"), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons second"
+    }, icon2)), " ", duration);
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/checkbox.jsx":
+/*!**********************************!*\
+  !*** ./src/widgets/checkbox.jsx ***!
+  \**********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ CheckBox; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+class CheckBox extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+  }
+  handleChange() {
+    this.props.onChange(this.props.name, !this.props.checked);
+  }
+  render() {
+    let classList = ['material-icons'];
+    let iconName;
+    if (Array.isArray(this.props.className)) {
+      classList.push(...this.props.className);
+    } else if (this.props.className) {
+      classList.push(this.props.className);
+    }
+    if (this.props.onChange) {
+      if (this.props.checked) {
+        classList.push('blue', 'clickable');
+        iconName = 'check_box';
+      } else if (this.props.checked === false) {
+        classList.push('blue', 'clickable');
+        iconName = 'check_box_outline_blank';
+      } else {
+        classList.push('lt-blue');
+        iconName = 'indeterminate_check_box';
+      }
+    } else {
+      if (this.props.checked) {
+        iconName = 'check_box';
+      } else {
+        iconName = 'check_box_outline_blank';
+      }
+    }
+    let attrs = {
+      className: classList.join(' '),
+      id: this.props.id
+    };
+    if (this.props.onChange) {
+      attrs.onClick = this.handleChange;
+    }
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement('i', attrs, iconName);
+  }
+}
+
+/***/ }),
+
+/***/ "./src/widgets/chip-input.jsx":
+/*!************************************!*\
+  !*** ./src/widgets/chip-input.jsx ***!
+  \************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ ChipInput; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _chip_jsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./chip.jsx */ "./src/widgets/chip.jsx");
+/* harmony import */ var _lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../lib/blob-helpers.js */ "./src/lib/blob-helpers.js");
+
+
+
+class ChipInput extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+  constructor(props) {
+    super(props);
+    this.state = ChipInput.deriveStateFromProps(props);
+    this.state.input = '';
+    this.state.focused = false;
+    this.handleTextInput = this.handleTextInput.bind(this);
+    this.removeChipAt = this.removeChipAt.bind(this);
+    this.handleChipCancel = this.handleChipCancel.bind(this);
+    this.handleFocusGained = this.handleFocusGained.bind(this);
+    this.handleFocusLost = this.handleFocusLost.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+  }
+  static deriveStateFromProps(props) {
+    return {
+      sortedChips: ChipInput.sortChips(props.chips, props.staticMembers),
+      chipIndex: ChipInput.indexChips(props.chips)
+    };
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.chips != this.props.chips || prevProps.staticMembers != this.props.staticMembers || prevProps.prompt != this.props.prompt) {
+      this.setState(ChipInput.deriveStateFromProps(this.props));
+    }
+    if (!prevState || this.props.chips.length > prevState.sortedChips.length) {
+      this.setState({
+        input: ''
+      });
+    }
+  }
+  static indexChips(chips) {
+    const index = {};
+    let count = 0;
+    chips.forEach(item => {
+      index[item.user] = count;
+      count++;
+    });
+    return index;
+  }
+  static sortChips(chips, keep) {
+    const required = [];
+    const normal = [];
+    chips.forEach(item => {
+      if (keep && keep.includes(item.user)) {
+        required.push(item);
+      } else {
+        normal.push(item);
+      }
+    });
+    return required.concat(normal);
+  }
+  handleTextInput(e) {
+    this.setState({
+      input: e.target.value
+    });
+    if (this.props.filterFunc) {
+      this.props.filterFunc(e.target.value);
+    }
+  }
+  removeChipAt(idx) {
+    const removed = this.state.sortedChips[idx];
+    this.props.onChipRemoved(removed.user, this.state.chipIndex[removed.user]);
+  }
+  handleChipCancel(item, idx) {
+    this.removeChipAt(idx);
+  }
+  handleFocusGained() {
+    this.setState({
+      focused: true
+    });
+  }
+  handleFocusLost() {
+    this.setState({
+      focused: false
+    });
+    if (this.props.onFocusLost) {
+      this.props.onFocusLost(this.state.input);
+    }
+  }
+  handleKeyDown(e) {
+    if (e.key === 'Backspace') {
+      if (this.state.input.length == 0 && this.state.sortedChips.length > 0) {
+        const at = this.state.sortedChips.length - 1;
+        if (this.state.sortedChips[at].user !== this.props.staticMembers) {
+          this.removeChipAt(at);
+        }
+      }
+    } else if (e.key === 'Enter') {
+      if (this.props.onEnter) {
+        this.props.onEnter(this.state.input);
+      }
+    } else if (e.key === 'Escape') {
+      if (this.props.onCancel) {
+        this.props.onCancel();
+      }
+    }
+  }
+  render() {
+    const chips = [];
+    let count = 0;
+    const staticMembers = this.props.staticMembers || [];
+    this.state.sortedChips.forEach(item => {
+      chips.push(react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_chip_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
+        sunrise: this.props.sunrise,
+        onCancel: this.handleChipCancel,
+        avatar: (0,_lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_2__.makeImageUrl)(item.public ? item.public.photo : null),
+        title: item.public ? item.public.fn : undefined,
+        noAvatar: this.props.avatarDisabled,
+        topic: item.user,
+        required: staticMembers.includes(item.user),
+        invalid: item.invalid,
+        index: count,
+        key: item.user
+      }));
+      count++;
+    });
+    const className = "chip-input" + (this.state.focused ? ' focused' : '');
+    const autoFocus = !(this.props.tabIndex > 0);
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: className
+    }, chips, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+      type: "text",
+      placeholder: this.props.prompt,
+      onChange: this.handleTextInput,
+      onFocus: this.handleFocusGained,
+      onBlur: this.handleFocusLost,
+      onKeyDown: this.handleKeyDown,
+      value: this.state.input,
+      tabIndex: this.props.tabIndex,
+      autoFocus: autoFocus
+    }));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/chip.jsx":
+/*!******************************!*\
+  !*** ./src/widgets/chip.jsx ***!
+  \******************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ Chip; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _letter_tile_jsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./letter-tile.jsx */ "./src/widgets/letter-tile.jsx");
+
+
+class Chip extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.handleCancel = this.handleCancel.bind(this);
+  }
+  handleCancel(e) {
+    e.preventDefault();
+    this.props.onCancel(this.props.topic, this.props.index);
+  }
+  render() {
+    const title = this.props.title || this.props.topic;
+    const className = this.props.invalid ? 'chip invalid' : 'chip';
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: className
+    }, this.props.noAvatar ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      className: "spacer"
+    }) : react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "avatar-box"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_letter_tile_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
+      authorizeURL: this.props.sunrise.authorizeURL,
+      avatar: this.props.avatar || true,
+      topic: this.props.topic,
+      title: this.props.title
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", null, title), this.props.onCancel && !this.props.required ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      onClick: this.handleCancel
+    }, "\xD7") : react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      className: "spacer"
+    }));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/contact-action.jsx":
+/*!****************************************!*\
+  !*** ./src/widgets/contact-action.jsx ***!
+  \****************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+
+
+class ContactAction extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
+  handleClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.props.onAction(this.props.action);
+  }
+  render() {
+    const {
+      formatMessage
+    } = this.props.intl;
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
+      onClick: this.handleClick,
+      className: "action"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "action-text"
+    }, formatMessage(this.props.title, this.props.values)));
+  }
+}
+;
+/* harmony default export */ __webpack_exports__["default"] = ((0,react_intl__WEBPACK_IMPORTED_MODULE_1__.injectIntl)(ContactAction));
+
+/***/ }),
+
+/***/ "./src/widgets/contact-badges.jsx":
+/*!****************************************!*\
+  !*** ./src/widgets/contact-badges.jsx ***!
+  \****************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ ContactBadges; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+const icon_mapping = {
+  'muted': 'notifications_off',
+  'banned': 'block',
+  'staff': 'verified_user'
+};
+class ContactBadges extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  render() {
+    let badges = null;
+    if (this.props.badges && this.props.badges.length > 0) {
+      badges = [];
+      this.props.badges.forEach(b => {
+        const color = b.color ? ' ' + b.color : '';
+        if (b.icon) {
+          badges.push(react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+            className: 'material-icons as-badge' + color,
+            key: b.key || b.icon
+          }, icon_mapping[b.icon] || b.icon));
+        } else {
+          badges.push(react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+            className: 'badge' + color,
+            key: b.key || b.name
+          }, b.name));
+        }
+      });
+      return react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, badges);
+    }
+    return null;
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/contact-list.jsx":
+/*!**************************************!*\
+  !*** ./src/widgets/contact-list.jsx ***!
+  \**************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _contact_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./contact.jsx */ "./src/widgets/contact.jsx");
+/* harmony import */ var _contact_action_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./contact-action.jsx */ "./src/widgets/contact-action.jsx");
+/* harmony import */ var _lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../lib/blob-helpers.js */ "./src/lib/blob-helpers.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../config.js */ "./src/config.js");
+
+
+
+
+
+
+
+const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
+  badge_you: {
+    id: "badge_you",
+    defaultMessage: [{
+      "type": 0,
+      "value": "you"
+    }]
+  },
+  badge_owner: {
+    id: "badge_owner",
+    defaultMessage: [{
+      "type": 0,
+      "value": "owner"
+    }]
+  }
+});
+class ContactList extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  render() {
+    const {
+      formatMessage
+    } = this.props.intl;
+    const showCheckmark = Array.isArray(this.props.topicSelected);
+    const contactNodes = [];
+    let contactsCount = 0;
+    if (this.props.showSelfTopic) {
+      const selected = showCheckmark ? this.props.topicSelected.indexOf('slf') > -1 : this.props.topicSelected === 'slf';
+      contactNodes.push(react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_contact_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
+        sunrise: this.props.sunrise,
+        avatar: true,
+        showMode: this.props.showMode,
+        selected: selected,
+        showCheckmark: showCheckmark,
+        onSelected: this.props.onTopicSelected,
+        showContextMenu: this.props.showContextMenu,
+        index: contactNodes.length,
+        item: "slf",
+        key: "slf"
+      }));
+      contactsCount++;
+    }
+    if (this.props.contacts && this.props.contacts.length > 0) {
+      const usedKeys = {};
+      this.props.contacts.forEach(c => {
+        if (c.action) {
+          contactNodes.push(react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_contact_action_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], {
+            title: c.title,
+            action: c.action,
+            values: c.values,
+            key: c.action,
+            onAction: this.props.onAction
+          }));
+        } else {
+          const key = this.props.showMode ? c.user : c.topic || c.user;
+          if (usedKeys[key]) {
+            return;
+          }
+          usedKeys[key] = true;
+          if (this.props.filterFunc && this.props.filter) {
+            const filterOn = [key];
+            if (c.private && c.private.comment) {
+              filterOn.push(('' + c.private.comment).toLowerCase());
+            }
+            if (c.public && c.public.fn) {
+              filterOn.push(('' + c.public.fn).toLowerCase());
+            }
+            if (!this.props.filterFunc(this.props.filter, filterOn)) {
+              return;
+            }
+          }
+          const isChannel = sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.isChannelTopicName(key);
+          const isGroup = !isChannel && sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.isGroupTopicName(key);
+          const selected = showCheckmark ? this.props.topicSelected.indexOf(key) > -1 : this.props.topicSelected === key;
+          const badges = [];
+          if (this.props.showMode) {
+            if (key == this.props.myUserId) {
+              badges.push({
+                name: formatMessage(messages.badge_you),
+                color: 'green'
+              });
+            }
+            if (c.acs && c.acs.isOwner()) {
+              badges.push({
+                name: formatMessage(messages.badge_owner),
+                color: 'blue'
+              });
+            }
+          }
+          const comment = Array.isArray(c.private) ? c.private.join(',') : c.private ? c.private.comment : null;
+          let preview;
+          let forwarded;
+          let previewIsResponse;
+          let deliveryStatus;
+          if (!this.props.showMode && c.latestMessage) {
+            const msg = c.latestMessage();
+            if (msg) {
+              forwarded = msg.head ? msg.head.forwarded : null;
+              deliveryStatus = msg._status || c.msgStatus(msg, true);
+              previewIsResponse = msg.from != this.props.myUserId;
+              if (msg.content) {
+                preview = typeof msg.content == 'string' ? msg.content.substr(0, _config_js__WEBPACK_IMPORTED_MODULE_6__.MESSAGE_PREVIEW_LENGTH) : sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.preview(msg.content, _config_js__WEBPACK_IMPORTED_MODULE_6__.MESSAGE_PREVIEW_LENGTH);
+              }
+            }
+          }
+          contactNodes.push(react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_contact_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
+            sunrise: this.props.sunrise,
+            title: c.public ? c.public.fn : null,
+            avatar: (0,_lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_5__.makeImageUrl)(c.public ? c.public.photo : null),
+            comment: comment,
+            preview: preview,
+            previewIsResponse: previewIsResponse,
+            forwarded: forwarded,
+            received: deliveryStatus,
+            unread: this.props.showUnread ? c.unread : 0,
+            now: c.online && this.props.connected,
+            acs: c.acs,
+            showMode: this.props.showMode,
+            badges: badges,
+            showCheckmark: showCheckmark,
+            selected: selected,
+            pinned: c.pinned,
+            showOnline: this.props.showOnline && !isChannel,
+            isChannel: isChannel,
+            isGroup: isGroup,
+            showContextMenu: this.props.showContextMenu,
+            isVerified: c.trusted && c.trusted.verified,
+            isStaff: c.trusted && c.trusted.staff,
+            isDangerous: c.trusted && c.trusted.danger,
+            deleted: c._deleted,
+            onSelected: this.props.onTopicSelected,
+            item: key,
+            index: contactNodes.length,
+            key: key
+          }));
+          contactsCount++;
+        }
+      }, this);
+    }
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: this.props.noScroll ? null : "scrollable-panel"
+    }, contactsCount == 0 ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "center-medium-text",
+      style: {
+        whiteSpace: 'pre-line'
+      }
+    }, this.props.emptyListMessage) : null, contactNodes.length > 0 ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", {
+      className: "contact-box"
+    }, contactNodes) : null);
+  }
+}
+;
+/* harmony default export */ __webpack_exports__["default"] = ((0,react_intl__WEBPACK_IMPORTED_MODULE_1__.injectIntl)(ContactList));
+
+/***/ }),
+
+/***/ "./src/widgets/contact.jsx":
+/*!*********************************!*\
+  !*** ./src/widgets/contact.jsx ***!
+  \*********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _contact_badges_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./contact-badges.jsx */ "./src/widgets/contact-badges.jsx");
+/* harmony import */ var _letter_tile_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./letter-tile.jsx */ "./src/widgets/letter-tile.jsx");
+/* harmony import */ var _unread_badge_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./unread-badge.jsx */ "./src/widgets/unread-badge.jsx");
+/* harmony import */ var _lib_formatters_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../lib/formatters.js */ "./src/lib/formatters.js");
+/* harmony import */ var _lib_utils_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../lib/utils.js */ "./src/lib/utils.js");
+/* harmony import */ var _lib_strformat_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../lib/strformat.js */ "./src/lib/strformat.js");
+
+
+
+
+
+
+
+
+
+
+const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
+  self_topic_name: {
+    id: "self_topic_name",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Saved messages"
+    }]
+  },
+  self_topic_comment: {
+    id: "self_topic_comment",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Notes, messages, links, files saved for posterity"
+    }]
+  }
+});
+class Contact extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+    this.handleContextClick = this.handleContextClick.bind(this);
+  }
+  handleClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (this.props.onSelected) {
+      this.props.onSelected(this.props.item, this.props.index);
+    }
+  }
+  handleContextClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.props.showContextMenu({
+      topicName: this.props.item,
+      topicTitle: this.props.title,
+      y: e.pageY,
+      x: e.pageX
+    });
+  }
+  render() {
+    let title = this.props.title;
+    const self = sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.isSelfTopicName(this.props.item);
+    if (!title) {
+      if (self) {
+        title = this.props.intl.formatMessage(messages.self_topic_name);
+      } else {
+        title = react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+          id: "unnamed_topic",
+          defaultMessage: [{
+            "type": 0,
+            "value": "Unnamed"
+          }]
+        }));
+      }
+    } else if (title.length > 30) {
+      title = (0,_lib_strformat_js__WEBPACK_IMPORTED_MODULE_8__.truncateString)(title, 30);
+    }
+    const online = this.props.now ? 'online' : 'offline';
+    const avatar = this.props.avatar ? this.props.avatar : true;
+    const badges = this.props.badges ? this.props.badges.slice() : [];
+    const icon_badges = [];
+    if (this.props.isVerified) {
+      icon_badges.push({
+        icon: 'verified',
+        color: 'verified-color'
+      });
+    }
+    if (this.props.isStaff) {
+      icon_badges.push({
+        icon: 'staff',
+        color: 'staff-color'
+      });
+    }
+    if (this.props.isDangerous) {
+      icon_badges.push({
+        icon: 'dangerous',
+        color: 'danger-color'
+      });
+    }
+    if (this.props.acs) {
+      if (this.props.showMode) {
+        badges.push({
+          name: this.props.acs.getMode(),
+          key: 'mode'
+        });
+      }
+      if (this.props.acs.isMuted()) {
+        icon_badges.push({
+          icon: 'muted'
+        });
+      }
+      if (!this.props.acs.isJoiner()) {
+        icon_badges.push({
+          icon: 'banned'
+        });
+      }
+    }
+    let preview;
+    if (typeof this.props.preview == 'string') {
+      preview = this.props.preview;
+    } else if (sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.isValid(this.props.preview)) {
+      preview = react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.format(this.props.preview, _lib_formatters_js__WEBPACK_IMPORTED_MODULE_6__.previewFormatter, {
+        formatMessage: this.props.intl.formatMessage,
+        previewIsResponse: this.props.previewIsResponse
+      }));
+    } else if (this.props.preview) {
+      preview = react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+        className: "material-icons gray"
+      }, "warning_amber"), " ", react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+        className: "gray"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+        id: "invalid_content",
+        defaultMessage: [{
+          "type": 0,
+          "value": "invalid content"
+        }]
+      })));
+    }
+    const icon = (0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_7__.deliveryMarker)(this.props.received);
+    const marker = icon ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: 'material-icons small space-right' + (icon.color ? ' ' + icon.color : '')
+    }, icon.name) : null;
+    const titleClass = 'contact-title' + (this.props.deleted ? ' deleted' : '');
+    const comment = preview || this.props.comment || (self ? this.props.intl.formatMessage(messages.self_topic_comment) : '\u00A0');
+    const bgColor = this.props.showCheckmark ? null : this.props.selected ? 'selected' : this.props.pinned ? 'tpinned' : null;
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
+      className: bgColor,
+      onClick: this.handleClick
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "avatar-box"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_letter_tile_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      authorizeURL: this.props.sunrise.authorizeURL,
+      avatar: avatar,
+      title: this.props.title,
+      topic: this.props.item,
+      deleted: this.props.deleted
+    }), this.props.deleted ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "deleted material-icons"
+    }, "cancel") : !self && this.props.showOnline ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      className: online
+    }) : this.props.showCheckmark && this.props.selected ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "checkmark material-icons"
+    }, "check_circle") : null), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "text-box"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      className: titleClass
+    }, title), this.props.isGroup ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons as-badge"
+    }, "group") : null, this.props.isChannel ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons as-badge"
+    }, "podcasts") : null, !self ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_contact_badges_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
+      badges: icon_badges
+    }) : null, !this.props.deleted ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_unread_badge_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      count: this.props.unread
+    }) : null), this.props.showMode ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_contact_badges_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
+      badges: badges
+    })) : this.props.small ? null : react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "contact-comment"
+    }, marker, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", null, comment))), this.props.showContextMenu ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      className: "menuTrigger"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      onClick: this.handleContextClick
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "expand_more"))) : null);
+  }
+}
+;
+/* harmony default export */ __webpack_exports__["default"] = ((0,react_intl__WEBPACK_IMPORTED_MODULE_1__.injectIntl)(Contact));
+
+/***/ }),
+
+/***/ "./src/widgets/context-menu.jsx":
+/*!**************************************!*\
+  !*** ./src/widgets/context-menu.jsx ***!
+  \**************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../config.js */ "./src/config.js");
+
+
+
+const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
+  info: {
+    id: "menu_item_info",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Info"
+    }]
+  },
+  clear_messages: {
+    id: "menu_item_clear_messages",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Clear messages"
+    }]
+  },
+  clear_for_all: {
+    id: "menu_item_clear_messages_for_all",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Clear for All"
+    }]
+  },
+  delete: {
+    id: "menu_item_delete",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Delete"
+    }]
+  },
+  delete_for_all: {
+    id: "menu_item_delete_for_all",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Delete for All"
+    }]
+  },
+  send_retry: {
+    id: "menu_item_send_retry",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Retry"
+    }]
+  },
+  mute: {
+    id: "menu_item_mute",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Mute"
+    }]
+  },
+  unmute: {
+    id: "menu_item_unmute",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Unmute"
+    }]
+  },
+  reply: {
+    id: "menu_item_reply",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Reply"
+    }]
+  },
+  forward: {
+    id: "menu_item_forward",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Forward"
+    }]
+  },
+  edit: {
+    id: "menu_item_edit",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Edit"
+    }]
+  },
+  topic_delete: {
+    id: "menu_item_delete_topic",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Delete"
+    }]
+  },
+  topic_delete_warning: {
+    id: "topic_delete_warning",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Are you sure you want to delete this conversation? It cannot be undone."
+    }]
+  },
+  delete_messages_warning: {
+    id: "delete_messages_warning",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Are you sure you want to delete all messages for everyone? It cannot be undone."
+    }]
+  },
+  unblock: {
+    id: "menu_item_unblock",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Unblock"
+    }]
+  },
+  block: {
+    id: "menu_item_block",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Block"
+    }]
+  },
+  topic_block_warning: {
+    id: "topic_block_warning",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Are you sure you want to block this conversation?"
+    }]
+  },
+  member_delete: {
+    id: "menu_item_member_delete",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Remove"
+    }]
+  },
+  archive: {
+    id: "menu_item_archive_topic",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Archive"
+    }]
+  },
+  unarchive: {
+    id: "menu_item_restore_topic",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Restore"
+    }]
+  },
+  edit_permissions: {
+    id: "menu_item_edit_permissions",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Edit permissions"
+    }]
+  },
+  clear_messages_warning: {
+    id: "clear_messages_warning",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Are you sure you want to clear all messages? It cannot be undone."
+    }]
+  },
+  pin_message: {
+    id: "pin_message",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Pin"
+    }]
+  },
+  unpin_message: {
+    id: "unpin_message",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Unpin"
+    }]
+  },
+  pin_chat: {
+    id: "pin_chat",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Pin"
+    }]
+  },
+  unpin_chat: {
+    id: "unpin_chat",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Unpin"
+    }]
+  }
+});
+class ContextMenu extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+  constructor(props) {
+    super(props);
+    this.selfRef = react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
+    const {
+      formatMessage
+    } = props.intl;
+    this.handlePageClick = this.handlePageClick.bind(this);
+    this.handleEscapeKey = this.handleEscapeKey.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+    this.MenuItems = {
+      'topic_info': {
+        id: 'topic_info',
+        title: formatMessage(messages.info),
+        handler: null
+      },
+      'messages_clear': {
+        id: 'messages_clear',
+        title: formatMessage(messages.clear_messages),
+        handler: (params, errorHandler) => {
+          return props.onShowAlert(params.topicTitle || formatMessage(messages.clear_messages), formatMessage(messages.clear_messages_warning), _ => {
+            this.deleteMessages(true, false, params, errorHandler);
+          }, null, true, null);
+        }
+      },
+      'messages_clear_hard': {
+        id: 'messages_clear_hard',
+        title: formatMessage(messages.clear_for_all),
+        handler: (params, errorHandler) => {
+          return props.onShowAlert(params.topicTitle || formatMessage(messages.clear_for_all), formatMessage(messages.delete_messages_warning), _ => {
+            return this.deleteMessages(true, true, params, errorHandler);
+          }, null, true, null);
+        }
+      },
+      'message_delete': {
+        id: 'message_delete',
+        title: formatMessage(messages.delete),
+        handler: (params, errorHandler) => {
+          return this.deleteMessages(false, false, params, errorHandler);
+        }
+      },
+      'message_delete_hard': {
+        id: 'message_delete_hard',
+        title: formatMessage(messages.delete_for_all),
+        handler: (params, errorHandler) => {
+          return this.deleteMessages(false, true, params, errorHandler);
+        }
+      },
+      'message_delete_generic': {
+        id: 'message_delete_generic',
+        title: formatMessage(messages.delete),
+        handler: (params, errorHandler) => {
+          return this.deleteMessages(false, true, params, errorHandler);
+        }
+      },
+      'menu_item_send_retry': {
+        id: 'menu_item_send_retry',
+        title: formatMessage(messages.send_retry),
+        handler: (params, errorHandler) => {
+          return this.retryMessage(params, errorHandler);
+        }
+      },
+      'menu_item_reply': {
+        id: 'menu_item_reply',
+        title: formatMessage(messages.reply),
+        handler: (params, errorHandler) => {
+          return this.replyToMessage(params, errorHandler);
+        }
+      },
+      'menu_item_forward': {
+        id: 'menu_item_forward',
+        title: formatMessage(messages.forward),
+        handler: _ => {}
+      },
+      'menu_item_edit': {
+        id: 'menu_item_edit',
+        title: formatMessage(messages.edit),
+        handler: (params, errorHandler) => {
+          return this.editMessage(params, errorHandler);
+        }
+      },
+      'menu_item_pin': {
+        id: 'menu_item_pin',
+        title: formatMessage(messages.pin_message),
+        handler: (params, errorHandler) => {
+          return this.pinMessage(true, params, errorHandler);
+        }
+      },
+      'menu_item_unpin': {
+        id: 'menu_item_unpin',
+        title: formatMessage(messages.unpin_message),
+        handler: (params, errorHandler) => {
+          return this.pinMessage(false, params, errorHandler);
+        }
+      },
+      'topic_unmute': {
+        id: 'topic_unmute',
+        title: formatMessage(messages.unmute),
+        handler: this.topicPermissionSetter.bind(this, '+P')
+      },
+      'topic_mute': {
+        id: 'topic_mute',
+        title: formatMessage(messages.mute),
+        handler: this.topicPermissionSetter.bind(this, '-P')
+      },
+      'topic_unblock': {
+        id: 'topic_unblock',
+        title: formatMessage(messages.unblock),
+        handler: this.topicPermissionSetter.bind(this, '+JP')
+      },
+      'topic_block': {
+        id: 'topic_block',
+        title: formatMessage(messages.block),
+        handler: (params, errorHandler) => {
+          return props.onShowAlert(params.topicTitle || formatMessage(messages.block), formatMessage(messages.topic_block_warning), _ => this.topicPermissionSetter('-JP', params, errorHandler).then(ctrl => {
+            this.props.onTopicRemoved(params.topicName);
+            return ctrl;
+          }), null, true, null);
+        }
+      },
+      'topic_delete': {
+        id: 'topic_delete',
+        title: formatMessage(messages.topic_delete),
+        handler: (params, errorHandler) => {
+          return props.onShowAlert(params.topicTitle || formatMessage(messages.topic_delete), formatMessage(messages.topic_delete_warning), _ => {
+            const topic = this.props.sunrise.getTopic(params.topicName);
+            if (!topic) {
+              console.warn("Topic not found: ", params.topicName);
+              return;
+            }
+            return topic.delTopic(true).catch(err => {
+              if (errorHandler) {
+                errorHandler(err.message, 'err');
+              }
+            });
+          }, null, true, null);
+        }
+      },
+      'topic_archive': {
+        id: 'topic_archive',
+        title: formatMessage(messages.archive),
+        handler: (params, errorHandler) => {
+          const topic = this.props.sunrise.getTopic(params.topicName);
+          if (!topic) {
+            console.warn("Topic not found: ", params.topicName);
+            return;
+          }
+          return topic.archive(true).catch(err => {
+            if (errorHandler) {
+              errorHandler(err.message, 'err');
+            }
+          });
+        }
+      },
+      'topic_restore': {
+        id: 'topic_restore',
+        title: formatMessage(messages.unarchive),
+        handler: (params, errorHandler) => {
+          const topic = this.props.sunrise.getTopic(params.topicName);
+          if (!topic) {
+            console.warn("Topic not found: ", params.topicName);
+            return;
+          }
+          return topic.archive(false).catch(err => {
+            if (errorHandler) {
+              errorHandler(err.message, 'err');
+            }
+          });
+        }
+      },
+      'topic_pin': {
+        id: 'topic_pin',
+        title: formatMessage(messages.pin_chat),
+        handler: (params, errorHandler) => {
+          const me = this.props.sunrise.getMeTopic();
+          if (!me) {
+            console.warn("'me' topic not found");
+            return;
+          }
+          return me.pinTopic(params.topicName, true).catch(err => {
+            if (errorHandler) {
+              errorHandler(err.message, 'err');
+            }
+          });
+        }
+      },
+      'topic_unpin': {
+        id: 'topic_unpin',
+        title: formatMessage(messages.unpin_chat),
+        handler: (params, errorHandler) => {
+          const me = this.props.sunrise.getMeTopic();
+          if (!me) {
+            console.warn("'me' topic not found");
+            return;
+          }
+          return me.pinTopic(params.topicName, false).catch(err => {
+            if (errorHandler) {
+              errorHandler(err.message, 'err');
+            }
+          });
+        }
+      },
+      'permissions': {
+        id: 'permissions',
+        title: formatMessage(messages.edit_permissions),
+        handler: null
+      },
+      'member_delete': {
+        id: 'member_delete',
+        title: formatMessage(messages.member_delete),
+        handler: (params, errorHandler) => {
+          const topic = this.props.sunrise.getTopic(params.topicName);
+          if (!topic || !params.user) {
+            console.warn("Topic or user not found: '" + params.topicName + "', '" + params.user + "'");
+            return;
+          }
+          return topic.delSubscription(params.user).catch(err => {
+            if (errorHandler) {
+              errorHandler(err.message, 'err');
+            }
+          });
+        }
+      },
+      'member_mute': {
+        id: 'member_mute',
+        title: formatMessage(messages.mute),
+        handler: this.topicPermissionSetter.bind(this, '-P')
+      },
+      'member_unmute': {
+        id: 'member_unmute',
+        title: formatMessage(messages.unmute),
+        handler: this.topicPermissionSetter.bind(this, '+P')
+      },
+      'member_block': {
+        id: 'member_block',
+        title: formatMessage(messages.block),
+        handler: this.topicPermissionSetter.bind(this, '-JP')
+      },
+      'member_unblock': {
+        id: 'member_unblock',
+        title: formatMessage(messages.unblock),
+        handler: this.topicPermissionSetter.bind(this, '+JP')
+      }
+    };
+  }
+  componentDidMount() {
+    document.addEventListener('mousedown', this.handlePageClick, false);
+    document.addEventListener('keyup', this.handleEscapeKey, false);
+  }
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handlePageClick, false);
+    document.removeEventListener('keyup', this.handleEscapeKey, false);
+  }
+  handlePageClick(e) {
+    if (this.selfRef.current.contains(e.target)) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    this.props.hide();
+  }
+  handleEscapeKey(e) {
+    if (e.keyCode === 27) {
+      this.props.hide();
+    }
+  }
+  handleClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.props.hide();
+    let item = this.props.items[e.currentTarget.dataset.id];
+    if (typeof item == 'string') {
+      item = this.MenuItems[item];
+    }
+    if (!item) {
+      console.error("Invalid menu item ID", e.currentTarget.dataset.id);
+    } else {
+      this.props.onAction(item.id, item.handler(this.props.params, this.props.onError), this.props.params);
+    }
+  }
+  deleteMessages(all, hard, params, errorHandler) {
+    const topic = this.props.sunrise.getTopic(params.topicName);
+    if (!topic) {
+      console.warn("Topic not found: ", params.topicName);
+      return;
+    }
+    if (!all && topic.cancelSend(params.seq)) {
+      return;
+    }
+    const promise = all ? topic.delMessagesAll(hard) : params.replace > 0 ? topic.delMessagesEdits(params.replace, hard) : topic.delMessagesList([params.seq], hard);
+    return promise.catch(err => {
+      if (errorHandler) {
+        errorHandler(err.message, 'err');
+      }
+    });
+  }
+  retryMessage(params, errorHandler) {
+    const topic = this.props.sunrise.getTopic(params.topicName);
+    if (!topic || !topic.flushMessage(params.seq)) {
+      return;
+    }
+    const msg = topic.createMessage(params.content, false);
+    return topic.publishDraft(msg).catch(err => {
+      if (errorHandler) {
+        errorHandler(err.message, 'err');
+      }
+    });
+  }
+  pinMessage(pin, params, errorHandler) {
+    const topic = this.props.sunrise.getTopic(params.topicName);
+    if (!topic) {
+      return;
+    }
+    topic.pinMessage(params.seq, pin).catch(err => errorHandler ? errorHandler(err.message, 'err') : null);
+  }
+  topicPermissionSetter(mode, params, errorHandler) {
+    const topic = this.props.sunrise.getTopic(params.topicName);
+    if (!topic) {
+      console.warn("Topic not found", params.topicName);
+      return;
+    }
+    let result = topic.updateMode(params.user, mode);
+    if (errorHandler) {
+      result = result.catch(err => errorHandler(err.message, 'err'));
+    }
+    return result;
+  }
+  replyToMessage(params, errorHandler) {
+    params.pickReply(params.seq, params.content, params.userFrom, params.userName, errorHandler);
+  }
+  editMessage(params, errorHandler) {
+    params.editMessage(params.replace || params.seq, params.content, errorHandler);
+  }
+  render() {
+    const menu = [];
+    let count = 0;
+    this.props.items.forEach(item => {
+      if (typeof item == 'string') {
+        item = this.MenuItems[item];
+      }
+      if (item && item.title) {
+        const className = item.disabled ? 'disabled' : undefined;
+        menu.push(item.title == '-' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
+          className: "separator",
+          key: count
+        }) : react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
+          className: className,
+          onClick: this.handleClick,
+          "data-id": count,
+          key: count
+        }, item.title));
+      }
+      count++;
+    });
+    const hSize = 12 * _config_js__WEBPACK_IMPORTED_MODULE_2__.REM_SIZE;
+    const vSize = _config_js__WEBPACK_IMPORTED_MODULE_2__.REM_SIZE * (0.7 + menu.length * 2.5);
+    const left = this.props.bounds.right - this.props.clickAt.x < hSize ? this.props.clickAt.x - this.props.bounds.left - hSize : this.props.clickAt.x - this.props.bounds.left;
+    const top = this.props.bounds.bottom - this.props.clickAt.y < vSize ? this.props.clickAt.y - this.props.bounds.top - vSize : this.props.clickAt.y - this.props.bounds.top;
+    const position = {
+      left: left + 'px',
+      top: top + 'px'
+    };
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", {
+      className: "menu",
+      style: position,
+      ref: this.selfRef
+    }, menu);
+  }
+}
+/* harmony default export */ __webpack_exports__["default"] = ((0,react_intl__WEBPACK_IMPORTED_MODULE_1__.injectIntl)(ContextMenu));
+
+/***/ }),
+
+/***/ "./src/widgets/cropper.jsx":
+/*!*********************************!*\
+  !*** ./src/widgets/cropper.jsx ***!
+  \*********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ Cropper; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+const DEFAULT_MAX_ZOOM = 8;
+class Cropper extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      panX: 0,
+      panY: 0,
+      originX: 0,
+      originY: 0,
+      zoom: 1,
+      minZoom: 0.001,
+      maxZoom: DEFAULT_MAX_ZOOM
+    };
+    this.overlay = react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
+    this.cutout = react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
+    this.preview = react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
+    this.boundingBox = react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
+    this.imageWidth = 0;
+    this.imageHeight = 0;
+    this.mouseX = 0;
+    this.mouseY = 0;
+    this.prevDistance = 0;
+    this.cutoutRect = {};
+    this.bBoxRect = {};
+    this.originX = 0;
+    this.originY = 0;
+    this.initScaling = this.initScaling.bind(this);
+    this.onZoom = this.onZoom.bind(this);
+    this.handleZoom = this.handleZoom.bind(this);
+    this.mouseDown = this.mouseDown.bind(this);
+    this.mouseUp = this.mouseUp.bind(this);
+    this.mouseMove = this.mouseMove.bind(this);
+    this.mouseTouch = this.mouseTouch.bind(this);
+    this.positionAll = this.positionAll.bind(this);
+    this.translate = this.translate.bind(this);
+  }
+  componentDidMount() {
+    this.overlay.current.addEventListener('mousedown', this.mouseDown, {
+      passive: true
+    });
+    this.overlay.current.addEventListener('touchstart', this.mouseDown, {
+      passive: true
+    });
+    this.bBoxRect = this.boundingBox.current.getBoundingClientRect();
+    this.originX = this.bBoxRect.width / 2;
+    this.originY = this.bBoxRect.height / 2;
+    this.cutoutRect = this.cutout.current.getBoundingClientRect();
+  }
+  componentWillUnmount() {
+    if (this.overlay.current) {
+      this.overlay.current.removeEventListener('mousedown', this.mouseDown);
+      this.overlay.current.removeEventListener('touchstart', this.mouseDown);
+    }
+  }
+  positionAll(panX, panY, zoom) {
+    this.setState({
+      panX: panX,
+      panY: panY,
+      zoom: zoom,
+      originX: this.originX - panX,
+      originY: this.originY - panY
+    });
+    const left = (this.originX - panX) * zoom - this.originX;
+    const top = (this.originY - panY) * zoom - this.originY;
+    this.props.onChange((left + this.cutoutRect.left - this.bBoxRect.left) / zoom, (top + this.cutoutRect.top - this.bBoxRect.top) / zoom, this.cutoutRect.width / zoom, this.cutoutRect.height / zoom, zoom);
+  }
+  static checkBound(currPan, img, cutout, delta) {
+    let nextDiff = Math.min(0, cutout[0] - img[0] - delta, img[1] - cutout[1] + delta);
+    if (nextDiff == 0) {
+      currPan += delta;
+    } else if (Math.min(0, cutout[0] - img[0], img[1] - cutout[1]) < nextDiff) {
+      currPan += delta;
+    }
+    return currPan;
+  }
+  initScaling() {
+    const imgRect = this.preview.current.getBoundingClientRect();
+    this.imageWidth = imgRect.width;
+    this.imageHeight = imgRect.height;
+    const minZoom = Math.max(this.cutoutRect.width / imgRect.width, this.cutoutRect.height / imgRect.height);
+    this.setState({
+      minZoom: minZoom,
+      maxZoom: minZoom * DEFAULT_MAX_ZOOM
+    });
+    const zoom = Math.max(this.bBoxRect.width / imgRect.width, this.bBoxRect.height / imgRect.height);
+    const panX = this.cutoutRect.left - this.bBoxRect.left - (imgRect.width - this.cutoutRect.width) / 2;
+    const panY = this.cutoutRect.top - this.bBoxRect.top - (imgRect.height - this.cutoutRect.height) / 2;
+    this.positionAll(panX, panY, zoom);
+  }
+  onZoom(e) {
+    this.handleZoom(e.target.value);
+  }
+  handleZoom(zoom) {
+    let panX = this.state.panX;
+    let panY = this.state.panY;
+    const imgLeft = this.originX - (this.originX - panX) * zoom;
+    const imgRight = imgLeft + this.imageWidth * zoom;
+    const imgTop = this.originY - (this.originY - panY) * zoom;
+    const imgBottom = imgTop + this.imageHeight * zoom;
+    const coLeft = this.cutoutRect.left - this.bBoxRect.left;
+    const coRight = coLeft + this.cutoutRect.width;
+    const coTop = this.cutoutRect.top - this.bBoxRect.top;
+    const coBottom = coTop + this.cutoutRect.height;
+    if (coLeft < imgLeft) {
+      panX -= (imgLeft - coLeft) / zoom;
+    } else if (coRight > imgRight) {
+      panX += (coRight - imgRight) / zoom;
+    }
+    if (coTop < imgTop) {
+      panY -= (imgTop - coTop) / zoom;
+    } else if (coBottom > imgBottom) {
+      panY += (coBottom - imgBottom) / zoom;
+    }
+    this.positionAll(panX, panY, zoom);
+  }
+  mouseDown(e) {
+    if (e.touches) {
+      this.mouseX = e.touches[0].pageX;
+      this.mouseY = e.touches[0].pageY;
+    } else {
+      this.mouseX = e.pageX;
+      this.mouseY = e.pageY;
+    }
+    window.addEventListener('mousemove', this.mouseMove, {
+      passive: false
+    });
+    window.addEventListener('touchmove', this.mouseTouch, {
+      passive: false
+    });
+    window.addEventListener('mouseup', this.mouseUp, {
+      passive: true
+    });
+    window.addEventListener('touchend', this.mouseUp, {
+      passive: true
+    });
+    document.body.style['userSelect'] = 'none';
+  }
+  translate(pageX, pageY) {
+    const dX = (pageX - this.mouseX) / this.state.zoom;
+    const dY = (pageY - this.mouseY) / this.state.zoom;
+    this.mouseX = pageX;
+    this.mouseY = pageY;
+    const imgRect = this.preview.current.getBoundingClientRect();
+    const panX = Cropper.checkBound(this.state.panX, [imgRect.left, imgRect.right], [this.cutoutRect.left, this.cutoutRect.right], dX);
+    const panY = Cropper.checkBound(this.state.panY, [imgRect.top, imgRect.bottom], [this.cutoutRect.top, this.cutoutRect.bottom], dY);
+    this.positionAll(panX, panY, this.state.zoom);
+  }
+  mouseMove(e) {
+    e.preventDefault();
+    this.translate(e.pageX, e.pageY);
+  }
+  mouseTouch(e) {
+    e.preventDefault();
+    if (e.touches.length == 1) {
+      this.translate(e.touches[0].pageX, e.touches[0].pageY);
+      return;
+    }
+    const [touch0, touch1] = e.touches;
+    const distance = Math.sqrt((touch0.pageX - touch1.pageX) * (touch0.pageX - touch1.pageX) + (touch0.pageY - touch1.pageY) * (touch0.pageY - touch1.pageY));
+    if (!this.prevDistance) {
+      this.prevDistance = distance / this.state.zoom;
+    }
+    let scale = distance / this.prevDistance;
+    this.handleZoom(Math.max(this.minZoom, Math.min(this.maxZoom, scale)));
+  }
+  mouseUp(e) {
+    window.removeEventListener('mousemove', this.mouseMove);
+    window.removeEventListener('touchmove', this.mouseTouch);
+    window.removeEventListener('mouseup', this.mouseUp);
+    window.removeEventListener('touchend', this.mouseUp);
+    document.body.style['userSelect'] = '';
+    this.positionAll(this.state.panX, this.state.panY, this.state.zoom);
+  }
+  render() {
+    const t3d = `translate3d(${this.state.panX}px, ${this.state.panY}px, 0) scale(${this.state.zoom})`;
+    const orig = `${this.state.originX}px ${this.state.originY}px`;
+    const overlay = {
+      top: `${this.originY - this.state.originY * this.state.zoom}px`,
+      left: `${this.originX - this.state.originX * this.state.zoom}px`,
+      width: `${this.imageWidth * this.state.zoom}px`,
+      height: `${this.imageHeight * this.state.zoom}px`
+    };
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "cropper"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "bounding-box",
+      ref: this.boundingBox
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", {
+      src: this.props.source,
+      className: "preview",
+      alt: "",
+      style: {
+        transform: t3d,
+        transformOrigin: orig
+      },
+      ref: this.preview,
+      onLoad: this.initScaling
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "cutout circle",
+      ref: this.cutout
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "overlay",
+      style: overlay,
+      ref: this.overlay
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "zoom-wrapper"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+      type: "range",
+      className: "zoomer",
+      step: "0.001",
+      min: this.state.minZoom,
+      max: this.state.maxZoom,
+      value: this.state.zoom,
+      onChange: this.onZoom
+    })));
+  }
+}
+
+/***/ }),
+
+/***/ "./src/widgets/error-panel.jsx":
+/*!*************************************!*\
+  !*** ./src/widgets/error-panel.jsx ***!
+  \*************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ ErrorPanel; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _menu_cancel_jsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./menu-cancel.jsx */ "./src/widgets/menu-cancel.jsx");
+
+
+class ErrorPanel extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      show: false
+    };
+    this.hide = this.hide.bind(this);
+  }
+  componentDidUpdate(prevProps) {
+    if (prevProps.level !== this.props.level) {
+      this.setState({
+        show: !!this.props.level
+      });
+    }
+  }
+  hide() {
+    this.setState({
+      show: false
+    });
+    if (this.props.onClearError) {
+      this.props.onClearError();
+    }
+  }
+  render() {
+    const icons = {
+      err: 'error',
+      warn: 'warning',
+      info: 'info'
+    };
+    const level = icons[this.props.level] || '';
+    const className = 'info-box ' + level;
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: className
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "icon"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, level)), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", null, this.props.text, this.props.action ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, "\xA0 ", react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      style: {
+        whiteSpace: 'nowrap'
+      },
+      onClick: e => {
+        e.preventDefault();
+        this.props.action();
+      }
+    }, this.props.actionText)) : null), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "cancel"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_menu_cancel_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
+      onCancel: this.hide
+    })));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/file-progress.jsx":
+/*!***************************************!*\
+  !*** ./src/widgets/file-progress.jsx ***!
+  \***************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ FileProgress; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+
+
+class FileProgress extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  render() {
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "uploader"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      style: {
+        width: this.props.progress * 100 + "%"
+      }
+    })), this.props.progress < 0.999 ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      onClick: e => {
+        e.preventDefault();
+        this.props.onCancel();
+      }
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "close"), " ", react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "action_cancel",
+      defaultMessage: [{
+        "type": 0,
+        "value": "cancel"
+      }]
+    })) : react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "upload_finishing",
+      defaultMessage: [{
+        "type": 0,
+        "value": "finishing..."
+      }]
+    }));
+  }
+}
+
+/***/ }),
+
+/***/ "./src/widgets/forward-dialog.jsx":
+/*!****************************************!*\
+  !*** ./src/widgets/forward-dialog.jsx ***!
+  \****************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ ForwardDialog; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _contact_list_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./contact-list.jsx */ "./src/widgets/contact-list.jsx");
+/* harmony import */ var _search_contacts_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./search-contacts.jsx */ "./src/widgets/search-contacts.jsx");
+
+
+
+
+
+class ForwardDialog extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      query: null
+    };
+    this.handleEscapeKey = this.handleEscapeKey.bind(this);
+    this.handleClose = this.handleClose.bind(this);
+    this.handleSearchContacts = this.handleSearchContacts.bind(this);
+    this.handleContactSelected = this.handleContactSelected.bind(this);
+  }
+  componentDidMount() {
+    this.props.onInitFind();
+  }
+  handleEscapeKey(e) {
+    if (e.keyCode === 27) {
+      this.props.hide(false);
+    }
+  }
+  handleClose(e) {
+    e.preventDefault();
+    this.props.hide(false);
+  }
+  handleSearchContacts(query) {
+    this.setState({
+      query: sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.isNullValue(query) ? null : query
+    });
+    this.props.onSearchContacts(query);
+  }
+  handleContactSelected(uid) {
+    this.props.onTopicSelected(uid);
+    this.props.hide(true);
+  }
+  render() {
+    let contacts = this.state.query != null ? this.props.searchResults : this.props.contacts;
+    contacts = contacts.filter(c => {
+      return c.name != this.props.topicSelected && c.acs.isJoiner() && c.acs.isWriter();
+    });
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "alert-container"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "forward-dialog"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "title with-control"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "forward_to",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Forward to"
+      }],
+      desription: "Title of the contact selector dialog when forwarding a message"
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      onClick: this.handleClose
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "close")))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "forward_to_search_placeholder",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Search contacts"
+      }]
+    }, search_placeholder => react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_search_contacts_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      placeholder: search_placeholder,
+      onSearchContacts: this.handleSearchContacts
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "search_no_results",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Search returned no results"
+      }]
+    }, not_found_placeholder => react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_contact_list_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
+      sunrise: this.props.sunrise,
+      contacts: contacts,
+      myUserId: this.props.myUserId,
+      emptyListMessage: not_found_placeholder,
+      showOnline: false,
+      showUnread: false,
+      showContextMenu: false,
+      onTopicSelected: this.handleContactSelected
+    }))));
+  }
+}
+
+/***/ }),
+
+/***/ "./src/widgets/host-selector.jsx":
+/*!***************************************!*\
+  !*** ./src/widgets/host-selector.jsx ***!
+  \***************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ HostSelector; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../config.js */ "./src/config.js");
+
+
+class HostSelector extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hostName: props.serverAddress,
+      changed: false
+    };
+    this.handleHostNameChange = this.handleHostNameChange.bind(this);
+    this.handleEditingFinished = this.handleEditingFinished.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+  }
+  handleHostNameChange(e) {
+    this.setState({
+      hostName: e.target.value,
+      changed: true
+    });
+  }
+  handleEditingFinished() {
+    if (this.state.changed) {
+      this.setState({
+        changed: false
+      });
+      this.props.onServerAddressChange(this.state.hostName.trim());
+    }
+  }
+  handleKeyDown(e) {
+    if (e.key == 'Enter') {
+      this.handleEditingFinished();
+    }
+  }
+  render() {
+    const hostOptions = [];
+    for (let key in _config_js__WEBPACK_IMPORTED_MODULE_1__.KNOWN_HOSTS) {
+      let item = _config_js__WEBPACK_IMPORTED_MODULE_1__.KNOWN_HOSTS[key];
+      hostOptions.push(react__WEBPACK_IMPORTED_MODULE_0___default().createElement("option", {
+        key: item,
+        value: item
+      }));
+    }
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+      type: "search",
+      id: "host-name",
+      placeholder: this.props.hostName,
+      list: "known-hosts",
+      className: "quoted",
+      value: this.state.hostName,
+      onChange: this.handleHostNameChange,
+      onBlur: this.handleEditingFinished,
+      onKeyDown: this.handleKeyDown,
+      required: true
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("datalist", {
+      id: "known-hosts"
+    }, hostOptions));
+  }
+}
+
+/***/ }),
+
+/***/ "./src/widgets/in-place-edit.jsx":
+/*!***************************************!*\
+  !*** ./src/widgets/in-place-edit.jsx ***!
+  \***************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ InPlaceEdit; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _visible_password_jsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./visible-password.jsx */ "./src/widgets/visible-password.jsx");
+
+
+class InPlaceEdit extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+  constructor(props) {
+    super(props);
+    this.selfRef = react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
+    this.state = {
+      active: props.active,
+      initialValue: props.value || '',
+      value: props.value || '',
+      valid: true
+    };
+    this.handeTextChange = this.handeTextChange.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleStartEditing = this.handleStartEditing.bind(this);
+    this.handleEditingFinished = this.handleEditingFinished.bind(this);
+    this.handlePasswordFinished = this.handlePasswordFinished.bind(this);
+  }
+  componentDidUpdate(prevProps, prevState) {
+    const newValue = this.props.value || '';
+    if (prevState.initialValue != newValue && !prevState.active) {
+      this.setState({
+        initialValue: newValue,
+        value: newValue
+      });
+    }
+  }
+  handeTextChange(e) {
+    this.setState({
+      value: e.target.value || ''
+    });
+    if (this.props.validator) {
+      Promise.resolve(this.props.validator(e.target.value)).then(valid => {
+        this.setState({
+          valid: valid
+        });
+      }).catch(err => {
+        if (err) {
+          this.setState({
+            valid: false
+          });
+        }
+      });
+    }
+  }
+  handleKeyDown(e) {
+    if (e.keyCode === 27) {
+      this.setState({
+        value: this.props.value,
+        active: false
+      });
+    } else if (e.keyCode === 13) {
+      this.handleEditingFinished(e);
+    }
+  }
+  handleStartEditing() {
+    if (!this.props.readOnly) {
+      this.setState({
+        active: true
+      }, _ => {
+        if (this.selfRef.current) {
+          this.selfRef.current.focus();
+        }
+      });
+    }
+  }
+  handleEditingFinished(event) {
+    const value = this.state.value.trim();
+    if (this.props.required && (!event.target.checkValidity() || !value)) {
+      this.setState({
+        value: this.props.value,
+        active: false
+      });
+      return;
+    }
+    this.setState({
+      active: false
+    });
+    if ((value || this.props.value) && value !== this.props.value && this.state.valid) {
+      this.props.onFinished(value);
+    }
+  }
+  handlePasswordFinished(value) {
+    this.setState({
+      active: false
+    });
+    if (value && value !== this.props.value) {
+      this.props.onFinished(value);
+    }
+  }
+  render() {
+    if (!this.state.active) {
+      let spanText = this.props.type == 'password' ? '••••••••' : this.state.value;
+      let spanClass = 'in-place-edit' + (this.props.readOnly ? ' disabled' : '');
+      if (!spanText) {
+        spanText = this.props.placeholder;
+        spanClass += ' placeholder';
+      }
+      if (!this.props.multiline || this.props.multiline == 1) {
+        spanClass += ' short';
+      }
+      return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+        className: spanClass,
+        onClick: this.handleStartEditing
+      }, this.props.iconLeft && react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+        className: "material-icons light-gray"
+      }, this.props.iconLeft), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", null, spanText), this.props.iconRight && react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+        className: "material-icons light-gray"
+      }, this.props.iconRight));
+    }
+    let element;
+    const attr = {};
+    if (this.props.type == 'password') {
+      element = _visible_password_jsx__WEBPACK_IMPORTED_MODULE_1__["default"];
+      attr.onFinished = this.handlePasswordFinished;
+    } else {
+      if (this.props.multiline > 1) {
+        element = 'textarea';
+        attr.rows = this.props.multiline;
+        attr.className = 'in-place-edit';
+      } else {
+        element = 'input';
+        attr.type = this.props.type || 'text';
+        attr.className = 'in-place-edit' + (this.props.iconLeft ? ' with-icon-left' : this.props.iconRight ? ' with-icon-right' : '');
+        if (this.props.maxLength) {
+          attr.maxLength = this.props.maxLength;
+        }
+      }
+      attr.value = this.state.value;
+      attr.className += this.state.valid ? '' : ' invalid';
+      attr.ref = this.selfRef;
+      attr.onChange = this.handeTextChange;
+      attr.onKeyDown = this.handleKeyDown;
+      attr.onBlur = this.handleEditingFinished;
+    }
+    attr.placeholder = this.props.placeholder;
+    attr.required = this.props.required ? 'required' : '';
+    attr.autoComplete = this.props.autoComplete;
+    attr.autoFocus = true;
+    if (this.props.spellCheck !== undefined) {
+      attr.spellCheck = this.props.spellCheck ? 'true' : 'false';
+    }
+    if (this.props.iconLeft || this.props.iconRight) {
+      return react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, this.props.iconLeft && react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+        className: "material-icons light-gray"
+      }, this.props.iconLeft), react__WEBPACK_IMPORTED_MODULE_0___default().createElement(element, attr, null), this.props.iconRight && react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+        className: "material-icons light-gray"
+      }, this.props.iconRight));
+    }
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement(element, attr, null);
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/inline-video.jsx":
+/*!**************************************!*\
+  !*** ./src/widgets/inline-video.jsx ***!
+  \**************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ InlineVideo; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _lib_strformat_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../lib/strformat.js */ "./src/lib/strformat.js");
+
+
+class InlineVideo extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.videoRef = react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
+    this.handleClick = this.handleClick.bind(this);
+  }
+  handleClick(e) {
+    if (this.props.onClick) {
+      this.props.onClick(e);
+    }
+  }
+  render() {
+    const duration = (0,_lib_strformat_js__WEBPACK_IMPORTED_MODULE_1__.secondsToTime)(this.props['data-duration'] / 1000);
+    const className = 'inline-video' + (this.props.onClick ? ' image-clickable' : '');
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: className
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement('img', this.props), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "play-control"
+    }, this.props.onClick ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons white x-big"
+    }, "play_arrow") : react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", {
+      src: "img/broken_video.png",
+      style: {
+        filter: 'invert(100%)'
+      },
+      width: "36",
+      height: "36"
+    })), duration ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "duration"
+    }, duration) : null);
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/lazy-image.jsx":
+/*!************************************!*\
+  !*** ./src/widgets/lazy-image.jsx ***!
+  \************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ LazyImage; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+class LazyImage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      src: this.props.isvideo ? 'img/blankvid.png' : 'img/blankimg.png',
+      style: Object.assign({
+        padding: '4px'
+      }, this.props.style),
+      className: this.props.className,
+      alt: this.props.alt,
+      onClick: this.props.onClick
+    };
+  }
+  componentDidMount() {
+    this.props.whenDone.promise.then(data => this.setState({
+      src: data.src,
+      style: {
+        ...this.state.style,
+        padding: 0
+      }
+    })).catch(_ => this.setState({
+      src: this.props.isvideo ? 'img/broken_video.png' : 'img/broken_image.png'
+    }));
+  }
+  componentWillUnmount() {
+    this.props.whenDone.cancel();
+  }
+  componentDidUpdate(prevProps) {
+    if (prevProps.whenDone != this.props.whenDone) {
+      this.setState({
+        src: this.props.isvideo ? 'img/blankvid.png' : 'img/blankimg.png',
+        style: {
+          ...this.state.style,
+          padding: '4px'
+        }
+      });
+      this.props.whenDone.promise.then(data => this.setState({
+        src: data.src,
+        style: {
+          ...this.state.style,
+          padding: 0
+        }
+      })).catch(_ => this.setState({
+        src: this.props.isvideo ? 'img/broken_video.png' : 'img/broken_image.png'
+      }));
+    }
+  }
+  render() {
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement('img', this.state);
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/letter-tile.jsx":
+/*!*************************************!*\
+  !*** ./src/widgets/letter-tile.jsx ***!
+  \*************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ LetterTile; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _lib_strformat_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../lib/strformat.js */ "./src/lib/strformat.js");
+/* harmony import */ var _lib_utils_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../lib/utils.js */ "./src/lib/utils.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../config.js */ "./src/config.js");
+
+
+
+
+
+class LetterTile extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  render() {
+    let avatar;
+    if (this.props.avatar === true) {
+      if (sunrise_sdk__WEBPACK_IMPORTED_MODULE_1__.Sunrise.isSelfTopicName(this.props.topic)) {
+        avatar = react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", {
+          className: "avatar self",
+          alt: "avatar",
+          src: _config_js__WEBPACK_IMPORTED_MODULE_4__.SELF_AVATAR_URI
+        });
+      } else {
+        const isGroup = sunrise_sdk__WEBPACK_IMPORTED_MODULE_1__.Sunrise.isGroupTopicName(this.props.topic);
+        const iconColor = (0,_lib_strformat_js__WEBPACK_IMPORTED_MODULE_2__.idToColorClass)(this.props.topic, isGroup);
+        if (this.props.topic && this.props.title && this.props.title.trim()) {
+          const letter = this.props.title.trim().charAt(0);
+          const className = 'lettertile ' + iconColor + (this.props.deleted ? ' disabled' : '');
+          avatar = react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+            className: className
+          }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, letter));
+        } else {
+          const className = 'material-icons ' + iconColor + (this.props.deleted ? ' disabled' : '');
+          avatar = isGroup ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+            className: className
+          }, "group") : react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+            className: className
+          }, "person");
+        }
+      }
+    } else if (this.props.avatar) {
+      const url = this.props.authorizeURL((0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_3__.sanitizeUrlForMime)(this.props.avatar, 'image'));
+      const className = 'avatar' + (this.props.deleted ? ' deleted' : '');
+      avatar = react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", {
+        className: className,
+        alt: "avatar",
+        src: url,
+        onError: e => {
+          e.target.onerror = null;
+          e.target.src = "img/broken_image.png";
+        }
+      });
+    } else {
+      avatar = null;
+    }
+    return avatar;
+  }
+}
+
+/***/ }),
+
+/***/ "./src/widgets/load-spinner.jsx":
+/*!**************************************!*\
+  !*** ./src/widgets/load-spinner.jsx ***!
+  \**************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ LoadSpinner; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+class LoadSpinner extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  render() {
+    const className = 'load-spinner-box' + (this.props.large ? ' large' : '') + (this.props.clear ? ' clear' : '') + (this.props.centered ? ' centered' : '');
+    return this.props.show ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: className
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "loader-spinner"
+    })) : null;
+  }
+}
+
+/***/ }),
+
+/***/ "./src/widgets/menu-cancel.jsx":
+/*!*************************************!*\
+  !*** ./src/widgets/menu-cancel.jsx ***!
+  \*************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ MenuCancel; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+class MenuCancel extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  render() {
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      onClick: e => {
+        e.preventDefault();
+        this.props.onCancel();
+      }
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "close"));
+  }
+}
+
+/***/ }),
+
+/***/ "./src/widgets/menu-contacts.jsx":
+/*!***************************************!*\
+  !*** ./src/widgets/menu-contacts.jsx ***!
+  \***************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ MenuContacts; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+class MenuContacts extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  render() {
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      onClick: e => {
+        e.preventDefault();
+        this.props.onNewTopic();
+      }
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "chat")), "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      onClick: e => {
+        e.preventDefault();
+        this.props.onSettings();
+      }
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "settings")));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/menu-start.jsx":
+/*!************************************!*\
+  !*** ./src/widgets/menu-start.jsx ***!
+  \************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ MenuStart; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+class MenuStart extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  render() {
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      onClick: e => {
+        e.preventDefault();
+        this.props.onSignUp();
+      }
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "person_add")), "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      onClick: e => {
+        e.preventDefault();
+        this.props.onSettings();
+      }
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "settings")));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/new-topic-by-id.jsx":
+/*!*****************************************!*\
+  !*** ./src/widgets/new-topic-by-id.jsx ***!
+  \*****************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var qrcodejs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! qrcodejs */ "qrcodejs");
+/* harmony import */ var qrcodejs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(qrcodejs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../config */ "./src/config.js");
+
+
+
+
+const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_2__.defineMessages)({
+  invalid_id: {
+    id: "error_invalid_id",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Invalid ID"
+    }]
+  }
+});
+class NewTopicById extends (react__WEBPACK_IMPORTED_MODULE_1___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.qrCodeRef = react__WEBPACK_IMPORTED_MODULE_1___default().createRef();
+    this.state = {
+      groupId: ''
+    };
+    this.handleChange = this.handleChange.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+  componentDidMount() {
+    new (qrcodejs__WEBPACK_IMPORTED_MODULE_0___default())(this.qrCodeRef.current, {
+      text: this.props.myURI,
+      width: _config__WEBPACK_IMPORTED_MODULE_3__.QRCODE_SIZE,
+      height: _config__WEBPACK_IMPORTED_MODULE_3__.QRCODE_SIZE
+    });
+  }
+  handleChange(e) {
+    this.setState({
+      groupId: e.target.value
+    });
+  }
+  handleKeyPress(e) {
+    if (e.key === 'Enter') {
+      this.handleSubmit(e);
+    }
+  }
+  handleSubmit(e) {
+    e.preventDefault();
+    if (this.state.groupId) {
+      const name = this.state.groupId.trim();
+      const prefix = name.substring(0, 3);
+      if (name.length > 3 && ['usr', 'grp', 'chn'].includes(prefix)) {
+        this.props.onSubmit(name);
+      } else {
+        this.props.onError(this.props.intl.formatMessage(messages.invalid_id), 'err');
+      }
+    }
+  }
+  render() {
+    return react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
+      className: "panel-form"
+    }, react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_1___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_2__.FormattedMessage, {
+      id: "group_user_id_prompt",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Group or User ID"
+      }]
+    }, prompt => react__WEBPACK_IMPORTED_MODULE_1___default().createElement("input", {
+      type: "text",
+      placeholder: prompt,
+      value: this.state.groupId,
+      onChange: this.handleChange,
+      onKeyDown: this.handleKeyPress,
+      required: true,
+      autoFocus: true
+    }))), react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
+      className: "dialog-buttons"
+    }, react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
+      className: "primary",
+      onClick: this.handleSubmit
+    }, react__WEBPACK_IMPORTED_MODULE_1___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_2__.FormattedMessage, {
+      id: "button_subscribe",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Subscribe"
+      }]
+    }))), react__WEBPACK_IMPORTED_MODULE_1___default().createElement("br", null), react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
+      className: "panel-form-column"
+    }, react__WEBPACK_IMPORTED_MODULE_1___default().createElement("label", {
+      className: "small"
+    }, react__WEBPACK_IMPORTED_MODULE_1___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_2__.FormattedMessage, {
+      id: "label_scan_id",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Scan my ID:"
+      }]
+    })), react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
+      className: "qr-code",
+      ref: this.qrCodeRef
+    })));
+  }
+}
+;
+/* harmony default export */ __webpack_exports__["default"] = ((0,react_intl__WEBPACK_IMPORTED_MODULE_2__.injectIntl)(NewTopicById));
+
+/***/ }),
+
+/***/ "./src/widgets/new-topic-group.jsx":
+/*!*****************************************!*\
+  !*** ./src/widgets/new-topic-group.jsx ***!
+  \*****************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ NewTopicGroup; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _avatar_crop_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./avatar-crop.jsx */ "./src/widgets/avatar-crop.jsx");
+/* harmony import */ var _avatar_upload_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./avatar-upload.jsx */ "./src/widgets/avatar-upload.jsx");
+/* harmony import */ var _checkbox_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./checkbox.jsx */ "./src/widgets/checkbox.jsx");
+/* harmony import */ var _tag_manager_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./tag-manager.jsx */ "./src/widgets/tag-manager.jsx");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../config.js */ "./src/config.js");
+/* harmony import */ var _lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../lib/blob-helpers.js */ "./src/lib/blob-helpers.js");
+/* harmony import */ var _lib_strformat_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../lib/strformat.js */ "./src/lib/strformat.js");
+
+
+
+
+
+
+
+
+
+class NewTopicGroup extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.fullName = react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
+    this.state = {
+      fullName: '',
+      private: '',
+      description: '',
+      imageUrl: null,
+      tags: [],
+      isChannel: false,
+      newAvatar: null,
+      newAvatarMime: null
+    };
+    this.handleFieldEdit = this.handleFieldEdit.bind(this);
+    this.handleImageChanged = this.handleImageChanged.bind(this);
+    this.handleAvatarCropped = this.handleAvatarCropped.bind(this);
+    this.handleAvatarCropCancel = this.handleAvatarCropCancel.bind(this);
+    this.uploadAvatar = this.uploadAvatar.bind(this);
+    this.handleTagsChanged = this.handleTagsChanged.bind(this);
+    this.handleChannelToggle = this.handleChannelToggle.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+  componentDidMount() {}
+  handleFieldEdit(name, e) {
+    this.setState({
+      [name]: e.target.value || ''
+    });
+  }
+  handleImageChanged(mime, img) {
+    this.setState({
+      newAvatar: img,
+      newAvatarMime: mime
+    });
+  }
+  handleAvatarCropped(mime, blob, width, height) {
+    const url = blob ? URL.createObjectURL(blob) : null;
+    this.setState({
+      imageUrl: url,
+      newAvatar: null,
+      newAvatarMime: null
+    });
+    if (blob) {
+      this.uploadAvatar(mime, blob, width, height);
+    }
+  }
+  handleAvatarCropCancel() {
+    this.setState({
+      newAvatar: null,
+      newAvatarMime: null
+    });
+  }
+  uploadAvatar(mime, blob, width, height) {
+    const readyToUpload = image => {
+      let {
+        mime,
+        blob
+      } = image;
+      if (blob.size > _config_js__WEBPACK_IMPORTED_MODULE_6__.MAX_AVATAR_BYTES) {
+        const uploader = this.props.sunrise.getLargeFileHelper();
+        uploader.upload(blob).then(url => this.setState({
+          imageUrl: url
+        })).catch(err => this.props.onError(err.message, 'err'));
+      } else {
+        (0,_lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_7__.blobToBase64)(blob).then(b64 => this.setState({
+          imageUrl: (0,_lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_7__.makeImageUrl)({
+            data: b64.bits,
+            type: mime
+          })
+        }));
+      }
+    };
+    if (width > _config_js__WEBPACK_IMPORTED_MODULE_6__.AVATAR_SIZE || height > _config_js__WEBPACK_IMPORTED_MODULE_6__.AVATAR_SIZE || width != height) {
+      (0,_lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_7__.imageScaled)(blob, _config_js__WEBPACK_IMPORTED_MODULE_6__.AVATAR_SIZE, _config_js__WEBPACK_IMPORTED_MODULE_6__.AVATAR_SIZE, _config_js__WEBPACK_IMPORTED_MODULE_6__.MAX_EXTERN_ATTACHMENT_SIZE, true).then(scaled => readyToUpload(scaled)).catch(err => this.props.onError(err.message, 'err'));
+    } else {
+      readyToUpload({
+        mime: mime,
+        blob: blob,
+        width: width,
+        height: height
+      });
+    }
+  }
+  handleTagsChanged(tags) {
+    this.setState({
+      tags: tags
+    });
+  }
+  handleChannelToggle() {
+    this.setState({
+      isChannel: !this.state.isChannel
+    });
+  }
+  handleSubmit(e) {
+    e.preventDefault();
+    const fn = (0,_lib_strformat_js__WEBPACK_IMPORTED_MODULE_8__.truncateString)(this.state.fullName.trim(), _config_js__WEBPACK_IMPORTED_MODULE_6__.MAX_TITLE_LENGTH);
+    const comment = (0,_lib_strformat_js__WEBPACK_IMPORTED_MODULE_8__.truncateString)(this.state.private.trim(), _config_js__WEBPACK_IMPORTED_MODULE_6__.MAX_TITLE_LENGTH);
+    const description = (0,_lib_strformat_js__WEBPACK_IMPORTED_MODULE_8__.truncateString)(this.state.description.trim(), _config_js__WEBPACK_IMPORTED_MODULE_6__.MAX_TOPIC_DESCRIPTION_LENGTH);
+    if (fn) {
+      this.props.onSubmit(fn, description, this.state.imageUrl, comment, this.state.tags, this.state.isChannel);
+    }
+  }
+  render() {
+    if (this.state.newAvatar) {
+      return react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_avatar_crop_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+        avatar: this.state.newAvatar,
+        mime: this.state.newAvatarMime,
+        onSubmit: this.handleAvatarCropped,
+        onCancel: this.handleAvatarCropCancel,
+        onError: this.props.onError
+      });
+    }
+    let submitClasses = 'primary';
+    if (this.props.disabled) {
+      submitClasses += ' disabled';
+    }
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("form", {
+      className: "panel-form",
+      onSubmit: this.handleSubmit
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-column"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("center", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_avatar_upload_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
+      sunrise: this.props.sunrise,
+      avatar: this.state.imageUrl,
+      onError: this.props.onError,
+      onImageUpdated: this.handleImageChanged
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "group"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      className: "small",
+      htmlFor: "new-topic-fn"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_topic_name",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Name"
+      }]
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "topic_name_editing_placeholder",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Freeform name of the group"
+      }]
+    }, placeholder => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+      type: "text",
+      id: "new-topic-fn",
+      placeholder: placeholder,
+      ref: this.fullName,
+      value: this.state.fullName,
+      onChange: this.handleFieldEdit.bind(this, 'fullName'),
+      autoFocus: true,
+      required: true,
+      tabIndex: 0
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "group"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      className: "small",
+      htmlFor: "new-topic-priv"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_private",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Private comment"
+      }]
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "private_editing_placeholder",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Visible to you only"
+      }]
+    }, placeholder => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+      type: "text",
+      id: "new-topic-priv",
+      placeholder: placeholder,
+      value: this.state.private,
+      onChange: this.handleFieldEdit.bind(this, 'private'),
+      tabIndex: 1
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "group"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      className: "small",
+      htmlFor: "new-topic-desc"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_description",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Description"
+      }]
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "description_editing_placeholder",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Description (optional)"
+      }]
+    }, placeholder => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+      type: "text",
+      id: "new-topic-desc",
+      placeholder: placeholder,
+      value: this.state.description,
+      onChange: this.handleFieldEdit.bind(this, 'description'),
+      tabIndex: 2
+    })))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_checkbox_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      checked: this.state.isChannel,
+      tabIndex: 3,
+      onChange: this.handleChannelToggle
+    }), "\xA0", react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      onClick: this.handleChannelToggle
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "channel_prompt",
+      defaultMessage: [{
+        "type": 0,
+        "value": "This is a channel"
+      }]
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "title_tag_manager",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Tags (search & discovery)"
+      }]
+    }, title => react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_tag_manager_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      sunrise: this.props.sunrise,
+      tags: this.state.tags,
+      activated: true,
+      onTagsChanged: this.handleTagsChanged,
+      tabIndex: 4,
+      title: title
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "dialog-buttons"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+      className: submitClasses
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "button_create",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Create"
+      }]
+    }))));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/search-contacts.jsx":
+/*!*****************************************!*\
+  !*** ./src/widgets/search-contacts.jsx ***!
+  \*****************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ SearchContacts; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_1__);
+
+
+class SearchContacts extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      edited: false,
+      search: this.props.initialQuery || ''
+    };
+    this.handleSearchChange = this.handleSearchChange.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
+    this.handleClear = this.handleClear.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+  }
+  componentWillUnmount() {
+    if (this.state.edited) {
+      this.setState({
+        search: '',
+        edited: false
+      });
+      this.props.onSearchContacts(sunrise_sdk__WEBPACK_IMPORTED_MODULE_1__.Sunrise.DEL_CHAR);
+    }
+  }
+  handleSearchChange(e) {
+    this.setState({
+      search: e.target.value
+    });
+  }
+  handleSearch(e) {
+    e.preventDefault();
+    const query = this.state.search.trim();
+    this.setState({
+      edited: query.length > 0
+    });
+    this.props.onSearchContacts(query.length > 0 ? query : sunrise_sdk__WEBPACK_IMPORTED_MODULE_1__.Sunrise.DEL_CHAR);
+  }
+  handleClear(e) {
+    e.preventDefault();
+    if (this.state.edited) {
+      this.props.onSearchContacts(sunrise_sdk__WEBPACK_IMPORTED_MODULE_1__.Sunrise.DEL_CHAR);
+    }
+    this.setState({
+      search: '',
+      edited: false
+    });
+  }
+  handleKeyDown(e) {
+    if (e.key === 'Enter') {
+      this.handleSearch(e);
+    } else if (e.key === 'Escape') {
+      e.stopPropagation();
+      this.handleClear(e);
+    }
+  }
+  render() {
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons search"
+    }, "search"), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+      className: "search",
+      type: "text",
+      placeholder: this.props.placeholder,
+      value: this.state.search,
+      onChange: this.handleSearchChange,
+      onKeyDown: this.handleKeyDown,
+      required: true,
+      autoFocus: true
+    }), this.state.search ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      onClick: this.handleClear
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "highlight_off")) : react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "\xA0"))));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/side-navbar.jsx":
+/*!*************************************!*\
+  !*** ./src/widgets/side-navbar.jsx ***!
+  \*************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ SideNavbar; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _letter_tile_jsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./letter-tile.jsx */ "./src/widgets/letter-tile.jsx");
+/* harmony import */ var _button_back_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./button-back.jsx */ "./src/widgets/button-back.jsx");
+/* harmony import */ var _contact_badges_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./contact-badges.jsx */ "./src/widgets/contact-badges.jsx");
+/* harmony import */ var _menu_contacts_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./menu-contacts.jsx */ "./src/widgets/menu-contacts.jsx");
+/* harmony import */ var _menu_start_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./menu-start.jsx */ "./src/widgets/menu-start.jsx");
+/* harmony import */ var _lib_utils_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../lib/utils.js */ "./src/lib/utils.js");
+
+
+
+
+
+
+
+class SideNavbar extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  render() {
+    const icon_badges = [];
+    if (this.props.trustedBadges) {
+      this.props.trustedBadges.forEach(b => {
+        icon_badges.push({
+          icon: b,
+          color: 'badge-inv'
+        });
+      });
+    }
+    let avatar = null;
+    if (this.props.sunrise) {
+      avatar = this.props.sunrise.authorizeURL((0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_6__.sanitizeUrlForMime)(this.props.avatar, 'image'));
+    }
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      id: "side-caption-panel",
+      className: "caption-panel"
+    }, this.props.onCancel ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_button_back_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      onBack: this.props.onCancel
+    }) : null, avatar ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      id: "self-avatar",
+      className: "avatar-box"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_letter_tile_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
+      authorizeURL: this.props.sunrise.authorizeURL,
+      avatar: avatar,
+      topic: this.props.myUserId,
+      title: this.props.title
+    })) : null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      id: "sidepanel-title",
+      className: "panel-title"
+    }, this.props.title, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_contact_badges_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
+      badges: icon_badges
+    })), this.props.state === 'login' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_menu_start_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      onSignUp: this.props.onSignUp,
+      onSettings: this.props.onSettings
+    }) : this.props.state === 'contacts' ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_menu_contacts_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      onNewTopic: this.props.onNewTopic,
+      onSettings: this.props.onSettings
+    }) : null);
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/tag-manager.jsx":
+/*!*************************************!*\
+  !*** ./src/widgets/tag-manager.jsx ***!
+  \*************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ TagManager; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _chip_input_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./chip-input.jsx */ "./src/widgets/chip-input.jsx");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../config.js */ "./src/config.js");
+/* harmony import */ var _lib_utils_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../lib/utils.js */ "./src/lib/utils.js");
+
+
+
+
+
+
+class TagManager extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      tags: this.props.tags || [],
+      alias: sunrise_sdk__WEBPACK_IMPORTED_MODULE_3__.Sunrise.tagByPrefix(this.props.tags, sunrise_sdk__WEBPACK_IMPORTED_MODULE_3__.Sunrise.TAG_ALIAS) || '',
+      tagInput: '',
+      activated: this.props.activated
+    };
+    this.handleTagInput = this.handleTagInput.bind(this);
+    this.handleAddTag = this.handleAddTag.bind(this);
+    this.handleRemoveTag = this.handleRemoveTag.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
+  }
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const tags = nextProps.tags || [];
+    if (!(0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_5__.arrayEqual)(tags, prevState.tags) && !prevState.activated) {
+      return {
+        tags: tags || [],
+        alias: sunrise_sdk__WEBPACK_IMPORTED_MODULE_3__.Sunrise.tagByPrefix(tags, sunrise_sdk__WEBPACK_IMPORTED_MODULE_3__.Sunrise.TAG_ALIAS) || ''
+      };
+    }
+    return null;
+  }
+  handleTagInput(text) {
+    this.setState({
+      tagInput: text
+    });
+    if (text.length > 0) {
+      const last = text[text.length - 1];
+      if (text[0] == '"') {
+        if (text.length > 1 && last == '"') {
+          this.handleAddTag(text.substring(1, text.length - 1));
+        }
+      } else if (last == ',' || last == ' ' || last == ';' || last == '"') {
+        this.handleAddTag(text.substring(0, text.length - 1).trim());
+      }
+    }
+  }
+  handleAddTag(tag) {
+    const maxTagCount = this.props.sunrise.getServerParam(sunrise_sdk__WEBPACK_IMPORTED_MODULE_3__.Sunrise.MAX_TAG_COUNT, _config_js__WEBPACK_IMPORTED_MODULE_4__.MAX_TAG_COUNT);
+    if (tag.length > 0 && this.state.tags.length < maxTagCount) {
+      const tags = this.state.tags.slice(0);
+      tags.push(tag);
+      this.setState({
+        tags: tags,
+        tagInput: ''
+      });
+      if (this.props.onTagsChanged) {
+        this.props.onTagsChanged(tags);
+      }
+      return tags;
+    }
+    return this.state.tags;
+  }
+  handleRemoveTag(tag, index) {
+    const tags = this.state.tags.slice(0);
+    tags.splice(index, 1);
+    this.setState({
+      tags: tags
+    });
+    if (this.props.onTagsChanged) {
+      this.props.onTagsChanged(tags);
+    }
+  }
+  handleSubmit() {
+    let tags = this.handleAddTag(this.state.tagInput.trim());
+    tags = sunrise_sdk__WEBPACK_IMPORTED_MODULE_3__.Sunrise.setUniqueTag(tags, this.state.alias);
+    this.props.onSubmit(tags);
+    this.setState({
+      activated: false,
+      tags: this.props.tags || []
+    });
+  }
+  handleCancel() {
+    this.setState({
+      activated: false,
+      tagInput: '',
+      tags: this.props.tags || []
+    });
+    if (this.props.onCancel) {
+      this.props.onCancel();
+    }
+  }
+  render() {
+    const minTagLength = this.props.sunrise.getServerParam(sunrise_sdk__WEBPACK_IMPORTED_MODULE_3__.Sunrise.MIN_TAG_LENGTH, _config_js__WEBPACK_IMPORTED_MODULE_4__.MIN_TAG_LENGTH);
+    const maxTagLength = this.props.sunrise.getServerParam(sunrise_sdk__WEBPACK_IMPORTED_MODULE_3__.Sunrise.MAX_TAG_LENGTH, _config_js__WEBPACK_IMPORTED_MODULE_4__.MAX_TAG_LENGTH);
+    let tags = [];
+    if (this.state.activated) {
+      this.state.tags.forEach(tag => {
+        if (tag != this.state.alias) {
+          tags.push({
+            user: tag,
+            invalid: tag.length < minTagLength || tag.length > maxTagLength
+          });
+        }
+      });
+    } else {
+      this.state.tags.forEach(tag => {
+        if (tag != this.state.alias) {
+          tags.push(react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+            className: "badge",
+            key: tags.length
+          }, tag));
+        }
+      });
+      if (tags.length == 0) {
+        tags = react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+          id: "tags_not_found",
+          defaultMessage: [{
+            "type": 0,
+            "value": "No tags defined. Add some."
+          }]
+        }));
+      }
+    }
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-column"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      className: "small"
+    }, this.props.title)), this.state.activated ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "tags_editor_no_tags",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Add some tags"
+      }]
+    }, add_tags_prompt => react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_chip_input_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      sunrise: this.props.sunrise,
+      chips: tags,
+      avatarDisabled: true,
+      prompt: add_tags_prompt,
+      tabIndex: this.props.tabIndex,
+      onEnter: this.handleAddTag,
+      onFocusLost: this.handleAddTag,
+      onCancel: this.handleCancel,
+      onChipRemoved: this.handleRemoveTag,
+      filterFunc: this.handleTagInput
+    })), this.props.onSubmit || this.props.onCancel ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      id: "tag-manager-buttons",
+      className: "dialog-buttons panel-form-row"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+      className: "outline",
+      onClick: this.handleCancel
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "button_cancel",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Cancel"
+      }]
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+      className: "primary",
+      onClick: this.handleSubmit
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "button_ok",
+      defaultMessage: [{
+        "type": 0,
+        "value": "OK"
+      }]
+    }))) : null) : react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "quoted"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      className: "flat-button",
+      onClick: e => {
+        e.preventDefault();
+        this.setState({
+          activated: true
+        });
+      }
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "edit"), " \xA0", react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "title_manage_tags",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Manage"
+      }]
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, tags)));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/the-card-mini.jsx":
+/*!***************************************!*\
+  !*** ./src/widgets/the-card-mini.jsx ***!
+  \***************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _letter_tile_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./letter-tile.jsx */ "./src/widgets/letter-tile.jsx");
+
+
+
+
+const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
+  unknown_name: {
+    id: "unknown_name",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Unknown"
+    }]
+  }
+});
+class TheCardMini extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.handleDownload = this.handleDownload.bind(this);
+    this.handleMessage = this.handleMessage.bind(this);
+  }
+  handleDownload(e) {
+    e.preventDefault();
+    try {
+      const vcard = sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.TheCard.exportVCard(this.props.content);
+      const blob = new Blob([vcard], {
+        type: 'text/vcard'
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = (this.props.content.fn || 'contact') + '.vcf';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error("Failed to download vcard", err);
+      if (this.props.onError) {
+        this.props.onError("Failed to download vcard", 'err');
+      }
+    }
+  }
+  handleMessage(e) {}
+  render() {
+    const card = this.props.content;
+    if (!card) {
+      return null;
+    }
+    const uid = sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.TheCard.getFirstTinodeID(card);
+    const contacts = sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.TheCard.getEmails(card).concat(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.TheCard.getPhones(card));
+    const org = sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.TheCard.getOrg(card);
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "contact-card"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "contact-body"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "avatar-box"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_letter_tile_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
+      authorizeURL: this.props.authorizeURL,
+      topic: uid || 'usr123XXX',
+      avatar: sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.TheCard.getPhotoUrl(card) || true,
+      title: card.fn
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "name-box"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "name"
+    }, card.fn || react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, messages.unknown_name)), org && react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "org"
+    }, org))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "contact-actions"
+    }, uid ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      className: "flat-button",
+      "data-val": uid,
+      onClick: this.props.onChatClick
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "chat_now",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Chat"
+      }]
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "divider"
+    })) : contacts.length > 0 ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      className: "flat-button",
+      "data-val": contacts.join(','),
+      onClick: this.props.onFindClick
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "find_user",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Find"
+      }]
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "divider"
+    })) : null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      className: "flat-button",
+      onClick: this.handleDownload
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "save_action",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Save"
+      }]
+    }))));
+  }
+}
+;
+/* harmony default export */ __webpack_exports__["default"] = ((0,react_intl__WEBPACK_IMPORTED_MODULE_1__.injectIntl)(TheCardMini));
+
+/***/ }),
+
+/***/ "./src/widgets/topic-desc-edit.jsx":
+/*!*****************************************!*\
+  !*** ./src/widgets/topic-desc-edit.jsx ***!
+  \*****************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _avatar_crop_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./avatar-crop.jsx */ "./src/widgets/avatar-crop.jsx");
+/* harmony import */ var _avatar_upload_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./avatar-upload.jsx */ "./src/widgets/avatar-upload.jsx");
+/* harmony import */ var _in_place_edit_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./in-place-edit.jsx */ "./src/widgets/in-place-edit.jsx");
+/* harmony import */ var _tag_manager_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./tag-manager.jsx */ "./src/widgets/tag-manager.jsx");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../config.js */ "./src/config.js");
+/* harmony import */ var _lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../lib/blob-helpers.js */ "./src/lib/blob-helpers.js");
+/* harmony import */ var _lib_strformat_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../lib/strformat.js */ "./src/lib/strformat.js");
+/* harmony import */ var _lib_utils_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../lib/utils.js */ "./src/lib/utils.js");
+
+
+
+
+
+
+
+
+
+
+
+const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
+  alias_invalid: {
+    id: "alias_invalid",
+    defaultMessage: [{
+      "type": 0,
+      "value": "(invalid)"
+    }]
+  },
+  alias_already_taken: {
+    id: "alias_already_taken",
+    defaultMessage: [{
+      "type": 0,
+      "value": "(already taken)"
+    }]
+  },
+  self_topic_name: {
+    id: "self_topic_name",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Saved messages"
+    }]
+  },
+  self_topic_comment: {
+    id: "self_topic_comment",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Notes, messages, links, files saved for posterity"
+    }]
+  }
+});
+const ALIAS_AVAILABILITY_CHECK_DELAY = 1000;
+class TopicDescEdit extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+  constructor(props) {
+    super(props);
+    const topic = this.props.sunrise.getTopic(this.props.topic);
+    const acs = topic.getAccessMode();
+    const isSelf = sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.isSelfTopicName(this.props.topic);
+    this.state = {
+      isMe: sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.isMeTopicName(this.props.topic),
+      isSelf: isSelf,
+      owner: acs && acs.isOwner(),
+      fullName: topic.public ? topic.public.fn : isSelf ? this.props.intl.formatMessage(messages.self_topic_name) : null,
+      private: topic.private ? topic.private.comment : null,
+      description: topic.public ? topic.public.note : isSelf ? this.props.intl.formatMessage(messages.self_topic_comment) : null,
+      avatar: (0,_lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_8__.makeImageUrl)(topic.public ? topic.public.photo : null),
+      tags: topic.tags() || [],
+      newAvatar: null,
+      newAvatarMime: null,
+      aliasError: ''
+    };
+    this.previousOnTags = null;
+    this.aliasCheckTimer = null;
+    this.aliasCheckPromise = null;
+    this.tnNewTags = this.tnNewTags.bind(this);
+    this.handleFullNameUpdate = this.handleFullNameUpdate.bind(this);
+    this.handleImageUpdated = this.handleImageUpdated.bind(this);
+    this.handleAvatarCropped = this.handleAvatarCropped.bind(this);
+    this.handleAvatarCropCancel = this.handleAvatarCropCancel.bind(this);
+    this.uploadAvatar = this.uploadAvatar.bind(this);
+    this.handlePrivateUpdate = this.handlePrivateUpdate.bind(this);
+    this.handleAliasUpdate = this.handleAliasUpdate.bind(this);
+    this.handleDescriptionUpdate = this.handleDescriptionUpdate.bind(this);
+    this.handleTagsUpdated = this.handleTagsUpdated.bind(this);
+    this.validateAlias = this.validateAlias.bind(this);
+    this.cancelValidator = this.cancelValidator.bind(this);
+  }
+  componentDidMount() {
+    const topic = this.props.sunrise.getTopic(this.props.topic);
+    this.previousOnTags = topic.onTagsUpdated;
+    topic.onTagsUpdated = this.tnNewTags;
+  }
+  componentWillUnmount() {
+    const topic = this.props.sunrise.getTopic(this.props.topic);
+    topic.onTagsUpdated = this.previousOnTags;
+    this.cancelValidator();
+  }
+  tnNewTags(tags) {
+    this.setState({
+      tags: tags
+    });
+  }
+  handleFullNameUpdate(fn) {
+    fn = (0,_lib_strformat_js__WEBPACK_IMPORTED_MODULE_9__.truncateString)(fn.trim(), _config_js__WEBPACK_IMPORTED_MODULE_7__.MAX_TITLE_LENGTH);
+    if (fn && this.state.fullName !== fn) {
+      this.setState({
+        fullName: fn
+      });
+      this.props.onUpdateTopicDesc(this.props.topic, (0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_10__.theCard)(fn, null));
+    }
+  }
+  handlePrivateUpdate(comment) {
+    comment = comment.trim().substring(0, _config_js__WEBPACK_IMPORTED_MODULE_7__.MAX_TITLE_LENGTH);
+    if (this.state.private !== comment) {
+      this.setState({
+        private: comment
+      });
+      this.props.onUpdateTopicDesc(this.props.topic, null, comment || sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.DEL_CHAR);
+    }
+  }
+  handleDescriptionUpdate(desc) {
+    desc = desc.trim().substring(0, _config_js__WEBPACK_IMPORTED_MODULE_7__.MAX_TOPIC_DESCRIPTION_LENGTH);
+    if (desc) {
+      this.setState({
+        description: desc
+      });
+      this.props.onUpdateTopicDesc(this.props.topic, (0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_10__.theCard)(null, null, null, desc));
+    }
+  }
+  handleImageUpdated(mime, img) {
+    this.setState({
+      newAvatar: img,
+      newAvatarMime: mime
+    });
+    if (!img) {
+      this.setState({
+        avatar: null
+      });
+      this.props.onUpdateTopicDesc(this.props.topic, (0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_10__.theCard)(null, sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.DEL_CHAR));
+    }
+  }
+  handleAvatarCropped(mime, blob, width, height) {
+    const url = blob ? URL.createObjectURL(blob) : null;
+    this.setState({
+      avatar: url,
+      newAvatar: null,
+      newAvatarMime: null
+    });
+    if (blob) {
+      this.uploadAvatar(mime, blob, width, height);
+    }
+  }
+  uploadAvatar(mime, blob, width, height) {
+    const readyToUpload = image => {
+      let {
+        mime,
+        blob
+      } = image;
+      if (blob.size > _config_js__WEBPACK_IMPORTED_MODULE_7__.MAX_AVATAR_BYTES) {
+        const uploader = this.props.sunrise.getLargeFileHelper();
+        uploader.upload(blob).then(url => this.props.onUpdateTopicDesc(this.props.topic, (0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_10__.theCard)(null, url))).catch(err => this.props.onError(err.message, 'err'));
+      } else {
+        (0,_lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_8__.blobToBase64)(blob).then(b64 => {
+          const du = (0,_lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_8__.makeImageUrl)({
+            data: b64.bits,
+            type: mime
+          });
+          this.setState({
+            source: du
+          });
+          this.props.onUpdateTopicDesc(this.props.topic, (0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_10__.theCard)(null, du));
+        });
+      }
+    };
+    if (width > _config_js__WEBPACK_IMPORTED_MODULE_7__.AVATAR_SIZE || height > _config_js__WEBPACK_IMPORTED_MODULE_7__.AVATAR_SIZE || width != height) {
+      (0,_lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_8__.imageScaled)(blob, _config_js__WEBPACK_IMPORTED_MODULE_7__.AVATAR_SIZE, _config_js__WEBPACK_IMPORTED_MODULE_7__.AVATAR_SIZE, _config_js__WEBPACK_IMPORTED_MODULE_7__.MAX_EXTERN_ATTACHMENT_SIZE, true).then(scaled => readyToUpload(scaled)).catch(err => this.props.onError(err.message, 'err'));
+    } else {
+      readyToUpload({
+        mime: mime,
+        blob: blob,
+        width: width,
+        height: height
+      });
+    }
+  }
+  handleAvatarCropCancel() {
+    this.setState({
+      newAvatar: null,
+      newAvatarMime: null
+    });
+  }
+  handleAliasUpdate(alias) {
+    alias = (alias || '').trim();
+    const tags = alias ? sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.setUniqueTag(this.state.tags, sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.TAG_ALIAS + alias.toLowerCase()) : sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.clearTagPrefix(this.state.tags, sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.TAG_ALIAS);
+    this.handleTagsUpdated(tags);
+  }
+  validateAlias(alias) {
+    this.cancelValidator();
+    alias = alias.trim();
+    if (!alias) {
+      this.setState({
+        aliasError: ''
+      });
+      return true;
+    }
+    const valid = sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.isValidTagValue(alias);
+    if (!valid) {
+      this.setState({
+        aliasError: this.props.intl.formatMessage(messages.alias_invalid)
+      });
+      return false;
+    }
+    this.setState({
+      aliasError: ''
+    });
+    const fnd = this.props.sunrise.getFndTopic();
+    if (!fnd) {
+      this.setState({
+        aliasError: ''
+      });
+      return true;
+    }
+    this.aliasCheckPromise = {};
+    const validationPromise = new Promise((resolve, reject) => {
+      this.aliasCheckPromise.resolve = resolve;
+      this.aliasCheckPromise.reject = reject;
+    });
+    this.aliasCheckTimer = setTimeout(_ => {
+      this.aliasCheckTimer = null;
+      fnd.checkTagUniqueness(`${sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.TAG_ALIAS}${alias}`, this.props.topic).then(ok => {
+        this.aliasCheckPromise.resolve(ok);
+        this.setState({
+          aliasError: ok ? '' : this.props.intl.formatMessage(messages.alias_already_taken)
+        });
+      }).catch(err => {
+        this.aliasCheckPromise.reject(err);
+        this.setState({
+          aliasError: err.message
+        });
+      });
+    }, ALIAS_AVAILABILITY_CHECK_DELAY);
+    return validationPromise;
+  }
+  cancelValidator() {
+    if (this.aliasCheckTimer) {
+      clearTimeout(this.aliasCheckTimer);
+      this.aliasCheckTimer = null;
+      this.aliasCheckPromise.reject(null);
+    }
+  }
+  handleTagsUpdated(tags) {
+    if ((0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_10__.arrayEqual)(this.state.tags.slice(0), tags.slice(0))) {
+      return;
+    }
+    this.props.onUpdateTags(tags);
+  }
+  render() {
+    if (this.state.newAvatar) {
+      return react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_avatar_crop_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
+        avatar: this.state.newAvatar,
+        mime: this.state.newAvatarMime,
+        onSubmit: this.handleAvatarCropped,
+        onCancel: this.handleAvatarCropCancel,
+        onError: this.props.onError
+      });
+    }
+    const editable = this.state.isMe || this.state.owner && !this.state.isSelf;
+    let alias = this.state.tags && this.state.tags.find(t => t.startsWith('alias:'));
+    if (alias) {
+      alias = alias.substring(6);
+    }
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "panel-form-column"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("center", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_avatar_upload_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      sunrise: this.props.sunrise,
+      avatar: this.state.avatar,
+      readOnly: !editable,
+      uid: this.props.topic,
+      title: this.state.fullName,
+      onImageUpdated: this.handleImageUpdated,
+      onError: this.props.onError
+    })), this.state.isMe ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "group"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      className: "small"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_your_name",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Your name"
+      }]
+    })), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "full_name_prompt",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Full name, e.g. John Doe"
+      }]
+    }, full_name_placeholder => react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_in_place_edit_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      placeholder: full_name_placeholder,
+      value: this.state.fullName,
+      required: true,
+      onFinished: this.handleFullNameUpdate
+    })))) : react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "group"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      className: "small"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_topic_name",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Name"
+      }]
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "topic_name_editing_placeholder",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Freeform name of the group"
+      }]
+    }, group_name_placeholder => react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_in_place_edit_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      placeholder: group_name_placeholder,
+      readOnly: !editable,
+      value: this.state.fullName,
+      required: true,
+      maxLength: 32,
+      onFinished: this.handleFullNameUpdate
+    })))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "group"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      className: "small"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_private",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Private comment"
+      }]
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "private_editing_placeholder",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Visible to you only"
+      }]
+    }, private_placeholder => react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_in_place_edit_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      placeholder: private_placeholder,
+      value: this.state.private,
+      onFinished: this.handlePrivateUpdate
+    }))))), editable || alias ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "group"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      className: 'small ' + (this.state.aliasError ? 'invalid' : '')
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_alias_edit",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Alias"
+      }]
+    }), " ", this.state.aliasError)), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "alias_editing_placeholder",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Alias (optional)"
+      }]
+    }, private_placeholder => react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_in_place_edit_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      placeholder: private_placeholder,
+      readOnly: !editable,
+      value: alias,
+      validator: this.validateAlias,
+      iconLeft: "alternate_email",
+      maxLength: 24,
+      spellCheck: false,
+      onFinished: this.handleAliasUpdate
+    })))) : null, editable || this.state.description ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "group"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+      className: "small"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "label_description",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Description"
+      }]
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "description_editing_placeholder",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Description (optional)"
+      }]
+    }, private_placeholder => react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_in_place_edit_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      placeholder: private_placeholder,
+      readOnly: !editable,
+      value: this.state.description,
+      multiline: 2,
+      onFinished: this.handleDescriptionUpdate
+    })))) : null), editable && !this.state.isMe ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "hr"
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "title_tag_manager",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Tags (search & discovery)"
+      }]
+    }, title_tag_manager => react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_tag_manager_jsx__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      sunrise: this.props.sunrise,
+      title: title_tag_manager,
+      activated: false,
+      tags: this.state.tags,
+      onSubmit: this.handleTagsUpdated
+    }))) : null);
+  }
+}
+;
+/* harmony default export */ __webpack_exports__["default"] = ((0,react_intl__WEBPACK_IMPORTED_MODULE_1__.injectIntl)(TopicDescEdit));
+
+/***/ }),
+
+/***/ "./src/widgets/unread-badge.jsx":
+/*!**************************************!*\
+  !*** ./src/widgets/unread-badge.jsx ***!
+  \**************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ UnreadBadge; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+class UnreadBadge extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  render() {
+    return this.props.count > 0 ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      className: "unread"
+    }, this.props.count > 9 ? "9+" : this.props.count) : null;
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/uploading-image.jsx":
+/*!*****************************************!*\
+  !*** ./src/widgets/uploading-image.jsx ***!
+  \*****************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ UploadingImage; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _file_progress_jsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./file-progress.jsx */ "./src/widgets/file-progress.jsx");
+
+
+class UploadingImage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "inline-image"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement('img', this.props), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "rounded-container"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_file_progress_jsx__WEBPACK_IMPORTED_MODULE_1__["default"], {
+      progress: this.props.progress,
+      onCancel: this.props.onCancelUpload
+    })));
+  }
+}
+;
+
+/***/ }),
+
+/***/ "./src/widgets/visible-password.jsx":
+/*!******************************************!*\
+  !*** ./src/widgets/visible-password.jsx ***!
+  \******************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ VisiblePassword; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+class VisiblePassword extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.inputRef = react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
+    this.state = {
+      value: this.props.value || '',
+      visible: false
+    };
+    this.handleVisibility = this.handleVisibility.bind(this);
+    this.handeTextChange = this.handeTextChange.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleEditingFinished = this.handleEditingFinished.bind(this);
+  }
+  componentDidMount() {
+    if (this.props.autoFocus) {
+      this.inputRef.current.focus();
+    }
+  }
+  handeTextChange(e) {
+    this.setState({
+      value: e.target.value
+    });
+    if (this.props.onChange) {
+      this.props.onChange(e);
+    }
+  }
+  handleVisibility(e) {
+    e.preventDefault();
+    this.setState({
+      visible: !this.state.visible
+    });
+  }
+  handleKeyDown(e) {
+    if (e.keyCode == 27) {
+      this.setState({
+        value: this.props.value || '',
+        visible: false
+      });
+      if (this.props.onFinished) {
+        this.props.onFinished();
+      }
+    } else if (e.keyCode == 13) {
+      this.handleEditingFinished();
+    }
+  }
+  handleEditingFinished(e) {
+    if (e) {
+      let currentTarget = e.currentTarget;
+      setTimeout(_ => {
+        if (!currentTarget.contains(document.activeElement)) {
+          if (this.props.onFinished) {
+            this.props.onFinished(this.state.value);
+          }
+        }
+      }, 0);
+    } else if (this.props.onFinished) {
+      this.props.onFinished(this.state.value.trim());
+    }
+  }
+  render() {
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      tabIndex: "-1",
+      className: "group-focus",
+      onBlur: this.handleEditingFinished
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+      className: "with-icon-right",
+      type: this.state.visible ? 'text' : 'password',
+      value: this.state.value,
+      placeholder: this.props.placeholder,
+      maxLength: 32,
+      required: this.props.required ? 'required' : '',
+      autoFocus: this.props.autoFocus ? 'autoFocus' : '',
+      autoComplete: this.props.autoComplete,
+      onChange: this.handeTextChange,
+      onKeyDown: this.handleKeyDown,
+      ref: this.inputRef
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      onClick: this.handleVisibility
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons clickable light-gray"
+    }, this.state.visible ? 'visibility' : 'visibility_off')));
+  }
+}
+
+/***/ }),
+
+/***/ "qrcodejs":
+/*!*************************!*\
+  !*** external "QRCode" ***!
+  \*************************/
+/***/ (function(module) {
+
+"use strict";
+module.exports = QRCode;
+
+/***/ }),
+
+/***/ "react":
+/*!************************!*\
+  !*** external "React" ***!
+  \************************/
+/***/ (function(module) {
+
+"use strict";
+module.exports = React;
+
+/***/ }),
+
+/***/ "react-dom":
+/*!***************************!*\
+  !*** external "ReactDOM" ***!
+  \***************************/
+/***/ (function(module) {
+
+"use strict";
+module.exports = ReactDOM;
+
+/***/ }),
+
+/***/ "react-intl":
+/*!****************************!*\
+  !*** external "ReactIntl" ***!
+  \****************************/
+/***/ (function(module) {
+
+"use strict";
+module.exports = ReactIntl;
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Check if module exists (development only)
+/******/ 		if (__webpack_modules__[moduleId] === undefined) {
+/******/ 			var e = new Error("Cannot find module '" + moduleId + "'");
+/******/ 			e.code = 'MODULE_NOT_FOUND';
+/******/ 			throw e;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	!function() {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = function(module) {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				function() { return module['default']; } :
+/******/ 				function() { return module; };
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/create fake namespace object */
+/******/ 	!function() {
+/******/ 		var getProto = Object.getPrototypeOf ? function(obj) { return Object.getPrototypeOf(obj); } : function(obj) { return obj.__proto__; };
+/******/ 		var leafPrototypes;
+/******/ 		// create a fake namespace object
+/******/ 		// mode & 1: value is a module id, require it
+/******/ 		// mode & 2: merge all properties of value into the ns
+/******/ 		// mode & 4: return value when already ns object
+/******/ 		// mode & 16: return value when it's Promise-like
+/******/ 		// mode & 8|1: behave like require
+/******/ 		__webpack_require__.t = function(value, mode) {
+/******/ 			if(mode & 1) value = this(value);
+/******/ 			if(mode & 8) return value;
+/******/ 			if(typeof value === 'object' && value) {
+/******/ 				if((mode & 4) && value.__esModule) return value;
+/******/ 				if((mode & 16) && typeof value.then === 'function') return value;
+/******/ 			}
+/******/ 			var ns = Object.create(null);
+/******/ 			__webpack_require__.r(ns);
+/******/ 			var def = {};
+/******/ 			leafPrototypes = leafPrototypes || [null, getProto({}), getProto([]), getProto(getProto)];
+/******/ 			for(var current = mode & 2 && value; (typeof current == 'object' || typeof current == 'function') && !~leafPrototypes.indexOf(current); current = getProto(current)) {
+/******/ 				Object.getOwnPropertyNames(current).forEach(function(key) { def[key] = function() { return value[key]; }; });
+/******/ 			}
+/******/ 			def['default'] = function() { return value; };
+/******/ 			__webpack_require__.d(ns, def);
+/******/ 			return ns;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	!function() {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = function(exports, definition) {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/ensure chunk */
+/******/ 	!function() {
+/******/ 		__webpack_require__.f = {};
+/******/ 		// This file contains only the entry chunk.
+/******/ 		// The chunk loading function for additional chunks
+/******/ 		__webpack_require__.e = function(chunkId) {
+/******/ 			return Promise.all(Object.keys(__webpack_require__.f).reduce(function(promises, key) {
+/******/ 				__webpack_require__.f[key](chunkId, promises);
+/******/ 				return promises;
+/******/ 			}, []));
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/get javascript chunk filename */
+/******/ 	!function() {
+/******/ 		// This function allow to reference async chunks
+/******/ 		__webpack_require__.u = function(chunkId) {
+/******/ 			// return url for filenames based on template
+/******/ 			return "" + chunkId + ".dev.js";
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/global */
+/******/ 	!function() {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	!function() {
+/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/load script */
+/******/ 	!function() {
+/******/ 		var inProgress = {};
+/******/ 		var dataWebpackPrefix = "sunrise-webapp:";
+/******/ 		// loadScript function to load a script via script tag
+/******/ 		__webpack_require__.l = function(url, done, key, chunkId) {
+/******/ 			if(inProgress[url]) { inProgress[url].push(done); return; }
+/******/ 			var script, needAttach;
+/******/ 			if(key !== undefined) {
+/******/ 				var scripts = document.getElementsByTagName("script");
+/******/ 				for(var i = 0; i < scripts.length; i++) {
+/******/ 					var s = scripts[i];
+/******/ 					if(s.getAttribute("src") == url || s.getAttribute("data-webpack") == dataWebpackPrefix + key) { script = s; break; }
+/******/ 				}
+/******/ 			}
+/******/ 			if(!script) {
+/******/ 				needAttach = true;
+/******/ 				script = document.createElement('script');
+/******/ 		
+/******/ 				script.charset = 'utf-8';
+/******/ 				if (__webpack_require__.nc) {
+/******/ 					script.setAttribute("nonce", __webpack_require__.nc);
+/******/ 				}
+/******/ 				script.setAttribute("data-webpack", dataWebpackPrefix + key);
+/******/ 		
+/******/ 				script.src = url;
+/******/ 			}
+/******/ 			inProgress[url] = [done];
+/******/ 			var onScriptComplete = function(prev, event) {
+/******/ 				// avoid mem leaks in IE.
+/******/ 				script.onerror = script.onload = null;
+/******/ 				clearTimeout(timeout);
+/******/ 				var doneFns = inProgress[url];
+/******/ 				delete inProgress[url];
+/******/ 				script.parentNode && script.parentNode.removeChild(script);
+/******/ 				doneFns && doneFns.forEach(function(fn) { return fn(event); });
+/******/ 				if(prev) return prev(event);
+/******/ 			}
+/******/ 			var timeout = setTimeout(onScriptComplete.bind(null, undefined, { type: 'timeout', target: script }), 120000);
+/******/ 			script.onerror = onScriptComplete.bind(null, script.onerror);
+/******/ 			script.onload = onScriptComplete.bind(null, script.onload);
+/******/ 			needAttach && document.head.appendChild(script);
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/publicPath */
+/******/ 	!function() {
+/******/ 		__webpack_require__.p = "/umd/";
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/jsonp chunk loading */
+/******/ 	!function() {
+/******/ 		// no baseURI
+/******/ 		
+/******/ 		// object to store loaded and loading chunks
+/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 		var installedChunks = {
+/******/ 			"index": 0
+/******/ 		};
+/******/ 		
+/******/ 		__webpack_require__.f.j = function(chunkId, promises) {
+/******/ 				// JSONP chunk loading for javascript
+/******/ 				var installedChunkData = __webpack_require__.o(installedChunks, chunkId) ? installedChunks[chunkId] : undefined;
+/******/ 				if(installedChunkData !== 0) { // 0 means "already installed".
+/******/ 		
+/******/ 					// a Promise means "currently loading".
+/******/ 					if(installedChunkData) {
+/******/ 						promises.push(installedChunkData[2]);
+/******/ 					} else {
+/******/ 						if(true) { // all chunks have JS
+/******/ 							// setup Promise in chunk cache
+/******/ 							var promise = new Promise(function(resolve, reject) { installedChunkData = installedChunks[chunkId] = [resolve, reject]; });
+/******/ 							promises.push(installedChunkData[2] = promise);
+/******/ 		
+/******/ 							// start chunk loading
+/******/ 							var url = __webpack_require__.p + __webpack_require__.u(chunkId);
+/******/ 							// create error before stack unwound to get useful stacktrace later
+/******/ 							var error = new Error();
+/******/ 							var loadingEnded = function(event) {
+/******/ 								if(__webpack_require__.o(installedChunks, chunkId)) {
+/******/ 									installedChunkData = installedChunks[chunkId];
+/******/ 									if(installedChunkData !== 0) installedChunks[chunkId] = undefined;
+/******/ 									if(installedChunkData) {
+/******/ 										var errorType = event && (event.type === 'load' ? 'missing' : event.type);
+/******/ 										var realSrc = event && event.target && event.target.src;
+/******/ 										error.message = 'Loading chunk ' + chunkId + ' failed.\n(' + errorType + ': ' + realSrc + ')';
+/******/ 										error.name = 'ChunkLoadError';
+/******/ 										error.type = errorType;
+/******/ 										error.request = realSrc;
+/******/ 										installedChunkData[1](error);
+/******/ 									}
+/******/ 								}
+/******/ 							};
+/******/ 							__webpack_require__.l(url, loadingEnded, "chunk-" + chunkId, chunkId);
+/******/ 						}
+/******/ 					}
+/******/ 				}
+/******/ 		};
+/******/ 		
+/******/ 		// no prefetching
+/******/ 		
+/******/ 		// no preloaded
+/******/ 		
+/******/ 		// no HMR
+/******/ 		
+/******/ 		// no HMR manifest
+/******/ 		
+/******/ 		// no on chunks loaded
+/******/ 		
+/******/ 		// install a JSONP callback for chunk loading
+/******/ 		var webpackJsonpCallback = function(parentChunkLoadingFunction, data) {
+/******/ 			var chunkIds = data[0];
+/******/ 			var moreModules = data[1];
+/******/ 			var runtime = data[2];
+/******/ 			// add "moreModules" to the modules object,
+/******/ 			// then flag all "chunkIds" as loaded and fire callback
+/******/ 			var moduleId, chunkId, i = 0;
+/******/ 			if(chunkIds.some(function(id) { return installedChunks[id] !== 0; })) {
+/******/ 				for(moduleId in moreModules) {
+/******/ 					if(__webpack_require__.o(moreModules, moduleId)) {
+/******/ 						__webpack_require__.m[moduleId] = moreModules[moduleId];
+/******/ 					}
+/******/ 				}
+/******/ 				if(runtime) var result = runtime(__webpack_require__);
+/******/ 			}
+/******/ 			if(parentChunkLoadingFunction) parentChunkLoadingFunction(data);
+/******/ 			for(;i < chunkIds.length; i++) {
+/******/ 				chunkId = chunkIds[i];
+/******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 					installedChunks[chunkId][0]();
+/******/ 				}
+/******/ 				installedChunks[chunkId] = 0;
+/******/ 			}
+/******/ 		
+/******/ 		}
+/******/ 		
+/******/ 		var chunkLoadingGlobal = self["webpackChunksunrise_webapp"] = self["webpackChunksunrise_webapp"] || [];
+/******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
+/******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
+/******/ 	}();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry needs to be wrapped in an IIFE because it needs to be in strict mode.
+!function() {
+"use strict";
+/*!**********************!*\
+  !*** ./src/index.js ***!
+  \**********************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_dom_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom/client */ "./node_modules/react-dom/client.js");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _views_sunrise_web_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./views/sunrise-web.jsx */ "./src/views/sunrise-web.jsx");
+/* harmony import */ var _lib_navigation_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./lib/navigation.js */ "./src/lib/navigation.js");
+
+
+
+
+
+if (typeof FIREBASE_INIT != 'undefined' && FIREBASE_INIT && FIREBASE_INIT.measurementId) {
+  const head = document.getElementsByTagName('head')[0];
+  let script = document.createElement('script');
+  script.src = 'https://www.googletagmanager.com/gtag/js?id=' + FIREBASE_INIT.measurementId;
+  script.async = true;
+  head.prepend(script);
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag('js', new Date());
+  gtag('config', FIREBASE_INIT.measurementId);
+}
+const messageLoader = {
+  'ar': _ => __webpack_require__.e(/*! import() */ "src_i18n_min_ar_json").then(__webpack_require__.t.bind(__webpack_require__, /*! ./i18n.min/ar.json */ "./src/i18n.min/ar.json", 19)),
+  'de': _ => __webpack_require__.e(/*! import() */ "src_i18n_min_de_json").then(__webpack_require__.t.bind(__webpack_require__, /*! ./i18n.min/de.json */ "./src/i18n.min/de.json", 19)),
+  'en': _ => __webpack_require__.e(/*! import() */ "src_i18n_min_en_json").then(__webpack_require__.t.bind(__webpack_require__, /*! ./i18n.min/en.json */ "./src/i18n.min/en.json", 19)),
+  'es': _ => __webpack_require__.e(/*! import() */ "src_i18n_min_es_json").then(__webpack_require__.t.bind(__webpack_require__, /*! ./i18n.min/es.json */ "./src/i18n.min/es.json", 19)),
+  'fr': _ => __webpack_require__.e(/*! import() */ "src_i18n_min_fr_json").then(__webpack_require__.t.bind(__webpack_require__, /*! ./i18n.min/fr.json */ "./src/i18n.min/fr.json", 19)),
+  'it': _ => __webpack_require__.e(/*! import() */ "src_i18n_min_it_json").then(__webpack_require__.t.bind(__webpack_require__, /*! ./i18n.min/it.json */ "./src/i18n.min/it.json", 19)),
+  'ko': _ => __webpack_require__.e(/*! import() */ "src_i18n_min_ko_json").then(__webpack_require__.t.bind(__webpack_require__, /*! ./i18n.min/ko.json */ "./src/i18n.min/ko.json", 19)),
+  'ro': _ => __webpack_require__.e(/*! import() */ "src_i18n_min_ro_json").then(__webpack_require__.t.bind(__webpack_require__, /*! ./i18n.min/ro.json */ "./src/i18n.min/ro.json", 19)),
+  'ru': _ => __webpack_require__.e(/*! import() */ "src_i18n_min_ru_json").then(__webpack_require__.t.bind(__webpack_require__, /*! ./i18n.min/ru.json */ "./src/i18n.min/ru.json", 19)),
+  'th': _ => __webpack_require__.e(/*! import() */ "src_i18n_min_th_json").then(__webpack_require__.t.bind(__webpack_require__, /*! ./i18n.min/th.json */ "./src/i18n.min/th.json", 19)),
+  'uk': _ => __webpack_require__.e(/*! import() */ "src_i18n_min_uk_json").then(__webpack_require__.t.bind(__webpack_require__, /*! ./i18n.min/uk.json */ "./src/i18n.min/uk.json", 19)),
+  'vi': _ => __webpack_require__.e(/*! import() */ "src_i18n_min_vi_json").then(__webpack_require__.t.bind(__webpack_require__, /*! ./i18n.min/vi.json */ "./src/i18n.min/vi.json", 19)),
+  'zh': _ => __webpack_require__.e(/*! import() */ "src_i18n_min_zh_json").then(__webpack_require__.t.bind(__webpack_require__, /*! ./i18n.min/zh.json */ "./src/i18n.min/zh.json", 19)),
+  'zh-TW': _ => __webpack_require__.e(/*! import() */ "src_i18n_min_zh-TW_json").then(__webpack_require__.t.bind(__webpack_require__, /*! ./i18n.min/zh-TW.json */ "./src/i18n.min/zh-TW.json", 19))
+};
+const rtl = ['ar', 'fa', 'he', 'ur'];
+const {
+  params
+} = _lib_navigation_js__WEBPACK_IMPORTED_MODULE_4__["default"].parseUrlHash(window.location.hash);
+const language = params && params.hl || navigator.languages && navigator.languages[0] || navigator.language || navigator.userLanguage || 'en';
+const normalized = language.replace('_', '-');
+const baseLanguage = normalized.split('-')[0].toLowerCase();
+const htmlLang = messageLoader[normalized] ? language : messageLoader[baseLanguage] ? baseLanguage : 'en';
+const html = document.getElementsByTagName('html')[0];
+html.setAttribute('lang', htmlLang);
+if (rtl.includes(baseLanguage)) {
+  html.setAttribute('dir', 'rtl');
+}
+const root = (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(document.getElementById('mountPoint'));
+messageLoader[htmlLang]().then(messages => root.render(react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_2__.IntlProvider, {
+  locale: language,
+  messages: messages,
+  textComponent: (react__WEBPACK_IMPORTED_MODULE_0___default().Fragment)
+}, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_views_sunrise_web_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], null))));
+}();
+/******/ })()
+;
+//# sourceMappingURL=index.dev.js.map

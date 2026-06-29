@@ -1,0 +1,187 @@
+# Reference configuration for a simple 3-node Sunrise cluster.
+# Includes:
+# * Mysql database
+# * 3 Sunrise servers
+# * 3 exporters
+
+version: '3.8'
+
+# Base Sunrise template.
+x-sunrise:
+  &sunrise-base
+  depends_on:
+    - db
+  image: sunrise/sunrise:latest
+  restart: always
+
+x-exporter:
+  &exporter-base
+  image: sunrise/exporter:latest
+  restart: always
+
+x-sunrise-env-vars: &sunrise-env-vars
+  "STORE_USE_ADAPTER": "mysql"
+  "PPROF_URL": "/pprof"
+  # You can provide your own sunrise config by setting EXT_CONFIG env var and binding your configuration file to
+  # "EXT_CONFIG": "/etc/sunrise/sunrise.conf"
+  "WAIT_FOR": "mysql:3306"
+  # Push notifications.
+  # Modify as appropriate.
+  # Sunrise Push Gateway configuration.
+  "TNPG_PUSH_ENABLED": "false"
+  # "TNPG_USER": "<user name>"
+  # "TNPG_AUTH_TOKEN": "<token>"
+  # FCM specific server configuration.
+  "FCM_PUSH_ENABLED": "false"
+  # "FCM_CRED_FILE": "<path to FCM credentials file>"
+  # "FCM_INCLUDE_ANDROID_NOTIFICATION": false
+  #
+  # FCM Web client configuration.
+  "FCM_API_KEY": "AIzaSyD6X4ULR-RUsobvs1zZ2bHdJuPz39q2tbQ"
+  "FCM_APP_ID": "1:114126160546:web:aca6ea2981feb81fb44dfb"
+  "FCM_PROJECT_ID": "sunrise-1000"
+  "FCM_SENDER_ID": 114126160546
+  "FCM_VAPID_KEY": "BOgQVPOMzIMXUpsYGpbVkZoEBc0ifKY_f2kSU5DNDGYI6i6CoKqqxDd7w7PJ3FaGRBgVGJffldETumOx831jl58"
+  "FCM_MEASUREMENT_ID": "G-WNJDQR34L3"
+  # iOS app universal links configuration.
+  # "IOS_UNIV_LINKS_APP_ID": "<ios universal links app id>"
+  # Video calls
+  "WEBRTC_ENABLED": "false"
+  # "ICE_SERVERS_FILE": "<path to ICE servers config>"
+
+x-exporter-env-vars: &exporter-env-vars
+  "SUNRISE_ADDR": "http://sunrise.host:18080/stats/expvar/"
+  # InfluxDB configation:
+  "SERVE_FOR": "influxdb"
+  "INFLUXDB_VERSION": 1.7
+  "INFLUXDB_ORGANIZATION": "<your organization>"
+  "INFLUXDB_PUSH_INTERVAL": 30
+  "INFLUXDB_PUSH_ADDRESS": "https://mon.sunrise.co/intake"
+  "INFLUXDB_AUTH_TOKEN": "<auth token>"
+  # Prometheus configuration:
+  # "SERVE_FOR": "prometheus"
+  # "PROM_NAMESPACE": "sunrise"
+  # "PROM_METRICS_PATH": "/metrics"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    # Use your own volume.
+    # volumes:
+    #   - <mysql directory in your file system>:/var/lib/mysql
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
+    security_opt:
+      - seccomp=unconfined
+
+  # Sunrise servers.
+  sunrise-0:
+    << : *sunrise-base
+    container_name: sunrise-0
+    hostname: sunrise-0
+    # You can mount your volumes as necessary:
+    # volumes:
+    #   # E.g. external config (assuming EXT_CONFIG is set).
+    #   - <path to your sunrise.conf>:/etc/sunrise/sunrise.conf
+    #   # Logs directory.
+    #   - <path to your sunrise-0 logs directory>:/var/log
+    ports:
+      - "6060:6060"
+    environment:
+      << : *sunrise-env-vars
+      "CLUSTER_SELF": "sunrise-0"
+      "RESET_DB": ${RESET_DB:-false}
+      "UPGRADE_DB": ${UPGRADE_DB:-false}
+
+  sunrise-1:
+    << : *sunrise-base
+    container_name: sunrise-1
+    hostname: sunrise-1
+    # You can mount your volumes as necessary:
+    # volumes:
+    #   # E.g. external config (assuming EXT_CONFIG is set).
+    #   - <path to your sunrise.conf>:/etc/sunrise/sunrise.conf
+    #   # Logs directory.
+    #   - <path to your sunrise-1 logs directory>:/var/log
+    ports:
+      - "6061:6060"
+    environment:
+      << : *sunrise-env-vars
+      "CLUSTER_SELF": "sunrise-1"
+      # Wait for sunrise-0, not the database since
+      # we let sunrise-0 perform all database initialization and upgrade work.
+      "WAIT_FOR": "sunrise-0:6060"
+      "NO_DB_INIT": "true"
+
+  sunrise-2:
+    << : *sunrise-base
+    container_name: sunrise-2
+    hostname: sunrise-2
+    # You can mount your volumes as necessary:
+    # volumes:
+    #   # E.g. external config (assuming EXT_CONFIG is set).
+    #   - <path to your sunrise.conf>:/etc/sunrise/sunrise.conf
+    #   # Logs directory.
+    #   - <path to your sunrise-2 logs directory>:/var/log
+    ports:
+      - "6062:6060"
+    environment:
+      << : *sunrise-env-vars
+      "CLUSTER_SELF": "sunrise-2"
+      # Wait for sunrise-0, not the database since
+      # we let sunrise-0 perform all database initialization and upgrade work.
+      "WAIT_FOR": "sunrise-0:6060"
+      "NO_DB_INIT": "true"
+
+  # Monitoring.
+  # Exporters are paired with sunrise instances.
+  exporter-0:
+    << : *exporter-base
+    container_name: exporter-0
+    hostname: exporter-0
+    depends_on:
+      - sunrise-0
+    ports:
+      - 6222:6222
+    links:
+      - sunrise-0:sunrise.host
+    environment:
+      << : *exporter-env-vars
+      "INSTANCE": "sunrise-0"
+      "WAIT_FOR": "sunrise-0:6060"
+
+  exporter-1:
+    << : *exporter-base
+    container_name: exporter-1
+    hostname: exporter-1
+    depends_on:
+      - sunrise-1
+    ports:
+      - 6223:6222
+    links:
+      - sunrise-1:sunrise.host
+    environment:
+      << : *exporter-env-vars
+      "INSTANCE": "sunrise-1"
+      "WAIT_FOR": "sunrise-1:6060"
+
+  exporter-2:
+    << : *exporter-base
+    container_name: exporter-2
+    hostname: exporter-2
+    depends_on:
+      - sunrise-2
+    ports:
+      - 6224:6222
+    links:
+      - sunrise-2:sunrise.host
+    environment:
+      << : *exporter-env-vars
+      "INSTANCE": "sunrise-2"
+      "WAIT_FOR": "sunrise-2:6060"

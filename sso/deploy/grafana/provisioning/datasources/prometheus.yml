@@ -1,0 +1,26 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# cotton-id — Grafana datasource provisioning.
+#
+# Auto-registers the Prometheus server as Grafana's default datasource on boot
+# (no click-ops). Grafana reads this file at startup from
+# /etc/grafana/provisioning/datasources (mounted by docker-compose.yml).
+#
+# `prometheus:9090` is the compose service name, resolved on the internal Docker
+# network — Grafana and Prometheus share it. The `uid` is fixed so the bundled
+# dashboards can reference the datasource by a stable id.
+# ─────────────────────────────────────────────────────────────────────────────
+
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    uid: cotton-id-prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    jsonData:
+      # Keep this >= the Prometheus scrape_interval so range queries align.
+      timeInterval: 15s
+      httpMethod: POST

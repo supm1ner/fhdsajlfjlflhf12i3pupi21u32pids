@@ -1,0 +1,3048 @@
+basePath: /api/v1
+definitions:
+  cotton-id_internal_adminapi.ClientSummary:
+    properties:
+      clientId:
+        type: string
+      clientType:
+        type: string
+      createdAt:
+        type: string
+      grantTypes:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      redirectUris:
+        items:
+          type: string
+        type: array
+      responseTypes:
+        items:
+          type: string
+        type: array
+      scopes:
+        items:
+          type: string
+        type: array
+    type: object
+  cotton-id_internal_adminapi.RegisterClientRequest:
+    properties:
+      clientType:
+        example: public
+        type: string
+      grantTypes:
+        example:
+        - authorization_code
+        - refresh_token
+        items:
+          type: string
+        type: array
+      name:
+        example: Demo App
+        type: string
+      redirectUris:
+        example:
+        - http://localhost:5173/callback
+        items:
+          type: string
+        type: array
+      responseTypes:
+        example:
+        - code
+        items:
+          type: string
+        type: array
+      scopes:
+        example:
+        - openid
+        - profile
+        - email
+        items:
+          type: string
+        type: array
+    type: object
+  cotton-id_internal_auth.PublicUser:
+    properties:
+      about:
+        type: string
+      displayName:
+        type: string
+      email:
+        type: string
+      emailVerified:
+        type: boolean
+      id:
+        type: string
+      location:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    type: object
+  cotton-id_internal_httpx.Problem:
+    properties:
+      detail:
+        description: Detail is a human-readable explanation specific to this occurrence.
+        example: email is required
+        type: string
+      field:
+        description: Field optionally names the offending request field for validation
+          errors.
+        example: email
+        type: string
+      instance:
+        description: Instance optionally identifies the specific occurrence (the request
+          path).
+        type: string
+      status:
+        description: Status is the HTTP status code.
+        example: 400
+        type: integer
+      title:
+        description: Title is a short, human-readable summary of the problem type.
+        example: Bad Request
+        type: string
+      type:
+        description: |-
+          Type is a URI reference identifying the problem type. "about:blank" is
+          used when only the status conveys meaning.
+        example: about:blank
+        type: string
+    type: object
+  internal_account.changePasswordRequest:
+    properties:
+      currentPassword:
+        example: old-Pass-1!
+        type: string
+      newPassword:
+        example: new-Pass-2!
+        type: string
+    type: object
+  internal_account.connectionClient:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  internal_account.connectionView:
+    properties:
+      client:
+        $ref: '#/definitions/internal_account.connectionClient'
+      grantedAt:
+        type: string
+      grantedScopes:
+        items:
+          type: string
+        type: array
+    type: object
+  internal_account.connectionsResponse:
+    properties:
+      connections:
+        items:
+          $ref: '#/definitions/internal_account.connectionView'
+        type: array
+    type: object
+  internal_account.countsView:
+    properties:
+      connections:
+        type: integer
+      passkeys:
+        type: integer
+      sessions:
+        type: integer
+    type: object
+  internal_account.deleteAccountRequest:
+    properties:
+      confirm:
+        example: true
+        type: boolean
+      currentPassword:
+        example: old-Pass-1!
+        type: string
+    type: object
+  internal_account.profileResponse:
+    properties:
+      counts:
+        $ref: '#/definitions/internal_account.countsView'
+      user:
+        $ref: '#/definitions/internal_account.userView'
+    type: object
+  internal_account.sessionView:
+    properties:
+      createdAt:
+        type: string
+      current:
+        type: boolean
+      expiresAt:
+        type: string
+      id:
+        type: string
+      ip:
+        type: string
+      lastSeenAt:
+        type: string
+      userAgent:
+        type: string
+    type: object
+  internal_account.sessionsResponse:
+    properties:
+      sessions:
+        items:
+          $ref: '#/definitions/internal_account.sessionView'
+        type: array
+    type: object
+  internal_account.updatePreferencesRequest:
+    properties:
+      lang:
+        example: ru
+        type: string
+      loginNotifications:
+        example: true
+        type: boolean
+      theme:
+        example: system
+        type: string
+    type: object
+  internal_account.updateProfileRequest:
+    properties:
+      about:
+        example: Building things.
+        type: string
+      displayName:
+        example: Alex Cotton
+        type: string
+      location:
+        example: Almaty, KZ
+        type: string
+    type: object
+  internal_account.userEnvelope:
+    properties:
+      user:
+        $ref: '#/definitions/internal_account.userView'
+    type: object
+  internal_account.userView:
+    properties:
+      about:
+        type: string
+      avatarUrl:
+        type: string
+      bannerUrl:
+        type: string
+      createdAt:
+        type: string
+      displayName:
+        type: string
+      email:
+        type: string
+      emailVerified:
+        type: boolean
+      hasPassword:
+        type: boolean
+      id:
+        type: string
+      lang:
+        type: string
+      location:
+        type: string
+      loginNotifications:
+        type: boolean
+      role:
+        type: string
+      status:
+        type: string
+      theme:
+        type: string
+      updatedAt:
+        type: string
+      username:
+        type: string
+    type: object
+  internal_admin.adminUserDetail:
+    properties:
+      about:
+        type: string
+      displayName:
+        type: string
+      email:
+        type: string
+      emailVerified:
+        type: boolean
+      id:
+        type: string
+      joinedAt:
+        type: string
+      location:
+        type: string
+      role:
+        type: string
+      status:
+        type: string
+      updatedAt:
+        type: string
+      username:
+        type: string
+    type: object
+  internal_admin.adminUserSummary:
+    properties:
+      displayName:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      joinedAt:
+        type: string
+      role:
+        type: string
+      servicesCount:
+        type: integer
+      status:
+        type: string
+      username:
+        type: string
+    type: object
+  internal_admin.auditResponse:
+    properties:
+      entries:
+        items:
+          $ref: '#/definitions/internal_admin.auditView'
+        type: array
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      total:
+        type: integer
+    type: object
+  internal_admin.auditView:
+    properties:
+      action:
+        type: string
+      actorId:
+        type: string
+      actorLabel:
+        type: string
+      id:
+        type: string
+      ip:
+        type: string
+      metadata:
+        additionalProperties: {}
+        type: object
+      requestId:
+        type: string
+      targetId:
+        type: string
+      targetType:
+        type: string
+      ts:
+        type: string
+    type: object
+  internal_admin.changeRoleRequest:
+    properties:
+      role:
+        example: admin
+        type: string
+    type: object
+  internal_admin.createServiceResponse:
+    properties:
+      clientId:
+        type: string
+      clientSecret:
+        type: string
+    type: object
+  internal_admin.messageResponse:
+    properties:
+      message:
+        example: A password reset link has been issued.
+        type: string
+    type: object
+  internal_admin.messageUserRequest:
+    properties:
+      body:
+        example: Hi — please verify your email address at your convenience.
+        type: string
+      subject:
+        example: A note from the cotton-id team
+        type: string
+    type: object
+  internal_admin.overviewResponse:
+    properties:
+      activeToday:
+        type: integer
+      newThisWeek:
+        type: integer
+      recentActivity:
+        items:
+          $ref: '#/definitions/internal_admin.auditView'
+        type: array
+      recentSignups:
+        items:
+          $ref: '#/definitions/internal_admin.adminUserSummary'
+        type: array
+      services:
+        type: integer
+      signups:
+        items:
+          $ref: '#/definitions/internal_admin.signupPointView'
+        type: array
+      totalUsers:
+        type: integer
+    type: object
+  internal_admin.revokeServiceConsentsResponse:
+    properties:
+      clientId:
+        type: string
+      complete:
+        type: boolean
+      revoked:
+        type: integer
+    type: object
+  internal_admin.serviceConsentsResponse:
+    properties:
+      clientId:
+        type: string
+      complete:
+        type: boolean
+      count:
+        type: integer
+    type: object
+  internal_admin.serviceDetailResponse:
+    properties:
+      service:
+        $ref: '#/definitions/cotton-id_internal_adminapi.ClientSummary'
+    type: object
+  internal_admin.servicesListResponse:
+    properties:
+      services:
+        items:
+          $ref: '#/definitions/cotton-id_internal_adminapi.ClientSummary'
+        type: array
+    type: object
+  internal_admin.sessionView:
+    properties:
+      createdAt:
+        type: string
+      expiresAt:
+        type: string
+      ip:
+        type: string
+      lastSeenAt:
+        type: string
+      userAgent:
+        type: string
+    type: object
+  internal_admin.signupPointView:
+    properties:
+      count:
+        type: integer
+      date:
+        type: string
+    type: object
+  internal_admin.updateServiceRequest:
+    properties:
+      clientType:
+        example: public
+        type: string
+      grantTypes:
+        items:
+          type: string
+        type: array
+      name:
+        example: Renamed App
+        type: string
+      redirectUris:
+        items:
+          type: string
+        type: array
+      responseTypes:
+        items:
+          type: string
+        type: array
+      scopes:
+        items:
+          type: string
+        type: array
+    type: object
+  internal_admin.userDetailResponse:
+    properties:
+      connections:
+        type: integer
+      recentActivity:
+        items:
+          $ref: '#/definitions/internal_admin.auditView'
+        type: array
+      sessions:
+        items:
+          $ref: '#/definitions/internal_admin.sessionView'
+        type: array
+      user:
+        $ref: '#/definitions/internal_admin.adminUserDetail'
+    type: object
+  internal_admin.userEnvelope:
+    properties:
+      user:
+        $ref: '#/definitions/internal_admin.adminUserDetail'
+    type: object
+  internal_admin.usersResponse:
+    properties:
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      total:
+        type: integer
+      users:
+        items:
+          $ref: '#/definitions/internal_admin.adminUserSummary'
+        type: array
+    type: object
+  internal_adminapi.clientSummary:
+    properties:
+      clientId:
+        type: string
+      clientType:
+        type: string
+      createdAt:
+        type: string
+      grantTypes:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      redirectUris:
+        items:
+          type: string
+        type: array
+      responseTypes:
+        items:
+          type: string
+        type: array
+      scopes:
+        items:
+          type: string
+        type: array
+    type: object
+  internal_adminapi.listClientsResponse:
+    properties:
+      clients:
+        items:
+          $ref: '#/definitions/internal_adminapi.clientSummary'
+        type: array
+    type: object
+  internal_adminapi.registerClientRequest:
+    properties:
+      clientType:
+        example: public
+        type: string
+      grantTypes:
+        example:
+        - authorization_code
+        - refresh_token
+        items:
+          type: string
+        type: array
+      name:
+        example: Demo App
+        type: string
+      redirectUris:
+        example:
+        - http://localhost:5173/callback
+        items:
+          type: string
+        type: array
+      responseTypes:
+        example:
+        - code
+        items:
+          type: string
+        type: array
+      scopes:
+        example:
+        - openid
+        - profile
+        - email
+        items:
+          type: string
+        type: array
+    type: object
+  internal_adminapi.registerClientResponse:
+    properties:
+      clientId:
+        type: string
+      clientSecret:
+        type: string
+    type: object
+  internal_auth.PublicUser:
+    properties:
+      about:
+        type: string
+      displayName:
+        type: string
+      email:
+        type: string
+      emailVerified:
+        type: boolean
+      id:
+        type: string
+      location:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    type: object
+  internal_auth.csrfResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  internal_auth.forgotRequest:
+    properties:
+      email:
+        example: alex@cotton-id.io
+        type: string
+    type: object
+  internal_auth.loginRequest:
+    properties:
+      email:
+        example: alex@cotton-id.io
+        type: string
+      password:
+        example: hunter2Pass!
+        type: string
+      remember:
+        example: true
+        type: boolean
+    type: object
+  internal_auth.messageResponse:
+    properties:
+      message:
+        example: If that email is registered, a reset link has been sent.
+        type: string
+    type: object
+  internal_auth.resetRequest:
+    properties:
+      password:
+        type: string
+      token:
+        type: string
+    type: object
+  internal_auth.signupRequest:
+    properties:
+      displayName:
+        example: Alex Cotton
+        type: string
+      email:
+        example: alex@cotton-id.io
+        type: string
+      password:
+        example: hunter2Pass!
+        type: string
+      username:
+        example: alex
+        type: string
+    type: object
+  internal_auth.userEnvelope:
+    properties:
+      user:
+        $ref: '#/definitions/internal_auth.PublicUser'
+    type: object
+  internal_httpx.healthResponse:
+    properties:
+      checks:
+        additionalProperties:
+          type: string
+        type: object
+      status:
+        type: string
+    type: object
+  internal_oidc.clientInfo:
+    properties:
+      id:
+        example: demo-client
+        type: string
+      name:
+        example: Demo App
+        type: string
+    type: object
+  internal_oidc.consentAcceptRequest:
+    properties:
+      consentChallenge:
+        example: def456challenge
+        type: string
+      grantScopes:
+        example:
+        - openid
+        - profile
+        - email
+        items:
+          type: string
+        type: array
+      remember:
+        example: true
+        type: boolean
+    type: object
+  internal_oidc.consentDetailsResponse:
+    properties:
+      client:
+        $ref: '#/definitions/internal_oidc.clientInfo'
+      requestedScopes:
+        items:
+          type: string
+        type: array
+      user:
+        $ref: '#/definitions/cotton-id_internal_auth.PublicUser'
+    type: object
+  internal_oidc.consentRejectRequest:
+    properties:
+      consentChallenge:
+        example: def456challenge
+        type: string
+    type: object
+  internal_oidc.loginAcceptRequest:
+    properties:
+      loginChallenge:
+        example: abc123challenge
+        type: string
+    type: object
+  internal_oidc.loginRejectRequest:
+    properties:
+      loginChallenge:
+        example: abc123challenge
+        type: string
+    type: object
+  internal_oidc.redirectResponse:
+    properties:
+      redirectTo:
+        example: http://localhost:4444/oauth2/auth?...
+        type: string
+    type: object
+  internal_passkey.credentialEnvelope:
+    properties:
+      passkey:
+        $ref: '#/definitions/internal_passkey.credentialView'
+    type: object
+  internal_passkey.credentialView:
+    properties:
+      createdAt:
+        example: "2026-06-06T12:00:00Z"
+        type: string
+      id:
+        example: 7c6f0b6e-...
+        type: string
+      lastUsedAt:
+        type: string
+      name:
+        example: MacBook Touch ID
+        type: string
+      transports:
+        example:
+        - internal
+        - hybrid
+        items:
+          type: string
+        type: array
+    type: object
+  internal_passkey.listResponse:
+    properties:
+      passkeys:
+        items:
+          $ref: '#/definitions/internal_passkey.credentialView'
+        type: array
+    type: object
+  internal_passkey.loginBeginRequest:
+    properties:
+      email:
+        example: alex@cotton-id.io
+        type: string
+      loginChallenge:
+        type: string
+    type: object
+  internal_passkey.loginFinishRequest:
+    properties:
+      credential:
+        type: object
+    type: object
+  internal_passkey.loginFinishResponse:
+    properties:
+      redirectTo:
+        type: string
+      user:
+        $ref: '#/definitions/cotton-id_internal_auth.PublicUser'
+    type: object
+  internal_passkey.registerFinishRequest:
+    properties:
+      credential:
+        type: object
+      name:
+        example: MacBook Touch ID
+        type: string
+    type: object
+  internal_social.providerInfo:
+    properties:
+      id:
+        example: google
+        type: string
+      name:
+        example: Google
+        type: string
+    type: object
+  internal_social.providersResponse:
+    properties:
+      providers:
+        items:
+          $ref: '#/definitions/internal_social.providerInfo'
+        type: array
+    type: object
+  protocol.AttestationFormat:
+    enum:
+    - packed
+    - tpm
+    - android-key
+    - android-safetynet
+    - fido-u2f
+    - apple
+    - compound
+    - none
+    type: string
+    x-enum-varnames:
+    - AttestationFormatPacked
+    - AttestationFormatTPM
+    - AttestationFormatAndroidKey
+    - AttestationFormatAndroidSafetyNet
+    - AttestationFormatFIDOUniversalSecondFactor
+    - AttestationFormatApple
+    - AttestationFormatCompound
+    - AttestationFormatNone
+  protocol.AuthenticationExtensions:
+    additionalProperties: {}
+    type: object
+  protocol.AuthenticatorAttachment:
+    enum:
+    - platform
+    - cross-platform
+    type: string
+    x-enum-varnames:
+    - Platform
+    - CrossPlatform
+  protocol.AuthenticatorSelection:
+    properties:
+      authenticatorAttachment:
+        allOf:
+        - $ref: '#/definitions/protocol.AuthenticatorAttachment'
+        description: |-
+          AuthenticatorAttachment If this member is present, eligible authenticators are filtered to only
+          authenticators attached with the specified AuthenticatorAttachment enum.
+      requireResidentKey:
+        description: |-
+          RequireResidentKey this member describes the Relying Party's requirements regarding resident
+          credentials. If the parameter is set to true, the authenticator MUST create a client-side-resident
+          public key credential source when creating a public key credential.
+        type: boolean
+      residentKey:
+        allOf:
+        - $ref: '#/definitions/protocol.ResidentKeyRequirement'
+        description: |-
+          ResidentKey this member describes the Relying Party's requirements regarding resident
+          credentials per Webauthn Level 2.
+      userVerification:
+        allOf:
+        - $ref: '#/definitions/protocol.UserVerificationRequirement'
+        description: |-
+          UserVerification This member describes the Relying Party's requirements regarding user verification for
+          the create() operation. Eligible authenticators are filtered to only those capable of satisfying this
+          requirement.
+    type: object
+  protocol.AuthenticatorTransport:
+    enum:
+    - usb
+    - nfc
+    - ble
+    - smart-card
+    - hybrid
+    - internal
+    type: string
+    x-enum-varnames:
+    - USB
+    - NFC
+    - BLE
+    - SmartCard
+    - Hybrid
+    - Internal
+  protocol.ConveyancePreference:
+    enum:
+    - none
+    - indirect
+    - direct
+    - enterprise
+    type: string
+    x-enum-varnames:
+    - PreferNoAttestation
+    - PreferIndirectAttestation
+    - PreferDirectAttestation
+    - PreferEnterpriseAttestation
+  protocol.CredentialAssertion:
+    properties:
+      mediation:
+        $ref: '#/definitions/protocol.CredentialMediationRequirement'
+      publicKey:
+        $ref: '#/definitions/protocol.PublicKeyCredentialRequestOptions'
+    type: object
+  protocol.CredentialCreation:
+    properties:
+      mediation:
+        $ref: '#/definitions/protocol.CredentialMediationRequirement'
+      publicKey:
+        $ref: '#/definitions/protocol.PublicKeyCredentialCreationOptions'
+    type: object
+  protocol.CredentialDescriptor:
+    properties:
+      id:
+        description: CredentialID The ID of a credential to allow/disallow.
+        items:
+          type: integer
+        type: array
+      transports:
+        description: The authenticator transports that can be used.
+        items:
+          $ref: '#/definitions/protocol.AuthenticatorTransport'
+        type: array
+      type:
+        allOf:
+        - $ref: '#/definitions/protocol.CredentialType'
+        description: The valid credential types.
+    type: object
+  protocol.CredentialMediationRequirement:
+    enum:
+    - ""
+    - silent
+    - optional
+    - conditional
+    - required
+    type: string
+    x-enum-varnames:
+    - MediationDefault
+    - MediationSilent
+    - MediationOptional
+    - MediationConditional
+    - MediationRequired
+  protocol.CredentialParameter:
+    properties:
+      alg:
+        $ref: '#/definitions/webauthncose.COSEAlgorithmIdentifier'
+      type:
+        $ref: '#/definitions/protocol.CredentialType'
+    type: object
+  protocol.CredentialType:
+    enum:
+    - public-key
+    type: string
+    x-enum-varnames:
+    - PublicKeyCredentialType
+  protocol.PublicKeyCredentialCreationOptions:
+    properties:
+      attestation:
+        $ref: '#/definitions/protocol.ConveyancePreference'
+      attestationFormats:
+        items:
+          $ref: '#/definitions/protocol.AttestationFormat'
+        type: array
+      authenticatorSelection:
+        $ref: '#/definitions/protocol.AuthenticatorSelection'
+      challenge:
+        items:
+          type: integer
+        type: array
+      excludeCredentials:
+        items:
+          $ref: '#/definitions/protocol.CredentialDescriptor'
+        type: array
+      extensions:
+        $ref: '#/definitions/protocol.AuthenticationExtensions'
+      hints:
+        items:
+          $ref: '#/definitions/protocol.PublicKeyCredentialHints'
+        type: array
+      pubKeyCredParams:
+        items:
+          $ref: '#/definitions/protocol.CredentialParameter'
+        type: array
+      rp:
+        $ref: '#/definitions/protocol.RelyingPartyEntity'
+      timeout:
+        type: integer
+      user:
+        $ref: '#/definitions/protocol.UserEntity'
+    type: object
+  protocol.PublicKeyCredentialHints:
+    enum:
+    - security-key
+    - client-device
+    - hybrid
+    type: string
+    x-enum-varnames:
+    - PublicKeyCredentialHintSecurityKey
+    - PublicKeyCredentialHintClientDevice
+    - PublicKeyCredentialHintHybrid
+  protocol.PublicKeyCredentialRequestOptions:
+    properties:
+      allowCredentials:
+        items:
+          $ref: '#/definitions/protocol.CredentialDescriptor'
+        type: array
+      challenge:
+        items:
+          type: integer
+        type: array
+      extensions:
+        $ref: '#/definitions/protocol.AuthenticationExtensions'
+      hints:
+        items:
+          $ref: '#/definitions/protocol.PublicKeyCredentialHints'
+        type: array
+      rpId:
+        type: string
+      timeout:
+        type: integer
+      userVerification:
+        $ref: '#/definitions/protocol.UserVerificationRequirement'
+    type: object
+  protocol.RelyingPartyEntity:
+    properties:
+      id:
+        description: A unique identifier for the Relying Party entity, which sets
+          the RP ID.
+        type: string
+      name:
+        description: |-
+          A human-palatable name for the entity. Its function depends on what the PublicKeyCredentialEntity represents:
+
+          When inherited by PublicKeyCredentialRpEntity it is a human-palatable identifier for the Relying Party,
+          intended only for display. For example, "ACME Corporation", "Wonderful Widgets, Inc." or "ОАО Примертех".
+
+          When inherited by PublicKeyCredentialUserEntity, it is a human-palatable identifier for a user account. It is
+          intended only for display, i.e., aiding the user in determining the difference between user accounts with similar
+          displayNames. For example, "alexm", "alex.p.mueller@example.com" or "+14255551234".
+        type: string
+    type: object
+  protocol.ResidentKeyRequirement:
+    enum:
+    - discouraged
+    - preferred
+    - required
+    type: string
+    x-enum-varnames:
+    - ResidentKeyRequirementDiscouraged
+    - ResidentKeyRequirementPreferred
+    - ResidentKeyRequirementRequired
+  protocol.UserEntity:
+    properties:
+      displayName:
+        description: |-
+          A human-palatable name for the user account, intended only for display.
+          For example, "Alex P. Müller" or "田中 倫". The Relying Party SHOULD let
+          the user choose this, and SHOULD NOT restrict the choice more than necessary.
+        type: string
+      id:
+        description: |-
+          ID is the user handle of the user account entity. To ensure secure operation,
+          authentication and authorization decisions MUST be made on the basis of this id
+          member, not the displayName nor name members. See Section 6.1 of
+          [RFC8266](https://www.w3.org/TR/webauthn/#biblio-rfc8266).
+      name:
+        description: |-
+          A human-palatable name for the entity. Its function depends on what the PublicKeyCredentialEntity represents:
+
+          When inherited by PublicKeyCredentialRpEntity it is a human-palatable identifier for the Relying Party,
+          intended only for display. For example, "ACME Corporation", "Wonderful Widgets, Inc." or "ОАО Примертех".
+
+          When inherited by PublicKeyCredentialUserEntity, it is a human-palatable identifier for a user account. It is
+          intended only for display, i.e., aiding the user in determining the difference between user accounts with similar
+          displayNames. For example, "alexm", "alex.p.mueller@example.com" or "+14255551234".
+        type: string
+    type: object
+  protocol.UserVerificationRequirement:
+    enum:
+    - required
+    - preferred
+    - discouraged
+    type: string
+    x-enum-comments:
+      VerificationPreferred: This is the default.
+    x-enum-descriptions:
+    - ""
+    - This is the default.
+    - ""
+    x-enum-varnames:
+    - VerificationRequired
+    - VerificationPreferred
+    - VerificationDiscouraged
+  webauthncose.COSEAlgorithmIdentifier:
+    enum:
+    - -7
+    - -8
+    - -9
+    - -19
+    - -35
+    - -36
+    - -37
+    - -38
+    - -39
+    - -47
+    - -48
+    - -49
+    - -50
+    - -51
+    - -52
+    - -257
+    - -258
+    - -259
+    - -65535
+    type: integer
+    x-enum-varnames:
+    - AlgES256
+    - AlgEdDSA
+    - AlgESP256
+    - AlgEd25519
+    - AlgES384
+    - AlgES512
+    - AlgPS256
+    - AlgPS384
+    - AlgPS512
+    - AlgES256K
+    - AlgMLDSA44
+    - AlgMLDSA65
+    - AlgMLDSA87
+    - AlgESP384
+    - AlgESP512
+    - AlgRS256
+    - AlgRS384
+    - AlgRS512
+    - AlgRS1
+info:
+  contact: {}
+  description: 'cotton-id is a single-tenant OpenID Connect identity provider. This
+    is the change-1 walking skeleton: email/password auth, sessions, and the OIDC
+    login/consent surface (OIDC and admin-client routes are stubs in this change).'
+  title: cotton-id API
+  version: 0.1.0
+paths:
+  /account:
+    delete:
+      consumes:
+      - application/json
+      description: Permanently deletes the current user's account after re-authentication
+        (the current password for password accounts, or confirm=true for social/passkey-only
+        accounts). FK cascade removes sessions, passkeys, social identities, and profile
+        images; the subject's Hydra login/consent sessions are best-effort revoked;
+        the session cookie is cleared. Irreversible. Requires an authenticated session.
+      parameters:
+      - description: Re-auth material
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_account.deleteAccountRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Delete account
+      tags:
+      - account
+    get:
+      description: Returns the current user's full profile (including avatar/banner
+        URLs and preferences) plus session/passkey/connection counts for the security
+        overview. Requires an authenticated session.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_account.profileResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Get account profile
+      tags:
+      - account
+    patch:
+      consumes:
+      - application/json
+      description: Updates the current user's display name, about, and location (validated
+        and length-bounded). Requires an authenticated session.
+      parameters:
+      - description: Profile fields
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_account.updateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_account.userEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Update account profile
+      tags:
+      - account
+  /account/connections:
+    get:
+      description: Returns the relying parties the current user has granted access
+        to (client id/name + granted scopes), read from Hydra's consent sessions for
+        the user's subject. Requires an authenticated session.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_account.connectionsResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: List connected apps
+      tags:
+      - account
+  /account/connections/{client}:
+    delete:
+      description: Revokes the current user's consent for the given client, so the
+        app must obtain consent again on its next authorization. Requires an authenticated
+        session.
+      parameters:
+      - description: OAuth2 client id
+        in: path
+        name: client
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Revoke a connected app
+      tags:
+      - account
+  /account/images/{kind}:
+    get:
+      description: Serves the current user's avatar or banner bytes with the stored
+        content type. Auth-gated to the owner for now (a public cross-app URL is a
+        later change). Requires an authenticated session.
+      parameters:
+      - description: Image kind
+        enum:
+        - avatar
+        - banner
+        in: path
+        name: kind
+        required: true
+        type: string
+      produces:
+      - image/png
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Serve avatar or banner
+      tags:
+      - account
+    put:
+      consumes:
+      - multipart/form-data
+      description: Uploads the current user's avatar or banner as multipart/form-data
+        (field "file"). The content type is validated by magic bytes (png/jpeg/webp
+        only) and the size is capped (avatar ≤ 512 KiB, banner ≤ 1 MiB). The image
+        is stored and the user's avatar/banner URL is set. Requires an authenticated
+        session.
+      parameters:
+      - description: Image kind
+        enum:
+        - avatar
+        - banner
+        in: path
+        name: kind
+        required: true
+        type: string
+      - description: Image file (png, jpeg, or webp)
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_account.userEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "413":
+          description: Request Entity Too Large
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "415":
+          description: Unsupported Media Type
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Upload avatar or banner
+      tags:
+      - account
+  /account/password:
+    put:
+      consumes:
+      - application/json
+      description: 'Changes the current user''s password: verifies the current password,
+        enforces the password policy on the new one, rehashes, and revokes the user''s
+        other sessions (the current device stays signed in). Requires an authenticated
+        session.'
+      parameters:
+      - description: Current and new password
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_account.changePasswordRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Change password
+      tags:
+      - account
+  /account/preferences:
+    patch:
+      consumes:
+      - application/json
+      description: Updates the current user's theme (dark|light|system), language
+        (ru|en), and login-notification toggle. Persisted server-side so they sync
+        across devices. Requires an authenticated session.
+      parameters:
+      - description: Preferences
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_account.updatePreferencesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_account.userEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Update preferences
+      tags:
+      - account
+  /account/sessions:
+    delete:
+      description: Revokes all of the current user's sessions except the request's
+        own (so the current device stays signed in). Requires an authenticated session.
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Revoke other sessions
+      tags:
+      - account
+    get:
+      description: Returns the current user's active sessions (id, user agent, ip,
+        created/expires timestamps), flagging the request's own session as current.
+        Requires an authenticated session.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_account.sessionsResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: List active sessions
+      tags:
+      - account
+  /account/sessions/{id}:
+    delete:
+      description: Revokes one of the current user's sessions by its id (scoped to
+        the user). Returns 404 if the session does not exist or belongs to another
+        account. Requires an authenticated session.
+      parameters:
+      - description: Session id (sha256 hex)
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Revoke a session
+      tags:
+      - account
+  /admin/audit:
+    get:
+      description: Returns audit entries newest-first, with optional actor/action/time-range
+        filters and pagination. Requires an admin/owner session.
+      parameters:
+      - description: 'filter by actor: an exact actor id (uuid) or a case-insensitive
+          actor-label substring'
+        in: query
+        name: actor
+        type: string
+      - description: filter by action (e.g. auth.login.ok)
+        in: query
+        name: action
+        type: string
+      - description: filter by target type (e.g. user, client, session)
+        in: query
+        name: targetType
+        type: string
+      - description: filter by target id (the affected entity's id)
+        in: query
+        name: targetId
+        type: string
+      - description: lower time bound (RFC3339, inclusive)
+        in: query
+        name: from
+        type: string
+      - description: upper time bound (RFC3339, exclusive)
+        in: query
+        name: to
+        type: string
+      - description: 1-based page number
+        in: query
+        name: page
+        type: integer
+      - description: page size (max 200)
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_admin.auditResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Query the audit log (Journal)
+      tags:
+      - admin-console
+  /admin/clients:
+    get:
+      description: Lists the registered relying-party clients. Secrets are never returned.
+        Requires the X-Admin-Key header.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_adminapi.listClientsResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - AdminKey: []
+      summary: List OAuth2 clients
+      tags:
+      - admin
+    post:
+      consumes:
+      - application/json
+      description: Creates a relying-party client in Hydra. Returns the generated
+        clientId, plus a clientSecret for confidential clients (shown once). Requires
+        the X-Admin-Key header.
+      parameters:
+      - description: Client to register
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_adminapi.registerClientRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_adminapi.registerClientResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - AdminKey: []
+      summary: Register an OAuth2 client
+      tags:
+      - admin
+  /admin/clients/{id}:
+    delete:
+      description: Removes a relying-party client from Hydra. Subsequent authorization
+        requests for that clientId are rejected. Idempotent. Requires the X-Admin-Key
+        header.
+      parameters:
+      - description: Client id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - AdminKey: []
+      summary: Delete an OAuth2 client
+      tags:
+      - admin
+  /admin/overview:
+    get:
+      description: Returns total accounts, active-today, new-this-week, registered
+        services count, a 30-day daily sign-up series, recent sign-ups, and a recent
+        activity feed. Requires an admin/owner session.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_admin.overviewResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Admin overview metrics
+      tags:
+      - admin-console
+  /admin/services:
+    get:
+      description: Lists the registered relying-party clients with id, name, type
+        (public/confidential), redirect URIs, scopes, and grant/response types. Secrets
+        are never returned. Requires an admin/owner session.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_admin.servicesListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: List services (OAuth clients)
+      tags:
+      - admin-console
+    post:
+      consumes:
+      - application/json
+      description: Registers a relying-party client. Returns the generated clientId,
+        plus a clientSecret for confidential clients shown EXACTLY ONCE (never re-served).
+        Invalid redirect URIs (non-absolute or containing a fragment) are rejected.
+        Audited. Requires an admin/owner session.
+      parameters:
+      - description: Service to create
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/cotton-id_internal_adminapi.RegisterClientRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_admin.createServiceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Create a service (OAuth client)
+      tags:
+      - admin-console
+  /admin/services/{id}:
+    delete:
+      description: Removes a relying-party client. Subsequent authorization requests
+        for that clientId are rejected. Idempotent. Audited. Requires an admin/owner
+        session.
+      parameters:
+      - description: client id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Delete a service (OAuth client)
+      tags:
+      - admin-console
+    get:
+      description: Returns a single relying-party client's id, name, type, redirect
+        URIs, scopes, and grant/response types. The secret is never returned (shown
+        only once on create). Requires an admin/owner session.
+      parameters:
+      - description: client id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_admin.serviceDetailResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Service detail
+      tags:
+      - admin-console
+    patch:
+      consumes:
+      - application/json
+      description: Updates a relying-party client's name, redirect URIs, scopes, and/or
+        grant/response types. Omitted fields are left unchanged. Invalid redirect
+        URIs are rejected. A public↔confidential type change is rejected (clientType,
+        if sent, must match the existing type). Audited. Requires an admin/owner session.
+      parameters:
+      - description: client id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: fields to change
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_admin.updateServiceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_admin.serviceDetailResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Edit a service (OAuth client)
+      tags:
+      - admin-console
+  /admin/services/{id}/consents:
+    delete:
+      description: 'Revokes the client''s consent grants so its users must consent
+        again on next authorization. BEST-EFFORT: Hydra v2.2.0 has no client-only
+        revoke, so this revokes per subject across the IdP''s subjects (capped); complete=false
+        means some subjects beyond the cap were not processed. Audited. Requires an
+        admin/owner session.'
+      parameters:
+      - description: client id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_admin.revokeServiceConsentsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Revoke a service's consents (best-effort)
+      tags:
+      - admin-console
+    get:
+      description: 'Returns the number of users who have an active consent grant for
+        the client. BEST-EFFORT: Hydra v2.2.0 exposes no per-client consent query,
+        so the count is derived by scanning the IdP''s subjects (capped); complete=false
+        means the count is a lower bound. Requires an admin/owner session.'
+      parameters:
+      - description: client id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_admin.serviceConsentsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Service consent usage (best-effort)
+      tags:
+      - admin-console
+  /admin/users:
+    get:
+      description: Lists users with a case-insensitive search over username/displayName/email,
+        optional status/role filters, and offset pagination, including each user's
+        connected-services count. Requires an admin/owner session.
+      parameters:
+      - description: case-insensitive search term
+        in: query
+        name: query
+        type: string
+      - description: filter by status
+        enum:
+        - active
+        - invited
+        - suspended
+        in: query
+        name: status
+        type: string
+      - description: filter by role
+        enum:
+        - user
+        - admin
+        - owner
+        in: query
+        name: role
+        type: string
+      - description: 1-based page number
+        in: query
+        name: page
+        type: integer
+      - description: page size (max 100)
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_admin.usersResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: List users
+      tags:
+      - admin-console
+  /admin/users/{id}:
+    delete:
+      description: Permanently deletes a user and cascades their sessions/passkeys/social
+        identities, and best-effort revokes their Hydra grants. OWNER-ONLY. A user
+        cannot delete themselves and the last owner cannot be deleted. Audited.
+      parameters:
+      - description: user id (uuid)
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Delete a user
+      tags:
+      - admin-console
+    get:
+      description: Returns a user's profile, active sessions, recent audit activity
+        (events targeting them), and connected-services count. Requires an admin/owner
+        session.
+      parameters:
+      - description: user id (uuid)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_admin.userDetailResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: User detail
+      tags:
+      - admin-console
+  /admin/users/{id}/message:
+    post:
+      consumes:
+      - application/json
+      description: 'Sends an admin-composed email (optional subject, required body)
+        to the target user''s address via the configured mailer. Delivery is best-effort:
+        a mailer failure is logged but the action still succeeds and is audited. Requires
+        an admin/owner session.'
+      parameters:
+      - description: user id (uuid)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: subject (optional) and body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_admin.messageUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_admin.messageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Message a user
+      tags:
+      - admin-console
+  /admin/users/{id}/reactivate:
+    post:
+      description: Sets a suspended user's status back to active. Audited.
+      parameters:
+      - description: user id (uuid)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_admin.userEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Reactivate a user
+      tags:
+      - admin-console
+  /admin/users/{id}/reset-password:
+    post:
+      description: Issues a single-use password-reset token for the user and (stub-)emails
+        the link. Audited.
+      parameters:
+      - description: user id (uuid)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_admin.messageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Force a password reset
+      tags:
+      - admin-console
+  /admin/users/{id}/role:
+    patch:
+      consumes:
+      - application/json
+      description: Grants or revokes a role (user/admin/owner). OWNER-ONLY. The last
+        owner cannot be demoted and a user cannot change their own role. Audited.
+      parameters:
+      - description: user id (uuid)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: new role
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_admin.changeRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_admin.userEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Change a user's role
+      tags:
+      - admin-console
+  /admin/users/{id}/suspend:
+    post:
+      description: Sets the user's status to suspended and revokes all their sessions.
+        A user cannot suspend themselves, and an admin cannot suspend an owner (owner
+        privilege required to act on an owner). Audited.
+      parameters:
+      - description: user id (uuid)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_admin.userEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Suspend a user
+      tags:
+      - admin-console
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates by email and password and establishes a session.
+      parameters:
+      - description: Login payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_auth.loginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_auth.userEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      summary: Log in
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      description: Revokes the current session and clears the session cookie.
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      summary: Log out
+      tags:
+      - auth
+  /auth/passkey/login/begin:
+    post:
+      consumes:
+      - application/json
+      description: Returns WebAuthn CredentialRequestOptions and sets the cid_wa ceremony
+        cookie. When an email is supplied the options carry an allow-list of that
+        account's credentials; when omitted a discoverable (usernameless) ceremony
+        is issued. An optional loginChallenge is carried to continue an in-progress
+        OIDC login. Pre-auth.
+      parameters:
+      - description: Optional email (allow-list) and loginChallenge
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/internal_passkey.loginBeginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/protocol.CredentialAssertion'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Begin passkey login
+      tags:
+      - passkeys
+  /auth/passkey/login/finish:
+    post:
+      consumes:
+      - application/json
+      description: Verifies the assertion against the cid_wa ceremony cookie and the
+        configured relying party, rejects a non-increasing sign counter as a possible
+        cloned authenticator, resolves the account, refuses non-active accounts, establishes
+        a cotton-id session (same cookie as password login), and either accepts the
+        carried Hydra login challenge (returning {redirectTo}) or returns {user}.
+        Pre-auth.
+      parameters:
+      - description: Assertion response
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_passkey.loginFinishRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_passkey.loginFinishResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Finish passkey login
+      tags:
+      - passkeys
+  /auth/password/forgot:
+    post:
+      consumes:
+      - application/json
+      description: Always responds 202 with a generic message; never reveals whether
+        the email is registered.
+      parameters:
+      - description: Email to reset
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_auth.forgotRequest'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/internal_auth.messageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      summary: Request a password reset
+      tags:
+      - auth
+  /auth/password/reset:
+    post:
+      consumes:
+      - application/json
+      description: Sets a new password using a single-use, time-limited reset token;
+        invalidates existing sessions.
+      parameters:
+      - description: Reset payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_auth.resetRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      summary: Reset a password
+      tags:
+      - auth
+  /auth/session:
+    get:
+      description: Returns the authenticated user for the current session, or 401.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_auth.userEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      summary: Current session
+      tags:
+      - auth
+  /auth/signup:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new account with display name, username, email, and password,
+        then establishes a session.
+      parameters:
+      - description: Signup payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_auth.signupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_auth.userEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      summary: Create an account
+      tags:
+      - auth
+  /auth/social/{provider}/callback:
+    get:
+      description: Validates the OAuth state cookie, exchanges the authorization code,
+        resolves (or creates/links) the cotton-id account by verified email, establishes
+        a session, then continues the OIDC login challenge or redirects to the SPA.
+      parameters:
+      - description: Social provider
+        enum:
+        - google
+        - github
+        - vk
+        - yandex
+        in: path
+        name: provider
+        required: true
+        type: string
+      - description: Authorization code from the provider
+        in: query
+        name: code
+        required: true
+        type: string
+      - description: Anti-CSRF state echoed by the provider
+        in: query
+        name: state
+        required: true
+        type: string
+      responses:
+        "302":
+          description: Redirect back into the OIDC flow or to the SPA
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      summary: Social login callback
+      tags:
+      - social
+  /auth/social/{provider}/start:
+    get:
+      description: Redirects the browser to the chosen provider's authorization endpoint.
+        A short-lived signed cookie carries the anti-CSRF state, the PKCE verifier
+        (where supported), and any in-progress login_challenge.
+      parameters:
+      - description: Social provider
+        enum:
+        - google
+        - github
+        - vk
+        - yandex
+        in: path
+        name: provider
+        required: true
+        type: string
+      - description: In-progress Hydra login challenge to continue after auth
+        in: query
+        name: login_challenge
+        type: string
+      responses:
+        "302":
+          description: Redirect to the provider authorization endpoint
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      summary: Start social login
+      tags:
+      - social
+  /auth/social/providers:
+    get:
+      description: Returns the social providers that have credentials configured,
+        so the SPA renders only usable buttons.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_social.providersResponse'
+      summary: List enabled social providers
+      tags:
+      - social
+  /csrf:
+    get:
+      description: Sets the cid_csrf cookie and returns the matching token for the
+        double-submit header.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_auth.csrfResponse'
+      summary: Issue a CSRF token
+      tags:
+      - auth
+  /healthz:
+    get:
+      description: Reports whether the backend can reach its critical dependencies.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_httpx.healthResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/internal_httpx.healthResponse'
+      summary: Liveness/readiness probe
+      tags:
+      - ops
+  /oauth/consent:
+    get:
+      description: Returns the requesting client, the requested scopes, and the current
+        user so the SPA can render the consent screen.
+      parameters:
+      - description: Hydra consent challenge
+        in: query
+        name: consent_challenge
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_oidc.consentDetailsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      summary: Get OIDC consent details
+      tags:
+      - oidc
+  /oauth/consent/accept:
+    post:
+      consumes:
+      - application/json
+      description: Grants consent for the chosen scopes, attaches the user's identity
+        claims, optionally remembers the decision, and returns the URL to navigate
+        back to Hydra.
+      parameters:
+      - description: Consent decision
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_oidc.consentAcceptRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_oidc.redirectResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Accept an OIDC consent challenge
+      tags:
+      - oidc
+  /oauth/consent/reject:
+    post:
+      consumes:
+      - application/json
+      description: Denies the consent request; the relying party receives an access_denied
+        error. Returns the URL to navigate back to Hydra.
+      parameters:
+      - description: Consent challenge to reject
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_oidc.consentRejectRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_oidc.redirectResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Reject an OIDC consent challenge
+      tags:
+      - oidc
+  /oauth/login:
+    get:
+      description: Hydra redirects the browser here with a login_challenge. If the
+        user already has a valid cotton-id session (or Hydra allows skip), the challenge
+        is accepted immediately and the browser is sent back to Hydra. Otherwise the
+        browser is redirected to the SPA sign-in page.
+      parameters:
+      - description: Hydra login challenge
+        in: query
+        name: login_challenge
+        required: true
+        type: string
+      responses:
+        "302":
+          description: Redirect to Hydra (accepted) or to the SPA sign-in page
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      summary: OIDC login entry (Hydra redirect target)
+      tags:
+      - oidc
+  /oauth/login/accept:
+    post:
+      consumes:
+      - application/json
+      description: After the SPA has logged the user in, accepts the Hydra login challenge
+        with the session's stable subject and returns the URL to navigate back to
+        Hydra.
+      parameters:
+      - description: Login challenge to accept
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_oidc.loginAcceptRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_oidc.redirectResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Accept an OIDC login challenge
+      tags:
+      - oidc
+  /oauth/login/reject:
+    post:
+      consumes:
+      - application/json
+      description: Cancels an in-progress sign-in, rejecting the Hydra login challenge
+        with access_denied and returning the URL to send the user back to the relying
+        party.
+      parameters:
+      - description: Login challenge to reject
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_oidc.loginRejectRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_oidc.redirectResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Reject an OIDC login challenge
+      tags:
+      - oidc
+  /oauth/logout:
+    get:
+      description: Accepts Hydra's logout challenge, clears the cotton-id session,
+        and redirects to the post-logout URL.
+      parameters:
+      - description: Hydra logout challenge
+        in: query
+        name: logout_challenge
+        required: true
+        type: string
+      responses:
+        "302":
+          description: Redirect to Hydra post-logout URL
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      summary: OIDC front-channel logout
+      tags:
+      - oidc
+  /passkeys:
+    get:
+      description: Returns the current user's registered passkeys (id, nickname, created/last-used
+        timestamps, transports). Requires an authenticated session.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_passkey.listResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: List passkeys
+      tags:
+      - passkeys
+  /passkeys/{id}:
+    delete:
+      description: Removes one of the current user's passkeys by its id. Returns 404
+        if the passkey does not exist or belongs to another account. Requires an authenticated
+        session.
+      parameters:
+      - description: Passkey id (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Delete a passkey
+      tags:
+      - passkeys
+  /passkeys/register/begin:
+    post:
+      description: Returns WebAuthn CredentialCreationOptions for the current user,
+        excluding their already-registered credentials, and sets the short-lived signed
+        cid_wa ceremony cookie. Requires an authenticated session.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/protocol.CredentialCreation'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Begin passkey registration
+      tags:
+      - passkeys
+  /passkeys/register/finish:
+    post:
+      consumes:
+      - application/json
+      description: Verifies the authenticator's attestation against the cid_wa ceremony
+        cookie and the configured relying party, stores the credential with the supplied
+        nickname, and clears the cookie. Requires an authenticated session.
+      parameters:
+      - description: Attestation response plus nickname
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_passkey.registerFinishRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_passkey.credentialEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/cotton-id_internal_httpx.Problem'
+      security:
+      - CSRF: []
+      summary: Finish passkey registration
+      tags:
+      - passkeys
+schemes:
+- http
+- https
+securityDefinitions:
+  AdminKey:
+    in: header
+    name: X-Admin-Key
+    type: apiKey
+  CSRF:
+    in: header
+    name: X-CSRF-Token
+    type: apiKey
+swagger: "2.0"

@@ -1,0 +1,24 @@
+version: '3.8'
+
+x-postgres-sunrise-env-vars: &postgres-sunrise-env-vars
+  "STORE_USE_ADAPTER": "postgres"
+
+services:
+  db:
+    image: postgres:15.2
+    container_name: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+
+  sunrise-0:
+    environment:
+      << : *postgres-sunrise-env-vars
+      "WAIT_FOR": "postgres:5432"
+
+  sunrise-1:
+    environment:
+      << : *postgres-sunrise-env-vars
+
+  sunrise-2:
+    environment:
+      << : *postgres-sunrise-env-vars

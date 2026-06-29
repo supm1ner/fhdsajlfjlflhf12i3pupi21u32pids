@@ -1,0 +1,33 @@
+# Keep the frontend build context lean and secret-free.
+# `npm ci` reinstalls node_modules inside the builder, and Vite re-emits dist,
+# so neither should be copied from the host (faster, deterministic builds).
+
+# Dependencies / build output (regenerated in-image)
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# VCS / tooling
+.git
+.gitignore
+.github
+
+# Logs
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Secrets / local env (Vite only inlines VITE_* at build; keep .env out anyway)
+.env
+.env.*
+
+# The Dockerfile / nginx config copied explicitly where needed.
+Dockerfile
+.dockerignore

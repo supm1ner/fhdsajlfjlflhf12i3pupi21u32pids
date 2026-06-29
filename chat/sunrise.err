@@ -1,0 +1,16 @@
+I2026/06/28 18:30:05 Server v0.25:C:\Users\supminer\Documents\projects\chat\sunrise.exe:undef; pid 29088; 12 process(es)
+I2026/06/28 18:30:05 Using config from 'C:\Users\supminer\Documents\projects\chat\server\sunrise.conf'
+I2026/06/28 18:30:05 stats: variables exposed at '/debug/vars'
+I2026/06/28 18:30:05 Cluster: running as a standalone server.
+I2026/06/28 18:30:05 DB adapter postgres 116
+I2026/06/28 18:30:05 Restricted tags: ['tel' 'basic' 'email']
+I2026/06/28 18:30:05 Alias tag: alias
+I2026/06/28 18:30:05 Stale account GC started with period 1h8m55s, block size 10, min account age 30 hours
+I2026/06/28 18:30:05 Push handlers configured: []
+I2026/06/28 18:30:05 Video calls disabled
+I2026/06/28 18:30:05 plugins: no active plugins found
+I2026/06/28 18:30:05 gRPC/1.73.0 server is registered at [:16060]
+I2026/06/28 18:30:05 Serving static content from 'C:\Users\supminer\Documents\projects\chat\static' at '/'
+I2026/06/28 18:30:05 API served from root URL path '/'
+I2026/06/28 18:30:05 Large media handling enabled fs
+I2026/06/28 18:30:05 Listening for client HTTP connections on [:6060]

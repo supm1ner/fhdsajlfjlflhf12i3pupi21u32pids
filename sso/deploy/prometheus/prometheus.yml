@@ -1,0 +1,37 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Prometheus scrape config for cotton-id (optional `observability` profile).
+#
+# Scrapes the backend's /metrics endpoint (contract §8, design.md D8): Go runtime
+# metrics plus app counters/histograms (http_request_duration_seconds by route &
+# status, login success/failure, signups, consent grants, Hydra admin latency).
+# ─────────────────────────────────────────────────────────────────────────────
+
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: cotton-id
+
+# Alerting rules — error-rate, auth-failure spike, and target-down conditions.
+# Evaluated every `evaluation_interval`; rules live alongside this file and are
+# mounted read-only into the prometheus container (see docker-compose.yml).
+rule_files:
+  - alerts.yml
+
+scrape_configs:
+  # The cotton-id backend. `backend` is the compose service name, resolved on
+  # the internal Docker network; 8080 per contract §6.
+  - job_name: cotton-id-backend
+    metrics_path: /metrics
+    scheme: http
+    static_configs:
+      - targets:
+          - backend:8080
+        labels:
+          service: cotton-id-backend
+
+  # Prometheus scraping itself — handy liveness signal for the monitor.
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - localhost:9090

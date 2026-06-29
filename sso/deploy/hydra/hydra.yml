@@ -1,0 +1,110 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Ory Hydra v2.2.0 configuration for cotton-id
+#
+# Hydra owns the OAuth2/OIDC protocol surface (authorize, token, JWKS, PKCE,
+# refresh rotation). It has no user store and no UI: it redirects the browser to
+# cotton-id's login/consent/logout endpoints and cotton-id calls Hydra's admin
+# API to accept/reject (design.md D1).
+#
+# Values that are environment-specific or secret are supplied via env vars at
+# runtime (Ory's env override is UPPER_SNAKE with `_` between nesting levels,
+# e.g. `urls.self.issuer` → URLS_SELF_ISSUER, `dsn` → DSN). See the compose file
+# and deploy/.env.example. Anything literal here is a safe non-secret default.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Data source name for Hydra's OWN database. cotton-id and Hydra share one
+# Postgres instance but use SEPARATE databases (contract §4): Hydra → `hydra` DB.
+# Overridden by the DSN env var in compose; this literal is the dev default.
+dsn: postgres://cotton:cotton@postgres:5432/hydra?sslmode=disable&max_conns=8&max_idle_conns=4
+
+serve:
+  public:
+    # OIDC issuer / authorize / token / JWKS — exposed to relying parties.
+    port: 4444
+    host: 0.0.0.0
+    cors:
+      enabled: true
+      allowed_origins:
+        # Dev SPA origin; tighten per deployment. Overridden by
+        # SERVE_PUBLIC_CORS_ALLOWED_ORIGINS in production.
+        - http://localhost:3000
+        - http://localhost:8080
+      allowed_methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+      allowed_headers:
+        - Authorization
+        - Content-Type
+      exposed_headers:
+        - Content-Type
+      allow_credentials: true
+  admin:
+    # Privileged: login/consent accept/reject, client CRUD. INTERNAL ONLY —
+    # never published to the host beyond the dev convenience mapping, and never
+    # reachable from the public network in production.
+    port: 4445
+    host: 0.0.0.0
+
+urls:
+  self:
+    # The public issuer URL. MUST match what relying parties and cotton-id use
+    # to reach Hydra (contract §5 HYDRA_PUBLIC_URL). Overridden by
+    # URLS_SELF_ISSUER in compose.
+    issuer: http://localhost:4444
+    public: http://localhost:4444
+  # User-interaction endpoints delegated to the cotton-id backend. Hydra 302s
+  # the browser here with login_challenge / consent_challenge / logout_challenge
+  # (contract §3 handshake). These point at the backend's PUBLIC_BASE_URL so the
+  # browser can reach them; overridden by URLS_LOGIN / URLS_CONSENT / URLS_LOGOUT.
+  login:   http://localhost:8080/oauth/login
+  consent: http://localhost:8080/oauth/consent
+  logout:  http://localhost:8080/oauth/logout
+  # Where to send the browser after a successful front-channel logout.
+  post_logout_redirect: http://localhost:3000/
+
+ttl:
+  # Short-lived access/ID tokens; longer-lived refresh; bounded login/consent
+  # request lifetimes. Tune per security posture.
+  access_token:        1h
+  refresh_token:       720h   # 30 days
+  id_token:            1h
+  auth_code:           10m
+  login_consent_request: 1h
+
+oauth2:
+  # Defense-in-depth: reject token requests whose subject/claims look malformed.
+  expose_internal_errors: false
+  pkce:
+    # Enforce PKCE for public clients (spec: "PKCE is required for public
+    # clients"). Confidential clients may still use it.
+    enforced_for_public_clients: true
+
+oidc:
+  subject_identifiers:
+    supported_types:
+      - public
+    pairwise:
+      # Salt only used if a client opts into pairwise subjects; harmless default.
+      # Overridden by OIDC_SUBJECT_IDENTIFIERS_PAIRWISE_SALT in production.
+      salt: cotton-id-dev-pairwise-salt
+
+# Secrets: provided EXCLUSIVELY via env in compose (SECRETS_SYSTEM,
+# SECRETS_COOKIE). They are intentionally NOT written here so no secret value
+# lives in a committed file (contract §8). Hydra requires SECRETS_SYSTEM to be a
+# 16+ char value; rotation is supported by listing multiple values (the first is
+# the active signing key).
+
+log:
+  level: info
+  format: json
+  leak_sensitive_values: false
+
+# Dev mode — REQUIRED for the local HTTP setup: Hydra v2 refuses to start with an
+# http:// issuer unless dev mode is on. Dev mode also relaxes PKCE enforcement for
+# public clients, so the spec guarantee "PKCE is required for public clients"
+# (oauth2.pkce.enforced_for_public_clients, above) only takes effect in a
+# PRODUCTION deployment with a real https issuer and dev mode OFF. See
+# docs/SECURITY.md → "Known gaps". Never enable dev mode on a public network.
+dev: true
