@@ -45,6 +45,9 @@ var joseSignatureAlgorithms = []jose.SignatureAlgorithm{
 type authenticator struct {
 	// Logical name of this authenticator.
 	name string
+	// disabled is true when the scheme is registered but has no issuer configured (SSO off).
+	// In that state every auth operation returns ErrUnsupported instead of panicking.
+	disabled bool
 	// Expected token issuer, e.g. "http://localhost:4444/". Must match the "iss" claim exactly.
 	issuer string
 	// Base URL used to fetch the discovery doc + JWKS. Defaults to issuer. Set this when the
@@ -126,8 +129,12 @@ func (a *authenticator) Init(jsonconf json.RawMessage, name string) error {
 		return errors.New("auth_oidc: failed to parse config: " + err.Error() + "(" + string(jsonconf) + ")")
 	}
 
+	// No issuer → SSO is not configured for this deployment. Register the scheme as
+	// disabled rather than failing startup, so one config works with or without SSO.
 	if config.Issuer == "" {
-		return errors.New("auth_oidc: 'issuer' is required")
+		a.name = name
+		a.disabled = true
+		return nil
 	}
 
 	audiences := config.Audiences
@@ -287,6 +294,9 @@ func (a *authenticator) audienceOK(aud jwt.ClaimStrings) bool {
 
 // validate parses and validates the ID token, returning its claims.
 func (a *authenticator) validate(secret []byte) (*claims, error) {
+	if a.disabled || a.parser == nil {
+		return nil, types.ErrUnsupported
+	}
 	tokenStr := strings.TrimSpace(string(secret))
 	if tokenStr == "" {
 		return nil, types.ErrMalformed

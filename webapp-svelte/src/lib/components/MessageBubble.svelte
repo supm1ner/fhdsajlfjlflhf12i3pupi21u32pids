@@ -2,7 +2,9 @@
   import { fileUrl, Drafty } from '../tinode.js';
   import DraftyText from './DraftyText.svelte';
 
-  let { msg, isOwn = false, senderName = '' } = $props();
+  let { msg, isOwn = false, senderName = '', status = '' } = $props();
+  // Delivery ticks: ✓ sent, ✓✓ received, ✓✓ (accent) read.
+  let tick = $derived(status === 'read' ? '✓✓' : status === 'received' ? '✓✓' : status === 'sent' ? '✓' : '');
 
   // entitySrc resolves a Drafty entity's media source: server ref (authorized) or inline base64.
   function entitySrc(data) {
@@ -102,7 +104,10 @@
       {:else if text && kind !== 'call'}
         <div class="text">{text}</div>
       {/if}
-      <div class="time-label">{time}</div>
+      <div class="time-label">
+        {time}
+        {#if isOwn && tick}<span class="ticks" class:read={status === 'read'}>{tick}</span>{/if}
+      </div>
     </div>
   </div>
 </div>
@@ -121,7 +126,10 @@
   .own .bubble .time-label { color: rgba(255, 255, 255, 0.7); }
   .text { font-size: 14px; line-height: 1.45; color: var(--text-primary); word-wrap: break-word; white-space: pre-wrap; }
   .bubble.media .text { padding: 4px 8px 0; }
-  .time-label { font-size: 11px; color: var(--text-tertiary); text-align: right; margin-top: 4px; }
+  .time-label { font-size: 11px; color: var(--text-tertiary); text-align: right; margin-top: 4px; display: flex; gap: 4px; justify-content: flex-end; align-items: center; }
+  .ticks { font-size: 11px; opacity: 0.8; }
+  .own .bubble .ticks { color: rgba(255, 255, 255, 0.8); }
+  .own .bubble .ticks.read { color: #bfe3ff; opacity: 1; }
   .media-img { max-width: 320px; max-height: 360px; border-radius: var(--radius-sm); display: block; cursor: pointer; }
   .media-video { max-width: 320px; border-radius: var(--radius-sm); display: block; }
   .video-note { width: 220px; height: 220px; border-radius: 50%; object-fit: cover; background: #000; }

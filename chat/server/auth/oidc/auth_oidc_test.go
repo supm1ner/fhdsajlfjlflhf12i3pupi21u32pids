@@ -194,11 +194,15 @@ func TestValidate_Malformed(t *testing.T) {
 	}
 }
 
-func TestInit_RequiresIssuer(t *testing.T) {
+func TestInit_DisabledWithoutIssuer(t *testing.T) {
 	a := &authenticator{}
 	conf, _ := json.Marshal(map[string]any{"client_id": "x"})
-	if err := a.Init(conf, "oidc"); err == nil {
-		t.Fatal("Init succeeded without an issuer")
+	if err := a.Init(conf, "oidc"); err != nil {
+		t.Fatalf("Init should succeed (disabled) without an issuer, got: %v", err)
+	}
+	// A disabled scheme rejects auth rather than panicking on the nil parser.
+	if _, _, err := a.Authenticate([]byte("anything"), ""); err == nil {
+		t.Fatal("disabled scheme should reject Authenticate")
 	}
 }
 

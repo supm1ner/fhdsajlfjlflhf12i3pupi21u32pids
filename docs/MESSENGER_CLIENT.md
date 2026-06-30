@@ -66,6 +66,9 @@ Backend host/API key: `VITE_HOST`, `VITE_API_KEY`, `VITE_TLS`. SSO: `VITE_OIDC_I
   recursive `DraftyText` renderer (link schemes restricted to http(s)/mailto/tel).
 - **Reconnect** — the SDK auto-reconnects the socket; the client re-logins with the saved token and
   resumes `me` on each reconnect, and surfaces an online/connecting status.
+- **History pagination** — older messages load when you scroll to the top (viewport stays stable).
+- **Delivery ticks** — own messages show ✓ (sent) / ✓✓ (received) / ✓✓ accent (read), driven by the
+  peer's recv/read receipts; the feed only auto-scrolls when you're already at the bottom.
 
 ## Known limitations / next
 

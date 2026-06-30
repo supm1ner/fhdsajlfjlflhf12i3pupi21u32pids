@@ -1,0 +1,28 @@
+# Single-port (443) edge for the messenger: web + chat + LiveKit signaling on ONE domain.
+# Set CADDY_DOMAIN in .env (defaults to localhost; for a real domain Caddy auto-provisions TLS).
+#
+# Behind this, only 443 (TCP) needs to be open for the app — PLUS the LiveKit media ports
+# 7881/TCP and 7882/UDP, which are NOT HTTP and cannot be reverse-proxied here.
+
+{$CADDY_DOMAIN:localhost} {
+	encode zstd gzip
+
+	# LiveKit SFU signaling (/rtc) + API (/twirp). Must precede the SPA catch-all.
+	@livekit path /rtc /rtc/* /twirp/*
+	reverse_proxy @livekit livekit:7880
+
+	# Sunrise messenger backend: WS chat (/v0/channels), files (/v0/file), token (/v0/livekit/token).
+	reverse_proxy /v0/* sunrise:6060
+
+	# Web client SPA (everything else).
+	reverse_proxy web:80
+}
+
+# ── Optional: SSO on subdomains (uncomment + point DNS). Each is HTTP, so they share :443. ──
+# id.{$CADDY_DOMAIN} {
+# 	reverse_proxy frontend:80
+# }
+# auth.{$CADDY_DOMAIN} {
+# 	reverse_proxy hydra:4444
+# }
+# Then set PUBLIC_BASE_URL/HYDRA_PUBLIC_URL/VITE_OIDC_* to the https subdomains and re-run register-rp.sh.

@@ -192,9 +192,32 @@ services:
       - "${WEB_PORT:-8088}:80"
     networks: [internal]
 
+  # Optional single-port edge (profile: edge). Fronts web + chat + LiveKit signaling on :443.
+  # Run with: docker compose --profile edge up -d --build
+  caddy:
+    image: caddy:2-alpine
+    profiles: [edge]
+    <<: *restart_policy
+    environment:
+      CADDY_DOMAIN: ${CADDY_DOMAIN:-localhost}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - web
+      - sunrise
+      - livekit
+    networks: [internal]
+
 volumes:
   pgdata:
   sunrise_uploads:
+  caddy_data:
+  caddy_config:
 
 networks:
   internal:

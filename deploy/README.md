@@ -55,6 +55,26 @@ Open the messenger at **http://localhost:8088**.
 - `register-rp.sh` registers `sunrise-messenger` as a public PKCE client with redirect
   `http://localhost:8088/`.
 
+## Run without SSO (messenger only)
+Login by login/password, no Hydra/cotton-id. Leave `SUNRISE_OIDC_ISSUER=` empty (the `oidc`
+scheme auto-disables) and start only the messenger services:
+
+```bash
+docker compose up -d --build postgres sunrise livekit web
+```
+Public ports then: **8088, 6060, 7880, 7881 (TCP) + 7882 (UDP)** — no 3000/4444/4445/8080.
+
+## Single port (one 443) with Caddy
+The `edge` profile adds Caddy, fronting web + chat + LiveKit signaling on **one domain / port 443**:
+
+```bash
+# set CADDY_DOMAIN in .env (a real domain gets auto-TLS)
+docker compose --profile edge up -d --build
+```
+Then only **443/TCP** is needed for the app, **plus LiveKit media `7881/TCP` + `7882/UDP`**
+(WebRTC media can't be HTTP-proxied). SSO services are HTTP too — expose them as subdomains on the
+same 443 (see commented blocks in `Caddyfile`).
+
 ## Production notes
 - Replace EVERY `dev-change-me*` secret in `.env` (`openssl rand -hex 32`).
 - Terminate TLS in front (Hydra needs https without `--dev`; WebRTC needs wss). Put a reverse proxy

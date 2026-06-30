@@ -28,6 +28,10 @@
   let showVideoNote = $state(false);
   let recordingVoice = $state(false);
   let voiceElapsed = $state(0);
+  let peerRead = $state(0);
+  let peerRecv = $state(0);
+  let loadingMore = $state(false);
+  let noMore = $state(false);
   let scroller;
   let fileInput;
   let imageInput;
@@ -47,12 +51,17 @@
     messages = [];
     loading = true;
     peerTyping = false;
+    peerRead = 0; peerRecv = 0; noMore = false; loadingMore = false;
 
     const topic = getClient().getTopic(name);
     topic.onData = (msg) => { if (msg) upsert(msg); };
-    topic.onPres = (pres) => {
-      if (pres?.what === 'kp') flashTyping();
+    const onReceipt = (m) => {
+      if (m?.what === 'kp') flashTyping();
+      else if (m?.what === 'read') { peerRead = Math.max(peerRead, m.seq || 0); peerRecv = Math.max(peerRecv, m.seq || 0); }
+      else if (m?.what === 'recv') peerRecv = Math.max(peerRecv, m.seq || 0);
     };
+    topic.onPres = onReceipt;
+    topic.onInfo = onReceipt;
 
     (async () => {
       try {
@@ -75,8 +84,41 @@
       cancelled = true;
       topic.onData = undefined;
       topic.onPres = undefined;
+      topic.onInfo = undefined;
     };
   });
+
+  // Load older messages when the user scrolls to the top (history pagination).
+  async function loadMore() {
+    if (loadingMore || noMore || messages.length === 0) return;
+    const topic = getClient().getTopic(topicName);
+    loadingMore = true;
+    const before = scroller ? scroller.scrollHeight : 0;
+    const prevCount = messages.length;
+    try {
+      await topic.getMeta(topic.startMetaQuery().withEarlierData(24).build());
+      collectExisting(topic);
+      if (messages.length === prevCount) noMore = true;
+      await tick();
+      if (scroller) scroller.scrollTop = scroller.scrollHeight - before; // keep the viewport stable
+    } catch {
+      noMore = true;
+    } finally {
+      loadingMore = false;
+    }
+  }
+
+  function onScroll() {
+    if (scroller && scroller.scrollTop < 60) loadMore();
+  }
+
+  // Delivery/read status for an own message: '' (other) | sent | received | read.
+  function statusOf(msg) {
+    if (msg.from !== myUID() || !msg.seq) return '';
+    if (peerRead >= msg.seq) return 'read';
+    if (peerRecv >= msg.seq) return 'received';
+    return 'sent';
+  }
 
   function collectExisting(topic) {
     const list = [];
@@ -96,11 +138,12 @@
 
   async function upsert(msg) {
     if (msg?.head?.mcall) return; // hide group-call mesh signaling from the feed
+    const atBottom = scroller ? (scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 120) : true;
     const next = messages.filter((m) => !(m.seq && msg.seq && m.seq === msg.seq));
     next.push(msg);
     messages = dedupe(next);
     if (msg.from && msg.from !== myUID()) getClient().getTopic(topicName)?.noteRead();
-    await scrollToBottom();
+    if (atBottom || msg.from === myUID()) await scrollToBottom();
   }
 
   function flashTyping() {
@@ -207,14 +250,15 @@
     </div>
   </header>
 
-  <div class="messages-area" bind:this={scroller}>
+  <div class="messages-area" bind:this={scroller} onscroll={onScroll}>
     {#if loading}
       <div class="loading">Loading…</div>
     {:else if messages.length === 0}
       <div class="empty-msg"><span>💬</span><p>No messages yet. Say hello!</p></div>
     {:else}
+      {#if loadingMore}<div class="load-more">Loading older…</div>{/if}
       {#each messages as msg (msg.seq || msg._key || msg.ts)}
-        <MessageBubble {msg} isOwn={msg.from === myUID()} />
+        <MessageBubble {msg} isOwn={msg.from === myUID()} status={statusOf(msg)} />
       {/each}
     {/if}
   </div>
@@ -262,6 +306,7 @@
   .hbtn:hover { background: var(--bg-glass-hover); }
   .messages-area { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 2px; }
   .loading, .empty-msg { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 8px; color: var(--text-secondary); font-size: 14px; }
+  .load-more { text-align: center; font-size: 12px; color: var(--text-tertiary); padding: 6px 0; }
   .empty-msg span { font-size: 36px; }
   .input-area { padding: 12px 16px; border-top: 1px solid var(--border-glass); flex-shrink: 0; }
   .input-row { display: flex; gap: 6px; align-items: center; }
