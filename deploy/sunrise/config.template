@@ -1,0 +1,117 @@
+{
+	"listen": ":6060",
+	"api_path": "/",
+	"cache_control": 39600,
+	"static_mount": "/",
+	"grpc_listen": ":16060",
+	"grpc_keepalive_enabled": true,
+	"api_key_salt": "$API_KEY_SALT",
+	"max_message_size": 4194304,
+	"max_subscriber_count": 128,
+	"max_tag_count": 16,
+	"expvar": "/stats/expvar/",
+	"server_status": "$SERVER_STATUS_PATH",
+	"use_x_forwarded_for": true,
+	"default_country_code": "$DEFAULT_COUNTRY_CODE",
+
+	"media": {
+		"use_handler": "$MEDIA_HANDLER",
+		"max_size": 33554432,
+		"gc_period": 60,
+		"gc_block_size": 100,
+		"handlers": {
+			"fs": {
+				"upload_dir": "uploads",
+				"cache_control": "max-age=86400",
+				"cors_origins": $FS_CORS_ORIGINS
+			}
+		}
+	},
+
+	"tls": {
+		"enabled": $TLS_ENABLED,
+		"http_redirect": ":80",
+		"strict_max_age": 604800,
+		"autocert": {
+			"cache": "/etc/letsencrypt/live/$TLS_DOMAIN_NAME",
+			"email": "$TLS_CONTACT_ADDRESS",
+			"domains": ["$TLS_DOMAIN_NAME"]
+		}
+	},
+
+	"auth_config": {
+		"logical_names": [],
+		"basic": {
+			"add_to_tags": true,
+			"min_login_length": 3,
+			"min_password_length": 6
+		},
+		"token": {
+			"expire_in": 1209600,
+			"serial_num": 1,
+			"key": "$AUTH_TOKEN_KEY"
+		},
+		"code": {
+			"expire_in": 900,
+			"max_retries": 3,
+			"code_length": 6
+		},
+		"oidc": {
+			"issuer": "$OIDC_ISSUER",
+			"discovery_issuer": "$OIDC_DISCOVERY_ISSUER",
+			"client_id": "$OIDC_CLIENT_ID",
+			"allow_new_accounts": true,
+			"add_to_tags": true,
+			"jwks_refresh": 3600,
+			"default_access": { "auth": "JRWPAS", "anon": "N" }
+		}
+	},
+
+	"store_config": {
+		"uid_key": "$UID_ENCRYPTION_KEY",
+		"max_results": 1024,
+		"use_adapter": "$STORE_USE_ADAPTER",
+		"adapters": {
+			"postgres": {
+				"database": "sunrise",
+				"dsn": "$POSTGRES_DSN"
+			}
+		}
+	},
+
+	"acc_validation": {
+		"email": {
+			"add_to_tags": true,
+			"required": [$EMAIL_VERIFICATION_REQUIRED],
+			"config": {
+				"host_url": "$SMTP_HOST_URL",
+				"smtp_server": "$SMTP_SERVER",
+				"smtp_port": "$SMTP_PORT",
+				"sender": "$SMTP_SENDER",
+				"login": "$SMTP_LOGIN",
+				"sender_password": "$SMTP_PASSWORD",
+				"auth_mechanism": "$SMTP_AUTH_MECHANISM",
+				"smtp_helo_host": "$SMTP_HELO_HOST",
+				"languages": ["en", "es", "fr", "ru", "vi", "zh"],
+				"validation_templ": "./templ/email-validation-{{.Language}}.templ",
+				"reset_secret_templ": "./templ/email-password-reset-{{.Language}}.templ",
+				"max_retries": 3,
+				"domains": [$SMTP_DOMAINS],
+				"debug_response": "$DEBUG_EMAIL_VERIFICATION_CODE"
+			}
+		}
+	},
+
+	"acc_gc_config": {
+		"enabled": $ACC_GC_ENABLED,
+		"gc_period": 3600,
+		"gc_block_size": 10,
+		"gc_min_account_age": 48
+	},
+
+	"webrtc": {
+		"enabled": $WEBRTC_ENABLED,
+		"call_establishment_timeout": 30,
+		"ice_servers_file": "$ICE_SERVERS_FILE"
+	}
+}

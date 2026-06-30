@@ -47,6 +47,10 @@ type authenticator struct {
 	name string
 	// Expected token issuer, e.g. "http://localhost:4444/". Must match the "iss" claim exactly.
 	issuer string
+	// Base URL used to fetch the discovery doc + JWKS. Defaults to issuer. Set this when the
+	// issuer (browser-facing) is not reachable from the server, e.g. "http://hydra:4444/" inside
+	// Docker while the public issuer is "http://localhost:4444/".
+	discoveryIssuer string
 	// Acceptable audiences. The token's "aud" must contain at least one of these.
 	audiences []string
 	// Allow creating a local account on first successful login.
@@ -99,6 +103,9 @@ func (a *authenticator) Init(jsonconf json.RawMessage, name string) error {
 		Issuer string `json:"issuer"`
 		// ClientID is the OAuth client id; used as the default expected audience.
 		ClientID string `json:"client_id"`
+		// DiscoveryIssuer optionally overrides the base URL for fetching discovery + JWKS
+		// (defaults to Issuer). Use when the public issuer isn't reachable from the server.
+		DiscoveryIssuer string `json:"discovery_issuer"`
 		// Audiences is an optional explicit list of acceptable audiences. Defaults to [ClientID].
 		Audiences []string `json:"audiences"`
 		// AllowNewAccounts permits creating a local account on first login.
@@ -138,6 +145,10 @@ func (a *authenticator) Init(jsonconf json.RawMessage, name string) error {
 
 	a.name = name
 	a.issuer = config.Issuer
+	a.discoveryIssuer = config.DiscoveryIssuer
+	if a.discoveryIssuer == "" {
+		a.discoveryIssuer = config.Issuer
+	}
 	a.audiences = audiences
 	a.allowNewAccounts = config.AllowNewAccounts
 	a.addToTags = config.AddToTags
@@ -161,7 +172,7 @@ func (a *authenticator) IsInitialized() bool {
 
 // discoveryURL returns the OIDC discovery document URL for the configured issuer.
 func (a *authenticator) discoveryURL() string {
-	return strings.TrimRight(a.issuer, "/") + "/.well-known/openid-configuration"
+	return strings.TrimRight(a.discoveryIssuer, "/") + "/.well-known/openid-configuration"
 }
 
 // refreshKeys fetches the JWKS from the IdP and rebuilds the key cache.

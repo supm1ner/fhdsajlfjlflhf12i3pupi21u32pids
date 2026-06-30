@@ -1,0 +1,201 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Sunrise — full stack, one command.
+#
+#   postgres   PostgreSQL 16; databases: cottonid, hydra, sunrise.
+#   hydra      Ory Hydra v2 OIDC engine (public 4444, admin 4445).
+#   backend    cotton-id SSO backend (:8080).
+#   frontend   cotton-id SPA (:3000) — login/consent UI.
+#   sunrise    Sunrise messenger server (:6060) — chat, calls, /v0/livekit/token.
+#   livekit    LiveKit SFU (:7880) — scalable group calls.
+#   web        Sunrise messenger web client (:8088).
+#
+# Usage:  cp .env.example .env  &&  edit secrets  &&  docker compose up -d --build
+#         then:  ./register-rp.sh   (registers the messenger OAuth client in Hydra)
+#
+# Secrets (POSTGRES_PASSWORD, ADMIN_API_KEY, HYDRA_*_SECRET, LIVEKIT_API_SECRET)
+# have NO default and come from .env — the stack fails fast without them.
+# ─────────────────────────────────────────────────────────────────────────────
+name: sunrise
+
+x-restart: &restart_policy
+  restart: unless-stopped
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    <<: *restart_policy
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cotton}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-cottonid}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cotton} -d ${POSTGRES_DB:-cottonid}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks: [internal]
+
+  hydra-migrate:
+    image: oryd/hydra:v2.2.0
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DSN: postgres://${POSTGRES_USER:-cotton}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/hydra?sslmode=disable&max_conns=8&max_idle_conns=4
+    command: migrate sql -e --yes
+    restart: "no"
+    networks: [internal]
+
+  hydra:
+    image: oryd/hydra:v2.2.0
+    <<: *restart_policy
+    depends_on:
+      postgres:
+        condition: service_healthy
+      hydra-migrate:
+        condition: service_completed_successfully
+    command: serve all --config /etc/config/hydra/hydra.yml --dev
+    environment:
+      DSN: postgres://${POSTGRES_USER:-cotton}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/hydra?sslmode=disable&max_conns=8&max_idle_conns=4
+      URLS_SELF_ISSUER: ${HYDRA_INTERNAL_URL:-http://hydra:4444}
+      URLS_SELF_PUBLIC: ${HYDRA_PUBLIC_URL:-http://localhost:4444}
+      URLS_LOGIN: ${PUBLIC_BASE_URL:-http://localhost:8080}/oauth/login
+      URLS_CONSENT: ${PUBLIC_BASE_URL:-http://localhost:8080}/oauth/consent
+      URLS_LOGOUT: ${PUBLIC_BASE_URL:-http://localhost:8080}/oauth/logout
+      URLS_POST_LOGOUT_REDIRECT: ${FRONTEND_BASE_URL:-http://localhost:3000}/
+      SECRETS_SYSTEM: ${HYDRA_SYSTEM_SECRET:?set HYDRA_SYSTEM_SECRET in .env}
+      SECRETS_COOKIE: ${HYDRA_COOKIE_SECRET:?set HYDRA_COOKIE_SECRET in .env}
+      SERVE_PUBLIC_CORS_ENABLED: "true"
+      SERVE_PUBLIC_CORS_ALLOWED_ORIGINS: ${HYDRA_CORS_ORIGINS:-http://localhost:3000,http://localhost:8080,http://localhost:8088}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    volumes:
+      - ../sso/deploy/hydra/hydra.yml:/etc/config/hydra/hydra.yml:ro
+    ports:
+      - "${HYDRA_PUBLIC_PORT:-4444}:4444"
+      - "${HYDRA_ADMIN_PORT:-4445}:4445"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:4445/health/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    networks: [internal]
+
+  backend:
+    build:
+      context: ../sso/backend
+      dockerfile: Dockerfile
+    image: cotton-id-backend:dev
+    <<: *restart_policy
+    depends_on:
+      postgres:
+        condition: service_healthy
+      hydra:
+        condition: service_healthy
+    environment:
+      COTTON_ENV: ${COTTON_ENV:-development}
+      HTTP_ADDR: ":8080"
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8080}
+      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-http://localhost:3000}
+      DATABASE_URL: postgres://${POSTGRES_USER:-cotton}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/cottonid?sslmode=disable
+      HYDRA_ADMIN_URL: http://hydra:4445
+      HYDRA_PUBLIC_URL: ${HYDRA_PUBLIC_URL:-http://localhost:4444}
+      ADMIN_API_KEY: ${ADMIN_API_KEY:?set ADMIN_API_KEY in .env}
+      WEBAUTHN_RP_ID: ${WEBAUTHN_RP_ID:-localhost}
+      WEBAUTHN_RP_ORIGINS: ${WEBAUTHN_RP_ORIGINS:-http://localhost:3000}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8080/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks: [internal]
+
+  frontend:
+    build:
+      context: ../sso/frontend
+      dockerfile: Dockerfile
+    image: cotton-id-frontend:dev
+    <<: *restart_policy
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    networks: [internal]
+
+  sunrise:
+    build:
+      context: ..
+      dockerfile: deploy/sunrise/Dockerfile
+    image: sunrise-server:dev
+    <<: *restart_policy
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      STORE_USE_ADAPTER: postgres
+      WAIT_FOR: postgres:5432
+      POSTGRES_DSN: postgresql://${POSTGRES_USER:-cotton}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/sunrise?sslmode=disable&connect_timeout=10
+      # OIDC: token "iss" is Hydra's self-issuer (internal); discovery/JWKS reachable in-network.
+      OIDC_ISSUER: ${SUNRISE_OIDC_ISSUER:-http://hydra:4444/}
+      OIDC_DISCOVERY_ISSUER: ${SUNRISE_OIDC_DISCOVERY_ISSUER:-http://hydra:4444/}
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:-sunrise-messenger}
+      # LiveKit (read by /v0/livekit/token).
+      LIVEKIT_URL: ${LIVEKIT_PUBLIC_URL:-ws://localhost:7880}
+      LIVEKIT_API_KEY: ${LIVEKIT_API_KEY:-devkey}
+      LIVEKIT_API_SECRET: ${LIVEKIT_API_SECRET:?set LIVEKIT_API_SECRET in .env}
+    volumes:
+      - sunrise_uploads:/opt/tinode/uploads
+    ports:
+      - "${SUNRISE_PORT:-6060}:6060"
+    networks: [internal]
+
+  livekit:
+    image: livekit/livekit-server:v1.7
+    <<: *restart_policy
+    command: ["--config", "/etc/livekit.yaml"]
+    environment:
+      LIVEKIT_KEYS: "${LIVEKIT_API_KEY:-devkey}: ${LIVEKIT_API_SECRET:?set LIVEKIT_API_SECRET in .env}"
+    volumes:
+      - ./livekit/livekit.yaml:/etc/livekit.yaml:ro
+    ports:
+      - "${LIVEKIT_PORT:-7880}:7880"
+      - "7881:7881"
+      - "7882:7882/udp"
+    networks: [internal]
+
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/web/Dockerfile
+      args:
+        VITE_HOST: ${VITE_HOST:-localhost:6060}
+        VITE_API_KEY: ${VITE_API_KEY:-AQEAAAABAAD_rAp4DJh05a1HAwFT3A6K}
+        VITE_TLS: ${VITE_TLS:-false}
+        VITE_OIDC_ISSUER: ${VITE_OIDC_ISSUER:-http://localhost:4444/}
+        VITE_OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:-sunrise-messenger}
+        VITE_OIDC_REDIRECT: ${VITE_OIDC_REDIRECT:-http://localhost:8088/}
+    image: sunrise-web:dev
+    <<: *restart_policy
+    depends_on:
+      - sunrise
+    ports:
+      - "${WEB_PORT:-8088}:80"
+    networks: [internal]
+
+volumes:
+  pgdata:
+  sunrise_uploads:
+
+networks:
+  internal:
+    driver: bridge

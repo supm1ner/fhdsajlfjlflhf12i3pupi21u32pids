@@ -174,7 +174,10 @@ scopes `openid profile email`). См. `sso/docs/RUNBOOK.md`.
 **M0 — Подготовка (этот документ)**
 - [x] Аудит бэкенда, клиента, точек интеграции.
 - [ ] Утвердить бренд и целевой scope MVP.
-- [ ] Поднять локально весь стек (cotton-id + Sunrise + svelte dev) в docker-compose.
+- [x] Деплой-кит «всё и разом» в `deploy/`: единый `docker-compose.yml` (Postgres + Hydra +
+      cotton-id + Sunrise + LiveKit + web), `.env.example`, сборка Sunrise из исходников,
+      регистрация OAuth-клиента, Makefile, README. Валиден (`docker compose config`), но вживую
+      ещё не запускался. Бэкенд получил `discovery_issuer` для OIDC за Docker.
 
 **M1 — Сквозной вход через SSO** *(приоритет №1, самая ценная веха)*
 - [ ] Адаптер варианта A (быстрый сквозной вход) ИЛИ сразу схема `oidc` (вариант B).
