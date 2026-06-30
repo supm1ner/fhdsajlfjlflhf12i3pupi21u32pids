@@ -55,7 +55,7 @@
 <style>
   .reg-page { height: 100%; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
   .bg-glow { position: absolute; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(139,92,246,0.15), transparent 70%); top: -200px; left: -200px; pointer-events: none; }
-  .reg-card { width: 380px; display: flex; flex-direction: column; gap: 14px; padding: 32px; animation: fadeIn 400ms ease; }
+  :global(.reg-card) { width: 380px; display: flex; flex-direction: column; gap: 14px; padding: 32px; animation: fadeIn 400ms ease; }
   .logo { font-size: 48px; text-align: center; }
   .title { font-size: 24px; font-weight: 600; text-align: center; }
   .subtitle { font-size: 14px; color: var(--text-secondary); text-align: center; margin-bottom: 8px; }

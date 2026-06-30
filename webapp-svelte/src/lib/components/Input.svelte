@@ -6,9 +6,9 @@
   }
 </script>
 
-<div class="input-wrap {className}">
+<label class="input-wrap {className}">
   {#if label}
-    <label class="label">{label}</label>
+    <span class="label">{label}</span>
   {/if}
   <div class="input-inner">
     {#if icon}
@@ -16,7 +16,7 @@
     {/if}
     <input {type} {placeholder} value={value} oninput={oninput} onkeydown={handleKeydown} />
   </div>
-</div>
+</label>
 
 <style>
   .input-wrap { display: flex; flex-direction: column; gap: 6px; }

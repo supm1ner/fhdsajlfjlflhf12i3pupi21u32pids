@@ -1,10 +1,11 @@
 import * as TinodeModule from 'tinode-sdk';
 
-// --- Configuration -----------------------------------------------------------
-const API_KEY = 'AQEAAAABAAD_rAp4DJh05a1HAwFT3A6K';
-const HOST = 'localhost:6060';
-const APP_NAME = 'SunriseWeb';
-const SECURE = false;
+// --- Configuration (override via Vite env: VITE_*; see .env.example) ----------
+const env = import.meta.env ?? {};
+const API_KEY = env.VITE_API_KEY || 'AQEAAAABAAD_rAp4DJh05a1HAwFT3A6K';
+const HOST = env.VITE_HOST || 'localhost:6060';
+const APP_NAME = env.VITE_APP_NAME || 'SunriseWeb';
+const SECURE = String(env.VITE_TLS ?? 'false') === 'true';
 const TOKEN_KEY = 'sunrise_auth_token';
 
 const Tinode = TinodeModule.Tinode ?? TinodeModule.default?.Tinode;
@@ -106,6 +107,35 @@ export function myUID() {
   return getClient().getCurrentUserID();
 }
 
+// --- Connection resilience ---------------------------------------------------
+
+let connListener = null;
+// setConnectionListener registers a callback receiving 'online' | 'connecting' | 'offline'.
+export function setConnectionListener(cb) { connListener = cb; }
+function notifyConn(state) { try { connListener?.(state); } catch { /* */ } }
+
+// installSession wires persistent reconnect handlers: the SDK auto-reconnects the socket,
+// and on each (re)connect we transparently re-login with the saved token and resume 'me'.
+export function installSession() {
+  const c = getClient();
+  c.onConnect = async () => {
+    try {
+      const raw = localStorage.getItem(TOKEN_KEY);
+      const tok = raw ? JSON.parse(raw) : null;
+      if (tok?.token) {
+        c.setAuthToken(tok);
+        await c.login('token', tok.token);
+        persistToken(c);
+      }
+      await subscribeMe().catch(() => {});
+      notifyConn('online');
+    } catch {
+      notifyConn('offline');
+    }
+  };
+  c.onDisconnect = () => notifyConn('connecting');
+}
+
 // --- 'me' topic & contacts ---------------------------------------------------
 
 export function getMe() {
@@ -119,6 +149,25 @@ export async function subscribeMe() {
     await me.subscribe(me.startMetaQuery().withLaterSub().withLaterDesc().build());
   }
   return me;
+}
+
+// searchUsers queries the 'fnd' (find) topic for users/groups matching the query
+// (a name, or "email:..."/"tel:..." tag). Returns [{ topic, name, online }].
+export async function searchUsers(query) {
+  const q = (query || '').trim();
+  if (!q) return [];
+  const fnd = getClient().getFndTopic();
+  if (!fnd.isSubscribed()) {
+    await fnd.subscribe(fnd.startMetaQuery().withSub().build());
+  }
+  await fnd.setMeta({ desc: { public: q } });
+  await fnd.getMeta(fnd.startMetaQuery().withSub().build());
+  const out = [];
+  fnd.contacts((s) => {
+    const topic = s.user || s.topic;
+    if (topic) out.push({ topic, name: s.public?.fn || topic, online: !!s.online });
+  });
+  return out;
 }
 
 // contactFromTopic builds a plain descriptor from an SDK Topic object.

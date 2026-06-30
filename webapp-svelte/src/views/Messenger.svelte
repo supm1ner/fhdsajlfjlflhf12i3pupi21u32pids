@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { appState } from '../lib/stores.svelte.js';
-  import { getClient, subscribeMe, getMe, mapContacts, myUID, logout as doLogout } from '../lib/tinode.js';
+  import { getClient, subscribeMe, getMe, mapContacts, myUID, searchUsers, installSession, setConnectionListener, logout as doLogout } from '../lib/tinode.js';
   import { callState, handleIncoming } from '../lib/calls.svelte.js';
   import { groupCall, handleSignal as handleGroupSignal } from '../lib/groupcall.svelte.js';
   import { liveKit } from '../lib/livekit.svelte.js';
@@ -19,10 +19,43 @@
   let search = $state('');
   let selected = $state(null); // contact descriptor
 
+  // New-chat search state.
+  let showNewChat = $state(false);
+  let query = $state('');
+  let results = $state([]);
+  let searching = $state(false);
+  let searchError = $state('');
+  let searchTimer = null;
+
   function refresh() { contacts = mapContacts(); }
+
+  function onQuery(v) {
+    query = v;
+    clearTimeout(searchTimer);
+    if (!v.trim()) { results = []; return; }
+    searchTimer = setTimeout(runSearch, 350);
+  }
+
+  async function runSearch() {
+    searching = true; searchError = '';
+    try {
+      results = await searchUsers(query);
+    } catch (e) {
+      searchError = e?.message || 'Search failed';
+      results = [];
+    } finally { searching = false; }
+  }
+
+  function openResult(r) {
+    showNewChat = false; query = ''; results = [];
+    openChat({ topic: r.topic, name: r.name, online: r.online, lastMsg: '', unread: 0 });
+  }
 
   onMount(async () => {
     try {
+      appState.connected = true;
+      setConnectionListener((state) => { appState.connected = state === 'online'; });
+      installSession();
       const me = await subscribeMe();
       me.onMetaSub = () => refresh();
       me.onSubsUpdated = () => refresh();
@@ -82,7 +115,38 @@
 
     <div class="search-box">
       <input type="text" placeholder="Search conversations…" bind:value={search} />
+      <button class="new-chat-btn" title="New chat" onclick={() => { showNewChat = true; query = ''; results = []; }}>＋</button>
     </div>
+
+    {#if showNewChat}
+      <div class="newchat">
+        <div class="newchat-head">
+          <input
+            type="text"
+            placeholder="Find people by name or email…"
+            value={query}
+            oninput={(e) => onQuery(e.target.value)}
+          />
+          <button class="close" onclick={() => { showNewChat = false; }}>✕</button>
+        </div>
+        <div class="newchat-results">
+          {#if searching}
+            <div class="nc-info">Searching…</div>
+          {:else if searchError}
+            <div class="nc-info err">{searchError}</div>
+          {:else if query.trim() && results.length === 0}
+            <div class="nc-info">No matches</div>
+          {:else}
+            {#each results as r (r.topic)}
+              <button class="nc-item" onclick={() => openResult(r)}>
+                <Avatar name={r.name} size={36} />
+                <span class="nc-name">{r.name}</span>
+              </button>
+            {/each}
+          {/if}
+        </div>
+      </div>
+    {/if}
 
     <div class="topics-list">
       {#if filtered.length === 0}
@@ -137,8 +201,20 @@
   .user-name { font-size: 14px; font-weight: 600; }
   .user-status { font-size: 11px; color: var(--text-tertiary); }
   .settings-btn { background: none; border: none; cursor: pointer; font-size: 18px; }
-  .search-box { padding: 0 4px; }
-  .search-box input { width: 100%; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; color: var(--text-primary); }
+  .search-box { padding: 0 4px; display: flex; gap: 6px; align-items: center; }
+  .search-box input { flex: 1; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; color: var(--text-primary); }
+  .new-chat-btn { flex-shrink: 0; width: 38px; height: 38px; border-radius: var(--radius-sm); background: var(--accent); color: #fff; font-size: 20px; cursor: pointer; border: none; }
+  .new-chat-btn:hover { background: var(--accent-hover); }
+  .newchat { margin: 6px 4px 0; border: 1px solid var(--border-glass); border-radius: var(--radius-md); background: var(--bg-card); box-shadow: var(--shadow); overflow: hidden; }
+  .newchat-head { display: flex; gap: 6px; padding: 8px; align-items: center; }
+  .newchat-head input { flex: 1; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 9px 12px; font-size: 13px; color: var(--text-primary); }
+  .newchat-head .close { background: none; border: none; color: var(--text-secondary); font-size: 15px; cursor: pointer; padding: 0 6px; }
+  .newchat-results { max-height: 280px; overflow-y: auto; }
+  .nc-info { padding: 12px 14px; font-size: 13px; color: var(--text-secondary); }
+  .nc-info.err { color: var(--danger); }
+  .nc-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 12px; background: none; border: none; cursor: pointer; text-align: left; }
+  .nc-item:hover { background: var(--bg-glass-hover); }
+  .nc-name { font-size: 14px; color: var(--text-primary); }
   .search-box input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
   .topics-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; padding: 4px 0; }
   .empty { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 40px 20px; text-align: center; }

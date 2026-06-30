@@ -5,13 +5,14 @@
 // This is a public client: there is no client secret in the browser; security comes
 // from PKCE and the registered redirect URI.
 
-// --- Configuration (override per deployment) ---------------------------------
+// --- Configuration (override via Vite env: VITE_OIDC_*; see .env.example) -----
 // Issuer = Hydra public URL. Must end with a slash and match the backend's oidc.issuer.
-const ISSUER = 'http://localhost:4444/';
-const CLIENT_ID = 'sunrise-messenger';
-const SCOPES = 'openid profile email';
+const env = import.meta.env ?? {};
+const ISSUER = env.VITE_OIDC_ISSUER || 'http://localhost:4444/';
+const CLIENT_ID = env.VITE_OIDC_CLIENT_ID || 'sunrise-messenger';
+const SCOPES = env.VITE_OIDC_SCOPES || 'openid profile email';
 // Where Hydra redirects back to after login. Must be registered with the OAuth client.
-const REDIRECT_URI = window.location.origin + '/';
+const REDIRECT_URI = env.VITE_OIDC_REDIRECT || (window.location.origin + '/');
 
 const STORAGE_KEY = 'sunrise_oidc_pkce';
 

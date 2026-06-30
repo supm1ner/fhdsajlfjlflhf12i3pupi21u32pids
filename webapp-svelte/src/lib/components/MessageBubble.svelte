@@ -1,5 +1,6 @@
 <script>
   import { fileUrl, Drafty } from '../tinode.js';
+  import DraftyText from './DraftyText.svelte';
 
   let { msg, isOwn = false, senderName = '' } = $props();
 
@@ -96,7 +97,9 @@
         </div>
       {/if}
 
-      {#if text && kind !== 'call'}
+      {#if kind === 'text'}
+        <div class="text"><DraftyText content={msg.content} /></div>
+      {:else if text && kind !== 'call'}
         <div class="text">{text}</div>
       {/if}
       <div class="time-label">{time}</div>
@@ -113,6 +116,8 @@
   .bubble.media { padding: 6px; }
   .own .bubble { background: var(--accent); border-color: transparent; }
   .own .bubble .text { color: #fff; }
+  .own .bubble :global(a), .own .bubble :global(.mention), .own .bubble :global(.hashtag) { color: #fff; }
+  .own .bubble :global(code) { background: rgba(255, 255, 255, 0.2); }
   .own .bubble .time-label { color: rgba(255, 255, 255, 0.7); }
   .text { font-size: 14px; line-height: 1.45; color: var(--text-primary); word-wrap: break-word; white-space: pre-wrap; }
   .bubble.media .text { padding: 4px 8px 0; }

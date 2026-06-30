@@ -53,15 +53,23 @@ come from the server param `iceServers`.
 
 ## Configuration
 
-Server host/API key live at the top of `src/lib/tinode.js` (`HOST`, `API_KEY`). SSO endpoints are in
-`src/lib/oidc.js`. For local dev, run the backend (`chat`) on `localhost:6060` and the SPA with
-`bun run dev` (Vite, port 5173).
+All endpoints are configurable via **Vite env** (`VITE_*`); copy `.env.example` to `.env`.
+Backend host/API key: `VITE_HOST`, `VITE_API_KEY`, `VITE_TLS`. SSO: `VITE_OIDC_ISSUER`,
+`VITE_OIDC_CLIENT_ID`, `VITE_OIDC_SCOPES`, `VITE_OIDC_REDIRECT`. Defaults target local dev
+(`localhost:6060` backend, `localhost:5173` SPA via `bun run dev`).
+
+## Implemented
+
+- **Start a new chat** — search people via the `fnd` topic (the ＋ button in the sidebar);
+  tapping a result opens a P2P conversation.
+- **Drafty rich text** — bold/italic/strikethrough/code/links/mentions/hashtags render via a safe
+  recursive `DraftyText` renderer (link schemes restricted to http(s)/mailto/tel).
+- **Reconnect** — the SDK auto-reconnects the socket; the client re-logins with the saved token and
+  resumes `me` on each reconnect, and surfaces an online/connecting status.
 
 ## Known limitations / next
 
-- Starting a brand-new conversation needs user search via the `fnd` topic (not wired yet) — existing
-  conversations appear automatically.
-- Drafty inline formatting (bold/italic/links) is currently rendered as plain text.
-- Calls are peer-to-peer (1:1); group calls are out of scope.
+- Inline base64 media is not rendered (only server-ref attachments).
+- 1:1 calls use the backend protocol; group calls use LiveKit (or a mesh fallback) — see CALLS.md.
 - Verified by build (`bun run build`) and against the documented SDK/backend protocol; a full live
   run against a deployed stack is still pending.
