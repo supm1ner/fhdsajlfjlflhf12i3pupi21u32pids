@@ -3,6 +3,7 @@
   import { getClient, myUID } from '../lib/tinode.js';
   import { sendText, sendImage, sendFile, sendVoice, sendVideoNote, pickMimeType } from '../lib/media.js';
   import { startCall, callState } from '../lib/calls.svelte.js';
+  import { startGroupCall } from '../lib/groupcall.svelte.js';
   import MessageBubble from '../lib/components/MessageBubble.svelte';
   import VideoNoteRecorder from '../lib/components/VideoNoteRecorder.svelte';
 
@@ -68,7 +69,7 @@
 
   function collectExisting(topic) {
     const list = [];
-    topic.messages?.((m) => { if (m) list.push(m); });
+    topic.messages?.((m) => { if (m && !m.head?.mcall) list.push(m); });
     messages = dedupe(list);
   }
 
@@ -83,6 +84,7 @@
   }
 
   async function upsert(msg) {
+    if (msg?.head?.mcall) return; // hide group-call mesh signaling from the feed
     const next = messages.filter((m) => !(m.seq && msg.seq && m.seq === msg.seq));
     next.push(msg);
     messages = dedupe(next);
@@ -190,6 +192,7 @@
     <div class="header-actions">
       <button class="hbtn" title="Voice call" onclick={() => call(true)}>📞</button>
       <button class="hbtn" title="Video call" onclick={() => call(false)}>🎥</button>
+      <button class="hbtn" title="Group call" onclick={() => startGroupCall(topicName, false)}>👥</button>
     </div>
   </header>
 

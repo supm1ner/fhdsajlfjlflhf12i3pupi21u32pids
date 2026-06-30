@@ -3,7 +3,9 @@
   import { appState } from '../lib/stores.svelte.js';
   import { getClient, subscribeMe, getMe, mapContacts, myUID, logout as doLogout } from '../lib/tinode.js';
   import { callState, handleIncoming } from '../lib/calls.svelte.js';
+  import { groupCall, handleSignal as handleGroupSignal } from '../lib/groupcall.svelte.js';
   import GlassPanel from '../lib/components/GlassPanel.svelte';
+  import GroupCallPanel from '../lib/components/GroupCallPanel.svelte';
   import TopicListItem from '../lib/components/TopicListItem.svelte';
   import Avatar from '../lib/components/Avatar.svelte';
   import Button from '../lib/components/Button.svelte';
@@ -27,6 +29,12 @@
 
       // Global incoming-call detection: an invite arrives as a data message with head.webrtc='started'.
       getClient().onDataMessage = (data) => {
+        // Group-call mesh signaling.
+        if (data?.head?.mcall) {
+          handleGroupSignal(data.head, data.from);
+          return;
+        }
+        // 1:1 incoming call.
         if (data?.head?.webrtc === 'started' && data.from !== myUID()) {
           const peer = contacts.find((c) => c.topic === data.topic);
           handleIncoming(data.topic, data.seq, !!data.head.aonly, peer?.name || data.topic);
@@ -115,6 +123,7 @@
 
     {#if showCallPanel}<CallPanel />{/if}
     {#if showIncoming}<IncomingCall />{/if}
+    {#if groupCall.active}<GroupCallPanel />{/if}
   </main>
 </div>
 

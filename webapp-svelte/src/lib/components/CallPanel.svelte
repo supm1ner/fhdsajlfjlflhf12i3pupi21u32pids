@@ -1,8 +1,11 @@
 <script>
-  import { callState, hangup, toggleMute, toggleVideo } from '../calls.svelte.js';
+  import { callState, hangup, toggleMute, toggleVideo, toggleScreenShare } from '../calls.svelte.js';
+  import { applySink } from '../devices.svelte.js';
+  import CallSettings from './CallSettings.svelte';
 
   let localEl = $state();
   let remoteEl = $state();
+  let showSettings = $state(false);
 
   // Bind MediaStreams to the video elements reactively.
   $effect(() => {
@@ -15,6 +18,7 @@
     if (remoteEl && callState.remoteStream && remoteEl.srcObject !== callState.remoteStream) {
       remoteEl.srcObject = callState.remoteStream;
       remoteEl.play?.().catch(() => {});
+      applySink(remoteEl);
     }
   });
 
@@ -62,9 +66,19 @@
         <button class="ctrl" class:off={callState.videoOff} onclick={toggleVideo} title="Camera">
           {callState.videoOff ? '📷' : '🎥'}
         </button>
+        <button class="ctrl" class:on={callState.screenSharing} onclick={toggleScreenShare} title="Share screen">🖥</button>
       {/if}
+      <button class="ctrl" onclick={() => showSettings = true} title="Audio & video settings">⚙️</button>
       <button class="ctrl hangup" onclick={hangup} title="Hang up">📞</button>
     </div>
+
+    {#if showSettings}
+      <div class="settings-modal">
+        <div class="settings-card">
+          <CallSettings onClose={() => showSettings = false} />
+        </div>
+      </div>
+    {/if}
   </div>
 </div>
 
@@ -85,5 +99,8 @@
   .ctrl { width: 60px; height: 60px; border-radius: 50%; border: none; cursor: pointer; font-size: 24px; background: rgba(255,255,255,0.15); color: #fff; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
   .ctrl:hover { background: rgba(255,255,255,0.25); }
   .ctrl.off { background: rgba(255,255,255,0.4); }
+  .ctrl.on { background: var(--accent); }
   .ctrl.hangup { background: var(--danger); transform: rotate(135deg); }
+  .settings-modal { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); }
+  .settings-card { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow); }
 </style>

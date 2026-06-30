@@ -4,6 +4,7 @@
 // arrive via topic.onInfo with what==='call'.
 
 import { getClient, iceServers, Drafty } from './tinode.js';
+import { constraints as deviceConstraints } from './devices.svelte.js';
 
 const DEFAULT_ICE = [{ urls: 'stun:stun.l.google.com:19302' }];
 
@@ -20,6 +21,7 @@ let _s = $state({
   remoteStream: null,
   muted: false,
   videoOff: false,
+  screenSharing: false,
   error: '',
 });
 
@@ -33,6 +35,7 @@ export const callState = {
   get remoteStream() { return _s.remoteStream; },
   get muted() { return _s.muted; },
   get videoOff() { return _s.videoOff; },
+  get screenSharing() { return _s.screenSharing; },
   get error() { return _s.error; },
 };
 
@@ -41,9 +44,10 @@ let pc = null;
 let isCaller = false;
 let setupComplete = false;
 let iceCache = [];
+let cameraTrack = null; // saved camera track while screen sharing
 
 function constraints() {
-  return _s.audioOnly ? { audio: true, video: false } : { audio: true, video: { width: 640, height: 480 } };
+  return deviceConstraints(_s.audioOnly);
 }
 
 function topicObj() {
@@ -57,7 +61,8 @@ function reset() {
   setupComplete = false;
   iceCache = [];
   if (_s.localStream) _s.localStream.getTracks().forEach((t) => t.stop());
-  _s = { ...(_s), active: false, direction: null, status: 'idle', topic: null, seq: -1, localStream: null, remoteStream: null, muted: false, videoOff: false };
+  cameraTrack = null;
+  _s = { ...(_s), active: false, direction: null, status: 'idle', topic: null, seq: -1, localStream: null, remoteStream: null, muted: false, videoOff: false, screenSharing: false };
 }
 
 function createPeerConnection() {
@@ -185,6 +190,31 @@ export function toggleVideo() {
   if (!track) return;
   track.enabled = !track.enabled;
   _s.videoOff = !track.enabled;
+}
+
+// toggleScreenShare swaps the outgoing video track between the camera and the screen.
+export async function toggleScreenShare() {
+  if (!pc) return;
+  const sender = pc.getSenders().find((s) => s.track && s.track.kind === 'video');
+  if (!sender) return;
+  if (_s.screenSharing) { await stopScreenShare(); return; }
+  try {
+    const display = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
+    const screenTrack = display.getVideoTracks()[0];
+    cameraTrack = sender.track;
+    await sender.replaceTrack(screenTrack);
+    _s.screenSharing = true;
+    screenTrack.onended = () => stopScreenShare();
+  } catch (e) {
+    _s.error = String(e);
+  }
+}
+
+async function stopScreenShare() {
+  const sender = pc?.getSenders().find((s) => s.track && s.track.kind === 'video');
+  if (sender && cameraTrack) await sender.replaceTrack(cameraTrack);
+  cameraTrack = null;
+  _s.screenSharing = false;
 }
 
 // --- Signaling router --------------------------------------------------------

@@ -27,10 +27,12 @@ class CallController extends ChangeNotifier {
   int seq = -1;
   bool muted = false;
   bool videoOff = false;
+  bool screenSharing = false;
   String? error;
 
   RTCPeerConnection? _pc;
   MediaStream? _localStream;
+  MediaStreamTrack? _cameraTrack;
   bool _caller = false;
   bool _ready = false;
   final List<RTCIceCandidate> _pendingIce = [];
@@ -172,6 +174,32 @@ class CallController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Swap the outgoing video track between the camera and the screen.
+  Future<void> toggleScreenShare() async {
+    final pc = _pc;
+    if (pc == null) return;
+    final senders = await pc.getSenders();
+    final sender = senders.where((s) => s.track?.kind == 'video').cast<RTCRtpSender?>().firstWhere((_) => true, orElse: () => null);
+    if (sender == null) return;
+    try {
+      if (!screenSharing) {
+        final display = await navigator.mediaDevices.getDisplayMedia({'video': true, 'audio': false});
+        final screenTrack = display.getVideoTracks().first;
+        _cameraTrack = sender.track;
+        await sender.replaceTrack(screenTrack);
+        screenSharing = true;
+      } else {
+        if (_cameraTrack != null) await sender.replaceTrack(_cameraTrack);
+        _cameraTrack = null;
+        screenSharing = false;
+      }
+      notifyListeners();
+    } catch (e) {
+      error = e.toString();
+      notifyListeners();
+    }
+  }
+
   // --- Signaling ---------------------------------------------------------
 
   /// Routes a {info what:'call'} event from the server.
@@ -268,6 +296,8 @@ class CallController extends ChangeNotifier {
     seq = -1;
     muted = false;
     videoOff = false;
+    screenSharing = false;
+    _cameraTrack = null;
     _caller = false;
     notifyListeners();
   }

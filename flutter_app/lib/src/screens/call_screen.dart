@@ -73,6 +73,10 @@ class CallScreen extends StatelessWidget {
               if (!call.audioOnly)
                 _circle(call.videoOff ? Icons.videocam_off : Icons.videocam, call.toggleVideo, const Color(0x33FFFFFF)),
               if (!call.audioOnly) const SizedBox(width: 18),
+              if (!call.audioOnly)
+                _circle(Icons.screen_share, call.toggleScreenShare,
+                    call.screenSharing ? Palette.accent : const Color(0x33FFFFFF)),
+              if (!call.audioOnly) const SizedBox(width: 18),
               _circle(Icons.call_end, call.hangup, Palette.danger),
             ]),
           ),
