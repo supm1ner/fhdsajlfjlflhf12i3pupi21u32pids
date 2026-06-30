@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../state/app_state.dart';
+import '../state/call_controller.dart';
 import '../sunrise/models.dart';
 import '../theme/glass_theme.dart';
 import '../widgets/contact_tile.dart';
 import '../widgets/glass.dart';
+import 'call_screen.dart';
 import 'conversation_screen.dart';
+import 'incoming_call.dart';
 
 /// Responsive shell: a split master-detail on wide screens (desktop/tablet),
 /// and a stack with navigation on narrow screens (phones).
@@ -39,12 +42,21 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final wide = MediaQuery.of(context).size.width >= 760;
+    final call = widget.state.call;
     return Scaffold(
-      body: DecoratedBox(
-        decoration: const BoxDecoration(gradient: Palette.backdrop),
-        child: SafeArea(
-          child: wide ? _wideLayout() : _narrowLayout(),
-        ),
+      body: Stack(
+        children: [
+          DecoratedBox(
+            decoration: const BoxDecoration(gradient: Palette.backdrop),
+            child: SafeArea(
+              child: wide ? _wideLayout() : _narrowLayout(),
+            ),
+          ),
+          if (call.active && call.status == CallStatus.incoming)
+            IncomingCallView(call: call)
+          else if (call.active)
+            CallScreen(call: call),
+        ],
       ),
     );
   }

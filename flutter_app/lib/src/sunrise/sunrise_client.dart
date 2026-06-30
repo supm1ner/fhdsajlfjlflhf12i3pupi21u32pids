@@ -196,6 +196,56 @@ class SunriseClient {
     });
   }
 
+  /// Send a WebRTC call signaling event over a topic.
+  /// [event] is one of: ringing, accept, offer, answer, ice-candidate, hang-up.
+  void videoCall(String topic, String event, int seq, [dynamic payload]) {
+    _send({
+      'note': {
+        'topic': topic,
+        'what': 'call',
+        'seq': seq,
+        'event': event,
+        if (payload != null) 'payload': payload,
+      },
+    });
+  }
+
+  /// Upload a file to the server; returns the file ref ("/v0/file/s/..").
+  Future<String> uploadFile(List<int> bytes, String filename, String mimeType) async {
+    final uri = Uri.parse('$baseHttp/v0/file/u');
+    final boundary = '----sunrise${DateTime.now().microsecondsSinceEpoch}';
+    final client = HttpClient();
+    try {
+      final req = await client.postUrl(uri);
+      req.headers.set(HttpHeaders.contentTypeHeader, 'multipart/form-data; boundary=$boundary');
+      req.headers.set('X-Sunrise-APIKey', apiKey);
+      if (authToken != null) {
+        req.headers.set(HttpHeaders.authorizationHeader, 'Token $authToken');
+      }
+      final head = utf8.encode(
+        '--$boundary\r\n'
+        'Content-Disposition: form-data; name="file"; filename="$filename"\r\n'
+        'Content-Type: $mimeType\r\n\r\n',
+      );
+      final tail = utf8.encode('\r\n--$boundary--\r\n');
+      req.add(head);
+      req.add(bytes);
+      req.add(tail);
+      final resp = await req.close();
+      final text = await resp.transform(utf8.decoder).join();
+      if (resp.statusCode < 200 || resp.statusCode >= 300) {
+        throw Exception('Upload failed: ${resp.statusCode} $text');
+      }
+      final json = jsonDecode(text) as Map<String, dynamic>;
+      final params = ((json['ctrl'] as Map?)?['params'] as Map?)?.cast<String, dynamic>();
+      final url = params?['url'] as String?;
+      if (url == null) throw Exception('Upload response missing url');
+      return url;
+    } finally {
+      client.close();
+    }
+  }
+
   void leave(String topic) {
     _send({
       'leave': {'id': _nextId(), 'topic': topic},

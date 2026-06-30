@@ -5,16 +5,19 @@ import 'package:flutter/foundation.dart';
 import '../sunrise/drafty.dart';
 import '../sunrise/models.dart';
 import '../sunrise/sunrise_client.dart';
+import 'call_controller.dart';
 
 enum Phase { loggedOut, connecting, ready }
 
 /// Application state: owns the SunriseClient and exposes reactive UI state.
 class AppState extends ChangeNotifier {
   AppState({SunriseClient? client}) : client = client ?? SunriseClient() {
+    call = CallController(this.client);
     _wire();
   }
 
   final SunriseClient client;
+  late final CallController call;
 
   Phase phase = Phase.loggedOut;
   String? error;
@@ -27,12 +30,15 @@ class AppState extends ChangeNotifier {
   bool peerTyping = false;
   Timer? _typingTimer;
 
-  StreamSubscription? _dataSub, _metaSub, _presSub;
+  StreamSubscription? _dataSub, _metaSub, _presSub, _infoSub;
 
   void _wire() {
     _dataSub = client.onData.listen(_handleData);
     _metaSub = client.onMeta.listen(_handleMeta);
     _presSub = client.onPres.listen(_handlePres);
+    _infoSub = client.onInfo.listen((info) {
+      if (info['what'] == 'call') call.onSignal(info);
+    });
   }
 
   // --- Auth --------------------------------------------------------------
@@ -116,10 +122,67 @@ class AppState extends ChangeNotifier {
     if (topic != null) client.note(topic, 'kp');
   }
 
+  String _currentName() {
+    final t = currentTopic;
+    if (t == null) return 'Chat';
+    return contacts.firstWhere((c) => c.topic == t, orElse: () => Contact(topic: t, name: t)).name;
+  }
+
+  // --- Calls -------------------------------------------------------------
+
+  void startCall({required bool audioOnly}) {
+    final t = currentTopic;
+    if (t == null) return;
+    call.startCall(t, _currentName(), audioOnly: audioOnly);
+  }
+
+  // --- Media -------------------------------------------------------------
+
+  Future<void> sendImage(List<int> bytes, String name, String mime, {int? width, int? height}) async {
+    await _sendMedia(() async {
+      final ref = await client.uploadFile(bytes, name, mime);
+      return Drafty.image(ref: ref, mime: mime, width: width, height: height, name: name, size: bytes.length);
+    });
+  }
+
+  Future<void> sendVideoNote(List<int> bytes, int durationMs, {String mime = 'video/mp4', int side = 240}) async {
+    await _sendMedia(() async {
+      final ref = await client.uploadFile(bytes, 'video-note.mp4', mime);
+      return Drafty.videoNote(ref: ref, mime: mime, side: side, durationMs: durationMs, name: 'video-note.mp4', size: bytes.length);
+    });
+  }
+
+  Future<void> sendVoice(List<int> bytes, int durationMs, {String mime = 'audio/m4a'}) async {
+    await _sendMedia(() async {
+      final ref = await client.uploadFile(bytes, 'voice-message.m4a', mime);
+      return Drafty.audio(ref: ref, mime: mime, durationMs: durationMs, name: 'voice-message.m4a', size: bytes.length);
+    });
+  }
+
+  Future<void> _sendMedia(Future<Map<String, dynamic>> Function() build) async {
+    final topic = currentTopic;
+    if (topic == null) return;
+    try {
+      final content = await build();
+      await client.publish(topic, content);
+    } catch (e) {
+      error = e.toString();
+      notifyListeners();
+    }
+  }
+
   // --- Server push handlers ---------------------------------------------
 
   void _handleData(Map<String, dynamic> data) {
     final msg = Message.fromData(data);
+
+    // Incoming call detection (works regardless of the open conversation).
+    final head = (data['head'] as Map?)?.cast<String, dynamic>();
+    if (head?['webrtc'] == 'started' && msg.from != null && msg.from != client.userId) {
+      final c = contacts.firstWhere((c) => c.topic == msg.topic, orElse: () => Contact(topic: msg.topic, name: msg.topic));
+      call.handleIncoming(msg.topic, msg.seq, head?['aonly'] == true, c.name);
+    }
+
     if (msg.topic == currentTopic) {
       final i = messages.indexWhere((m) => m.seq != 0 && m.seq == msg.seq);
       if (i >= 0) {
@@ -208,7 +271,9 @@ class AppState extends ChangeNotifier {
     _dataSub?.cancel();
     _metaSub?.cancel();
     _presSub?.cancel();
+    _infoSub?.cancel();
     _typingTimer?.cancel();
+    call.dispose();
     super.dispose();
   }
 }

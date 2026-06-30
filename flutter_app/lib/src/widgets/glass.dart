@@ -1,48 +1,35 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 import '../theme/glass_theme.dart';
 
-/// A frosted-glass surface: blurred backdrop, translucent fill, hairline border.
+/// A clean, minimalist surface: white card, hairline border, soft shadow.
 class GlassPanel extends StatelessWidget {
   const GlassPanel({
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(16),
-    this.radius = 20,
-    this.blur = 18,
+    this.radius = 18,
+    this.blur = 0,
     this.strong = false,
   });
 
   final Widget child;
   final EdgeInsets padding;
   final double radius;
-  final double blur;
+  final double blur; // retained for API compatibility; unused in the flat theme
   final bool strong;
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(radius),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-        child: Container(
-          padding: padding,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: strong
-                  ? const [Color(0x33FFFFFF), Color(0x14FFFFFF)]
-                  : const [Color(0x1AFFFFFF), Color(0x0DFFFFFF)],
-            ),
-            borderRadius: BorderRadius.circular(radius),
-            border: Border.all(color: Palette.glassBorder, width: 1),
-          ),
-          child: child,
-        ),
+    return Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        color: Palette.bg,
+        borderRadius: BorderRadius.circular(radius),
+        border: Border.all(color: Palette.border, width: 1),
+        boxShadow: Palette.cardShadow,
       ),
+      child: child,
     );
   }
 }
@@ -68,15 +55,16 @@ class GlassButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fg = primary ? Colors.white : Palette.textPrimary;
     final content = Row(
       mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (loading)
-          const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+          SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: fg))
         else ...[
-          if (icon != null) ...[Icon(icon, size: 18), const SizedBox(width: 8)],
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+          if (icon != null) ...[Icon(icon, size: 18, color: fg), const SizedBox(width: 8)],
+          Text(label, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: fg)),
         ],
       ],
     );

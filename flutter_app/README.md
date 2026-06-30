@@ -4,17 +4,18 @@ A minimalist, **liquid-glass** messenger client for the Sunrise backend, built w
 runs from one codebase on **iOS, Android, macOS, Windows and Linux** (and web). It talks to the same
 Go server as the web client, over the same WebSocket/JSON protocol, and authenticates through SSO.
 
-> **Status:** application code (Dart) is complete for the first slice — connect, login
-> (basic / token / SSO via PKCE), live contact list, conversation with history + realtime +
-> typing/read, and message rendering (text, photo, video note, voice, file, call). It is written
-> against the documented protocol but **has not been compiled here** (no Flutter SDK in the build
-> environment) — see _Building_ below. Calls (WebRTC) and media capture are the next step
-> (`flutter_webrtc`, `image_picker`, `record`).
+> **Status:** application code (Dart) covers connect, login (basic / token / SSO via PKCE), live
+> contact list, conversation with history + realtime + typing/read, message rendering
+> (text, photo, video note, voice, file, call), **WebRTC audio/video calls**, **round video notes
+> ("кружки")**, voice messages and photo attachments. It is written against the documented protocol
+> and package APIs but **has not been compiled here** (no Flutter SDK in the build environment) —
+> see _Building_ below.
 
 ## Design
 
-Liquid glass over a dark violet backdrop: frosted `GlassPanel`s (`BackdropFilter` + translucent
-gradient fill + hairline border), a violet accent matching the web client, and a minimalist layout.
+Minimalist **white/black with a violet accent** (`#7C3AED`). Clean `GlassPanel` cards (white surface,
+hairline border, soft shadow), generous whitespace, crisp typography. Own messages are solid violet
+with white text (iMessage-style); the call screen and video-note recorder stay immersive dark.
 The shell is responsive — a master-detail split on wide screens (desktop/tablet) and a navigated
 stack on phones.
 
@@ -61,12 +62,19 @@ flutter pub get
 flutter run -d macos      # or windows / linux / chrome / <device-id>
 ```
 
+**Permissions** (add after `flutter create .`, required by calls / video notes / voice / photos):
+
+- iOS `ios/Runner/Info.plist`: `NSCameraUsageDescription`, `NSMicrophoneUsageDescription`,
+  `NSPhotoLibraryUsageDescription`.
+- Android `android/app/src/main/AndroidManifest.xml`: `CAMERA`, `RECORD_AUDIO`, `INTERNET`
+  (and for `flutter_webrtc`, `minSdkVersion 21+`).
+- macOS: enable camera/microphone entitlements in `macos/Runner/*.entitlements`.
+
 ## Known limitations / next
 
-- **Not yet compiled** in CI — written against the protocol; expect minor fixes on first
-  `flutter analyze`/`flutter run`.
+- **Not yet compiled** in CI — written against the protocol and package APIs; expect minor fixes on
+  the first `flutter analyze` / `flutter run`.
 - **SSO redirect**: the first cut opens the browser and asks the user to paste the authorization
   `code`. A polished flow needs platform deep-link/custom-scheme capture (`flutter_web_auth_2`).
-- **Calls & media capture** (camera/mic, кружки, voice) are stubbed in the UI; wiring needs
-  `flutter_webrtc`, `record` and `image_picker`.
 - **Inline base64 media** is not rendered (only server-ref attachments).
+- Video-note playback shows a play affordance (tap-to-open) rather than inline autoplay.

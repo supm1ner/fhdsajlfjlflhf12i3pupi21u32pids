@@ -8,12 +8,10 @@
 
 <style>
   .glass-panel {
-    background: var(--bg-glass);
-    backdrop-filter: blur(20px) saturate(1.4);
-    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    background: var(--bg-card);
     border: 1px solid var(--border-glass);
     border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
     transition: var(--transition);
   }
-  .glass-panel:hover { border-color: var(--border-hover); }
 </style>

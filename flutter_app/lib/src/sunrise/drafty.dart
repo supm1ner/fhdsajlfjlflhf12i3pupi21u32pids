@@ -52,4 +52,57 @@ class Drafty {
     final txt = plainText(content);
     return txt.isEmpty ? '' : txt;
   }
+
+  // --- Builders (match the JS SDK Drafty format) -------------------------
+
+  static Map<String, dynamic> _single(String tp, Map<String, dynamic> data) => {
+        'txt': ' ',
+        'fmt': [
+          {'at': 0, 'len': 1, 'key': 0}
+        ],
+        'ent': [
+          {'tp': tp, 'data': data}
+        ],
+      };
+
+  /// Content for a video-call invite (VC entity).
+  static Map<String, dynamic> videoCall(bool audioOnly) => _single('VC', {'aonly': audioOnly});
+
+  static Map<String, dynamic> image({
+    required String ref,
+    required String mime,
+    int? width,
+    int? height,
+    String? name,
+    int? size,
+  }) =>
+      _single('IM', {'mime': mime, 'ref': ref, 'width': width, 'height': height, 'name': name, 'size': size});
+
+  /// A square video (rendered as a round "video note").
+  static Map<String, dynamic> videoNote({
+    required String ref,
+    required String mime,
+    int side = 240,
+    int? durationMs,
+    String? name,
+    int? size,
+  }) =>
+      _single('VD', {
+        'mime': mime,
+        'ref': ref,
+        'width': side,
+        'height': side,
+        'duration': durationMs ?? 0,
+        'name': name,
+        'size': size,
+      });
+
+  static Map<String, dynamic> audio({
+    required String ref,
+    required String mime,
+    int? durationMs,
+    String? name,
+    int? size,
+  }) =>
+      _single('AU', {'mime': mime, 'ref': ref, 'duration': durationMs ?? 0, 'name': name, 'size': size});
 }

@@ -111,7 +111,9 @@
   .bubble-wrap { max-width: 78%; }
   .bubble { padding: 10px 14px; border-radius: var(--radius-md); background: var(--bg-glass); border: 1px solid var(--border-glass); position: relative; }
   .bubble.media { padding: 6px; }
-  .own .bubble { background: var(--accent-soft); border-color: rgba(139, 92, 246, 0.2); }
+  .own .bubble { background: var(--accent); border-color: transparent; }
+  .own .bubble .text { color: #fff; }
+  .own .bubble .time-label { color: rgba(255, 255, 255, 0.7); }
   .text { font-size: 14px; line-height: 1.45; color: var(--text-primary); word-wrap: break-word; white-space: pre-wrap; }
   .bubble.media .text { padding: 4px 8px 0; }
   .time-label { font-size: 11px; color: var(--text-tertiary); text-align: right; margin-top: 4px; }

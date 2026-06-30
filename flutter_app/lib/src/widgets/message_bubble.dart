@@ -27,7 +27,9 @@ class MessageBubble extends StatelessWidget {
     final text = Drafty.plainText(message.content);
     final time = TimeOfDay.fromDateTime(message.ts).format(context);
 
-    final bubbleColor = isOwn ? const Color(0x338B5CF6) : Palette.glassFill;
+    final bubbleColor = isOwn ? Palette.accent : Palette.surface;
+    final textColor = isOwn ? Colors.white : Palette.textPrimary;
+    final metaColor = isOwn ? Colors.white70 : Palette.textTertiary;
 
     Widget body;
     switch (tp) {
@@ -81,7 +83,7 @@ class MessageBubble extends StatelessWidget {
         ]);
         break;
       default:
-        body = Text(text, style: const TextStyle(color: Palette.textPrimary, fontSize: 14, height: 1.4));
+        body = Text(text, style: TextStyle(color: textColor, fontSize: 14, height: 1.4));
     }
 
     return Align(
@@ -93,7 +95,7 @@ class MessageBubble extends StatelessWidget {
         decoration: BoxDecoration(
           color: bubbleColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Palette.glassBorder),
+          border: Border.all(color: isOwn ? Colors.transparent : Palette.border),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,10 +104,10 @@ class MessageBubble extends StatelessWidget {
             body,
             if (text.isNotEmpty && tp != 'text' && tp != 'call') ...[
               const SizedBox(height: 6),
-              Text(text, style: const TextStyle(color: Palette.textPrimary, fontSize: 14)),
+              Text(text, style: TextStyle(color: textColor, fontSize: 14)),
             ],
             const SizedBox(height: 2),
-            Text(time, style: const TextStyle(color: Palette.textTertiary, fontSize: 11)),
+            Text(time, style: TextStyle(color: metaColor, fontSize: 11)),
           ],
         ),
       ),

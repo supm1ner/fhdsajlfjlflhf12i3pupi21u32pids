@@ -97,7 +97,7 @@
   .subtitle { font-size: 14px; color: var(--text-secondary); text-align: center; margin-bottom: 8px; }
   .error { font-size: 13px; color: var(--danger); background: rgba(239,68,68,0.1); padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid rgba(239,68,68,0.2); }
   .divider { display: flex; align-items: center; gap: 12px; color: var(--text-secondary); font-size: 12px; }
-  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border-glass); }
   .switch { font-size: 13px; color: var(--text-secondary); text-align: center; }
   .link { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 13px; font-weight: 500; }
   .link:hover { text-decoration: underline; }
