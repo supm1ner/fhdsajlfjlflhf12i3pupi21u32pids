@@ -210,6 +210,30 @@ class SunriseClient {
     });
   }
 
+  /// Request a LiveKit access token for [room]. Returns { url, token, room, identity }.
+  /// Throws [LiveKitNotConfigured] when the server has no LiveKit configured (HTTP 501).
+  Future<Map<String, dynamic>> fetchLiveKitToken(String room) async {
+    final params = <String, String>{'room': room, 'apikey': apiKey};
+    if (authToken != null) {
+      params['auth'] = 'token';
+      params['secret'] = authToken!;
+    }
+    final query = params.entries.map((e) => '${e.key}=${Uri.encodeComponent(e.value)}').join('&');
+    final uri = Uri.parse('$baseHttp/v0/livekit/token?$query');
+    final http = HttpClient();
+    try {
+      final resp = await (await http.getUrl(uri)).close();
+      final text = await resp.transform(utf8.decoder).join();
+      if (resp.statusCode == 501) throw LiveKitNotConfigured();
+      if (resp.statusCode < 200 || resp.statusCode >= 300) {
+        throw Exception('LiveKit token request failed: ${resp.statusCode} $text');
+      }
+      return jsonDecode(text) as Map<String, dynamic>;
+    } finally {
+      http.close();
+    }
+  }
+
   /// Upload a file to the server; returns the file ref ("/v0/file/s/..").
   Future<String> uploadFile(List<int> bytes, String filename, String mimeType) async {
     final uri = Uri.parse('$baseHttp/v0/file/u');
@@ -280,4 +304,10 @@ class SunriseError implements Exception {
   SunriseError(this.code, this.message);
   @override
   String toString() => 'SunriseError($code): $message';
+}
+
+/// Thrown when the backend has no LiveKit configured (clients fall back to 1:1/mesh).
+class LiveKitNotConfigured implements Exception {
+  @override
+  String toString() => 'LiveKit is not configured on the server';
 }

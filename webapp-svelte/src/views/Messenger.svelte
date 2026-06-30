@@ -4,8 +4,10 @@
   import { getClient, subscribeMe, getMe, mapContacts, myUID, logout as doLogout } from '../lib/tinode.js';
   import { callState, handleIncoming } from '../lib/calls.svelte.js';
   import { groupCall, handleSignal as handleGroupSignal } from '../lib/groupcall.svelte.js';
+  import { liveKit } from '../lib/livekit.svelte.js';
   import GlassPanel from '../lib/components/GlassPanel.svelte';
   import GroupCallPanel from '../lib/components/GroupCallPanel.svelte';
+  import LiveKitPanel from '../lib/components/LiveKitPanel.svelte';
   import TopicListItem from '../lib/components/TopicListItem.svelte';
   import Avatar from '../lib/components/Avatar.svelte';
   import Button from '../lib/components/Button.svelte';
@@ -124,6 +126,7 @@
     {#if showCallPanel}<CallPanel />{/if}
     {#if showIncoming}<IncomingCall />{/if}
     {#if groupCall.active}<GroupCallPanel />{/if}
+    {#if liveKit.active}<LiveKitPanel />{/if}
   </main>
 </div>
 

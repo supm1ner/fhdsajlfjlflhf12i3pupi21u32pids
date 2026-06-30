@@ -4,6 +4,17 @@
   import { sendText, sendImage, sendFile, sendVoice, sendVideoNote, pickMimeType } from '../lib/media.js';
   import { startCall, callState } from '../lib/calls.svelte.js';
   import { startGroupCall } from '../lib/groupcall.svelte.js';
+  import { start as startLiveKit } from '../lib/livekit.svelte.js';
+
+  // Prefer the LiveKit SFU; fall back to the mesh when LiveKit isn't configured.
+  async function startGroup() {
+    try {
+      await startLiveKit(topicName, false);
+    } catch (e) {
+      if (e?.code === 501) startGroupCall(topicName, false);
+      else console.error('group call failed', e);
+    }
+  }
   import MessageBubble from '../lib/components/MessageBubble.svelte';
   import VideoNoteRecorder from '../lib/components/VideoNoteRecorder.svelte';
 
@@ -192,7 +203,7 @@
     <div class="header-actions">
       <button class="hbtn" title="Voice call" onclick={() => call(true)}>📞</button>
       <button class="hbtn" title="Video call" onclick={() => call(false)}>🎥</button>
-      <button class="hbtn" title="Group call" onclick={() => startGroupCall(topicName, false)}>👥</button>
+      <button class="hbtn" title="Group call" onclick={startGroup}>👥</button>
     </div>
   </header>
 

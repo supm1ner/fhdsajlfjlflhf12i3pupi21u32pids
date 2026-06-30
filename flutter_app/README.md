@@ -78,3 +78,6 @@ flutter run -d macos      # or windows / linux / chrome / <device-id>
   `code`. A polished flow needs platform deep-link/custom-scheme capture (`flutter_web_auth_2`).
 - **Inline base64 media** is not rendered (only server-ref attachments).
 - Video-note playback shows a play affordance (tap-to-open) rather than inline autoplay.
+- **Group calls** use LiveKit (`livekit_client`): the conversation's group button fetches a token
+  from `/v0/livekit/token` and joins a room (`livekit_room.dart` + `LiveKitRoomScreen`). Requires the
+  backend `LIVEKIT_*` env (see `../docs/CALLS.md`). Per-device audio settings on Flutter are still TODO.

@@ -212,3 +212,24 @@ export { avatarFromPhoto };
 export function iceServers() {
   return getClient().getServerParam ? getClient().getServerParam('iceServers', null) : null;
 }
+
+// fetchLiveKitToken requests a LiveKit access token for the given room from the backend.
+// Returns { url, token, room, identity }. Throws with code 501 if LiveKit is not configured.
+export async function fetchLiveKitToken(room) {
+  const u = new URL(baseUrl() + '/v0/livekit/token');
+  u.searchParams.set('room', room);
+  u.searchParams.set('apikey', API_KEY);
+  const tok = getClient().getAuthToken();
+  if (tok?.token) {
+    u.searchParams.set('auth', 'token');
+    u.searchParams.set('secret', tok.token);
+  }
+  const resp = await fetch(u.toString());
+  if (resp.status === 501) {
+    const err = new Error('LiveKit is not configured');
+    err.code = 501;
+    throw err;
+  }
+  if (!resp.ok) throw new Error('LiveKit token request failed: ' + resp.status);
+  return resp.json();
+}

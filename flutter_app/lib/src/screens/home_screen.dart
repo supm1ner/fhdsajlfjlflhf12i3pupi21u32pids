@@ -9,6 +9,7 @@ import '../widgets/glass.dart';
 import 'call_screen.dart';
 import 'conversation_screen.dart';
 import 'incoming_call.dart';
+import 'livekit_room_screen.dart';
 
 /// Responsive shell: a split master-detail on wide screens (desktop/tablet),
 /// and a stack with navigation on narrow screens (phones).
@@ -55,7 +56,9 @@ class _HomeScreenState extends State<HomeScreen> {
           if (call.active && call.status == CallStatus.incoming)
             IncomingCallView(call: call)
           else if (call.active)
-            CallScreen(call: call),
+            CallScreen(call: call)
+          else if (widget.state.liveKit.active)
+            LiveKitRoomScreen(controller: widget.state.liveKit),
         ],
       ),
     );

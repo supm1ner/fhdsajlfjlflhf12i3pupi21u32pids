@@ -29,13 +29,49 @@ separate signaling channel — messages published to the group topic carrying an
 newcomer. Implementation: `src/lib/groupcall.svelte.js` + `GroupCallPanel`/`VideoTile`.
 Signaling messages are filtered out of the chat feed.
 
-**Tradeoffs / "better than Discord" path.** Mesh is simple and serverless but each client
-uploads its stream to every peer, so it scales to ~4-6 participants. For large rooms the real
-solution is an **SFU** (LiveKit, mediasoup, Janus): each client sends one stream up and the SFU
-fans it out. Other Discord-grade features to add: RNNoise-style noise suppression, active-speaker
-detection, per-participant volume, and a dedicated signaling verb so signaling doesn't ride on
-stored messages. These are tracked in ROADMAP M5.
+Mesh is simple and serverless but each client uploads its stream to every peer, so it scales to
+~4-6 participants. For large rooms use **LiveKit** (below). The group-call button prefers LiveKit and
+falls back to mesh automatically when LiveKit isn't configured.
 
-> Status: implemented in the **web** client and verified by `bun run build`. Not yet run against a
-> live multi-client stack. Flutter has 1:1 + screen share; group calls and device settings are the
-> next step there.
+## Group calls (LiveKit SFU) — the scalable path
+
+For Discord-scale rooms the messenger integrates **LiveKit**, an SFU: each client publishes one
+camera/mic stream to the LiveKit server, which selectively forwards streams to participants.
+
+**Token minting (backend).** The browser/app must not hold the LiveKit API secret, so an
+authenticated user requests a short-lived token from the Sunrise backend:
+`GET /v0/livekit/token?room=<room>&apikey=<key>&auth=token&secret=<session>`. The handler
+(`chat/server/hdl_livekit.go`) authenticates the user (same path as file upload), then mints a
+LiveKit JWT (HS256, signed with the API secret) carrying a video grant scoped to the room. Returns
+`{url, token, room, identity}`, or **501** when LiveKit isn't configured (clients then use mesh).
+
+**Backend config (environment variables):**
+
+```
+LIVEKIT_URL=wss://livekit.example.com   # or ws://localhost:7880 for local
+LIVEKIT_API_KEY=devkey
+LIVEKIT_API_SECRET=<32+ byte secret>
+```
+
+**Run a LiveKit server (local dev):**
+
+```bash
+docker run --rm -p 7880:7880 -p 7881:7881 -p 7882:7882/udp \
+  -e LIVEKIT_KEYS="devkey: <your-secret>" \
+  livekit/livekit-server --dev
+```
+
+Then set the same `devkey`/secret in the Sunrise backend env. Point `LIVEKIT_URL` at
+`ws://localhost:7880`.
+
+**Web client.** `src/lib/livekit.svelte.js` (Room connect, publish camera/mic, screen share via
+`setScreenShareEnabled`, participant grid) + `LiveKitPanel`/`LiveKitTile`. Token via
+`fetchLiveKitToken()`.
+
+**Still to add for true Discord parity:** RNNoise-style noise suppression, active-speaker
+indication, per-participant volume, recording/egress, and adaptive simulcast tuning (LiveKit
+supports simulcast + dynacast out of the box, already enabled).
+
+> Status: backend (`go build`) and web (`bun run build`) compile. Not yet run against a live LiveKit
+> server + multiple clients. Flutter: 1:1 + screen share done; LiveKit/group + device settings are
+> the next step there.

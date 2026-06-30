@@ -14,6 +14,7 @@
     "vite": "^8.1.0"
   },
   "dependencies": {
+    "livekit-client": "^2.20.0",
     "tinode-sdk": "^0.25.1"
   }
 }

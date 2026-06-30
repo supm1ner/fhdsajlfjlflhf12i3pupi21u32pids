@@ -32,7 +32,7 @@ class _SunriseAppState extends State<SunriseApp> {
       debugShowCheckedModeBanner: false,
       theme: buildGlassTheme(),
       home: ListenableBuilder(
-        listenable: Listenable.merge([_state, _state.call]),
+        listenable: Listenable.merge([_state, _state.call, _state.liveKit]),
         builder: (context, _) {
           return _state.phase == Phase.ready
               ? HomeScreen(state: _state)

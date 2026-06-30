@@ -14,6 +14,7 @@ dependencies:
   crypto: ^3.0.3               # PKCE code challenge for SSO
   url_launcher: ^6.2.5         # open the SSO provider in the system browser
   flutter_webrtc: ^0.11.7      # audio/video calls
+  livekit_client: ^2.3.0       # SFU group calls (LiveKit)
   camera: ^0.11.0              # round video notes ("кружки")
   record: ^5.1.2               # voice messages
   image_picker: ^1.1.2         # photo attachments

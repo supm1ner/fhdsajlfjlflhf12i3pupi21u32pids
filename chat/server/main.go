@@ -787,6 +787,9 @@ func main() {
 		logs.Info.Println("Large media handling enabled", config.Media.UseHandler)
 	}
 
+	// LiveKit access-token endpoint for SFU group calls (no-op unless LIVEKIT_* env is set).
+	mux.HandleFunc(config.ApiPath+"v0/livekit/token", livekitTokenHandler)
+
 	if staticMountPoint != "/" {
 		// Serve json-formatted 404 for all other URLs
 		mux.HandleFunc("/", serve404)

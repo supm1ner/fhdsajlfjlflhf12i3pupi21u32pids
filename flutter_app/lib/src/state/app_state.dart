@@ -6,6 +6,7 @@ import '../sunrise/drafty.dart';
 import '../sunrise/models.dart';
 import '../sunrise/sunrise_client.dart';
 import 'call_controller.dart';
+import 'livekit_room.dart';
 
 enum Phase { loggedOut, connecting, ready }
 
@@ -13,11 +14,13 @@ enum Phase { loggedOut, connecting, ready }
 class AppState extends ChangeNotifier {
   AppState({SunriseClient? client}) : client = client ?? SunriseClient() {
     call = CallController(this.client);
+    liveKit = LiveKitController(this.client);
     _wire();
   }
 
   final SunriseClient client;
   late final CallController call;
+  late final LiveKitController liveKit;
 
   Phase phase = Phase.loggedOut;
   String? error;
@@ -134,6 +137,17 @@ class AppState extends ChangeNotifier {
     final t = currentTopic;
     if (t == null) return;
     call.startCall(t, _currentName(), audioOnly: audioOnly);
+  }
+
+  /// Start a group call via LiveKit (SFU). Surfaces an error if LiveKit isn't configured.
+  Future<void> startGroupCall() async {
+    final t = currentTopic;
+    if (t == null) return;
+    final joined = await liveKit.start(t, audioOnly: false);
+    if (!joined) {
+      error = 'Group calls require LiveKit, which is not configured on the server.';
+      notifyListeners();
+    }
   }
 
   // --- Media -------------------------------------------------------------
@@ -274,6 +288,7 @@ class AppState extends ChangeNotifier {
     _infoSub?.cancel();
     _typingTimer?.cancel();
     call.dispose();
+    liveKit.dispose();
     super.dispose();
   }
 }

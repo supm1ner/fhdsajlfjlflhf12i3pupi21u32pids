@@ -207,9 +207,13 @@ scopes `openid profile email`). См. `sso/docs/RUNBOOK.md`.
       `setSinkId`), шумоподавление/эхо/AGC, сохранение выбора.
 - [x] **Групповые звонки** (веб): WebRTC-**mesh** через сигналинг в топике (`mcall` head),
       сетка участников, mute/камера/экран/настройки. Без изменений бэкенда.
-- [ ] **Discord-масштаб**: SFU (LiveKit/mediasoup) вместо mesh для больших комнат; шумоподавление
-      (RNNoise), индикатор говорящего, выделенный сигнальный канал (сейчас сигналинг идёт
-      сохраняемыми сообщениями, скрытыми из ленты). Flutter: группы + настройки устройств.
+- [x] **LiveKit (SFU)** для масштабируемых групповых звонков: бэкенд-эндпоинт выдачи токена
+      (`/v0/livekit/token`, JWT HS256), веб-клиент (`livekit.svelte.js` + `LiveKitPanel`),
+      Flutter-клиент (`livekit_room.dart` + `LiveKitRoomScreen`). Кнопка группового звонка
+      предпочитает LiveKit, при отсутствии конфигурации — фолбэк на mesh (веб). Demuxing/simulcast
+      (dynacast) включён. Деплой — в `docs/CALLS.md`.
+- [ ] **Discord-grade поверх LiveKit**: шумоподавление (RNNoise), индикатор говорящего,
+      per-participant громкость, запись (egress). Flutter: настройки устройств.
 
 **M6 — Нативные приложения (Flutter)** *(каркас готов)*
 - [x] Flutter-клиент для мобайл+десктоп (`flutter_app/`): один Dart-клиент протокола Sunrise по

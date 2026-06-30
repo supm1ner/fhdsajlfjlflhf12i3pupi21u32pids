@@ -147,6 +147,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
               IconButton(
                   onPressed: () => s.startCall(audioOnly: false),
                   icon: const Icon(Icons.videocam, color: Palette.textSecondary)),
+              IconButton(
+                  onPressed: s.startGroupCall,
+                  icon: const Icon(Icons.groups, color: Palette.textSecondary)),
             ],
           ),
         ),
