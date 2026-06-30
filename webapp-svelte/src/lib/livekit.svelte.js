@@ -5,9 +5,10 @@
 // the API secret never reaches the browser. Falls back to the mesh implementation (groupcall.js)
 // when LiveKit is not configured (token endpoint returns 501).
 
-import { Room, RoomEvent, Track } from 'livekit-client';
 import { fetchLiveKitToken } from './tinode.js';
 
+// livekit-client is heavy (~120 KB gzip); load it lazily only when a group call starts.
+let LK = null; // the dynamically-imported livekit-client module
 let room = null;
 const audioEls = new Map(); // trackSid -> HTMLAudioElement
 
@@ -50,6 +51,7 @@ function rebuildTiles() {
 }
 
 function wire(r) {
+  const { RoomEvent, Track } = LK;
   const refresh = () => rebuildTiles();
   r.on(RoomEvent.ParticipantConnected, refresh)
     .on(RoomEvent.ParticipantDisconnected, refresh)
@@ -80,7 +82,8 @@ function wire(r) {
 export async function start(roomName, audioOnly = false) {
   if (_s.active) return;
   const { url, token } = await fetchLiveKitToken(roomName);
-  room = new Room({ adaptiveStream: true, dynacast: true });
+  if (!LK) LK = await import('livekit-client');
+  room = new LK.Room({ adaptiveStream: true, dynacast: true });
   wire(room);
   await room.connect(url, token);
   await room.localParticipant.setMicrophoneEnabled(true);

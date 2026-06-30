@@ -69,6 +69,10 @@ Backend host/API key: `VITE_HOST`, `VITE_API_KEY`, `VITE_TLS`. SSO: `VITE_OIDC_I
 - **History pagination** — older messages load when you scroll to the top (viewport stays stable).
 - **Delivery ticks** — own messages show ✓ (sent) / ✓✓ (received) / ✓✓ accent (read), driven by the
   peer's recv/read receipts; the feed only auto-scrolls when you're already at the bottom.
+- **PWA** — installable (manifest + icons) with an offline app shell (service worker, same-origin
+  cache only — the WS/API is never intercepted).
+- **Desktop notifications** — inbound messages notify when the tab is backgrounded; click focuses the
+  chat. `livekit-client` is code-split (loads only when a group call starts), keeping initial JS small.
 
 ## Known limitations / next
 

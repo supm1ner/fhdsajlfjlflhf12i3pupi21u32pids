@@ -1,7 +1,8 @@
 <script>
   import { onMount } from 'svelte';
   import { appState } from '../lib/stores.svelte.js';
-  import { getClient, subscribeMe, getMe, mapContacts, myUID, searchUsers, installSession, setConnectionListener, logout as doLogout } from '../lib/tinode.js';
+  import { getClient, subscribeMe, getMe, mapContacts, myUID, searchUsers, installSession, setConnectionListener, messagePreview, logout as doLogout } from '../lib/tinode.js';
+  import { ensureNotifyPermission, notifyMessage } from '../lib/notify.js';
   import { callState, handleIncoming } from '../lib/calls.svelte.js';
   import { groupCall, handleSignal as handleGroupSignal } from '../lib/groupcall.svelte.js';
   import { liveKit } from '../lib/livekit.svelte.js';
@@ -61,8 +62,9 @@
       me.onSubsUpdated = () => refresh();
       me.onContactUpdate = () => refresh();
       refresh();
+      ensureNotifyPermission();
 
-      // Global incoming-call detection: an invite arrives as a data message with head.webrtc='started'.
+      // Global handler for incoming data messages.
       getClient().onDataMessage = (data) => {
         // Group-call mesh signaling.
         if (data?.head?.mcall) {
@@ -73,6 +75,14 @@
         if (data?.head?.webrtc === 'started' && data.from !== myUID()) {
           const peer = contacts.find((c) => c.topic === data.topic);
           handleIncoming(data.topic, data.seq, !!data.head.aonly, peer?.name || data.topic);
+          return;
+        }
+        // Desktop notification for an inbound message (only fires when the tab is backgrounded).
+        if (data.from && data.from !== myUID() && !data.head?.webrtc) {
+          const peer = contacts.find((c) => c.topic === data.topic);
+          const name = peer?.name || data.topic;
+          notifyMessage(name, messagePreview({ content: data.content, head: data.head }),
+            () => openChat({ topic: data.topic, name, online: peer?.online, lastMsg: '', unread: 0 }));
         }
       };
     } catch (e) {

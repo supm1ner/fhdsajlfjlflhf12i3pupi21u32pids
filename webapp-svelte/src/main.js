@@ -4,10 +4,11 @@ import App from './App.svelte'
 import { appState } from './lib/stores.svelte.js'
 import { loginWithSavedToken, myUID } from './lib/tinode.js'
 
+// Register the service worker for PWA install + offline app shell.
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(regs =>
-    regs.forEach(r => r.unregister())
-  )
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => { /* ignore */ });
+  });
 }
 
 const app = mount(App, {
