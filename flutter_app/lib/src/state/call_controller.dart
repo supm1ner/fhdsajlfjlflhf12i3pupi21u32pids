@@ -179,7 +179,10 @@ class CallController extends ChangeNotifier {
     final pc = _pc;
     if (pc == null) return;
     final senders = await pc.getSenders();
-    final sender = senders.where((s) => s.track?.kind == 'video').cast<RTCRtpSender?>().firstWhere((_) => true, orElse: () => null);
+    RTCRtpSender? sender;
+    for (final s in senders) {
+      if (s.track?.kind == 'video') { sender = s; break; }
+    }
     if (sender == null) return;
     try {
       if (!screenSharing) {
