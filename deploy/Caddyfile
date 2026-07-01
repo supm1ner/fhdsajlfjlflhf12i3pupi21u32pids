@@ -1,28 +1,28 @@
-# Single-port (443) edge for the messenger: web + chat + LiveKit signaling on ONE domain.
-# Set CADDY_DOMAIN in .env (defaults to localhost; for a real domain Caddy auto-provisions TLS).
+# Single-port (443) edge. The PRIMARY client is the mature Tinode/Sunrise React app,
+# which the Sunrise backend serves at "/" on the same origin as the API (/v0/*) — so it
+# auto-detects the server and works with zero config. LiveKit signaling shares :443 too.
 #
-# Behind this, only 443 (TCP) needs to be open for the app — PLUS the LiveKit media ports
-# 7881/TCP and 7882/UDP, which are NOT HTTP and cannot be reverse-proxied here.
+# Set CADDY_DOMAIN in .env (defaults to localhost). Only 443/TCP needs to be public for the
+# app — PLUS LiveKit media 7881/TCP + 7882/UDP (WebRTC media is not HTTP, can't be proxied).
 
 {$CADDY_DOMAIN:localhost} {
 	encode zstd gzip
 
-	# LiveKit SFU signaling (/rtc) + API (/twirp). Must precede the SPA catch-all.
+	# LiveKit SFU: signaling (/rtc) + API (/twirp). Must precede the catch-all.
 	@livekit path /rtc /rtc/* /twirp/*
 	reverse_proxy @livekit livekit:7880
 
-	# Sunrise messenger backend: WS chat (/v0/channels), files (/v0/file), token (/v0/livekit/token).
-	reverse_proxy /v0/* sunrise:6060
-
-	# Web client SPA (everything else).
-	reverse_proxy web:80
+	# Everything else → Sunrise backend: it serves the React client at "/" AND the
+	# WS chat (/v0/channels), files (/v0/file), token (/v0/livekit/token) on one origin.
+	reverse_proxy sunrise:6060
 }
 
-# ── Optional: SSO on subdomains (uncomment + point DNS). Each is HTTP, so they share :443. ──
-# id.{$CADDY_DOMAIN} {
-# 	reverse_proxy frontend:80
+# ── Optional: the experimental Svelte client on a subdomain (uncomment + point DNS). ──
+# app.{$CADDY_DOMAIN} {
+# 	reverse_proxy web:80
 # }
-# auth.{$CADDY_DOMAIN} {
-# 	reverse_proxy hydra:4444
-# }
-# Then set PUBLIC_BASE_URL/HYDRA_PUBLIC_URL/VITE_OIDC_* to the https subdomains and re-run register-rp.sh.
+
+# ── Optional: SSO on subdomains (each is HTTP → shares :443). ──
+# id.{$CADDY_DOMAIN}   { reverse_proxy frontend:80 }
+# auth.{$CADDY_DOMAIN} { reverse_proxy hydra:4444 }
+# Then set PUBLIC_BASE_URL/HYDRA_PUBLIC_URL/VITE_OIDC_* to the https subdomains, re-run register-rp.sh.

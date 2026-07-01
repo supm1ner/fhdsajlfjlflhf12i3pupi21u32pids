@@ -26,11 +26,21 @@ docker compose up -d --build  # or: make up
 ./register-rp.sh              # or: make register
 ```
 
-Open the messenger at **http://localhost:8088**.
+Open the messenger at **http://localhost:6060**.
+
+### Clients
+- **http://localhost:6060 — the primary, working client.** The Sunrise backend serves the mature
+  **Tinode/Sunrise React app** on the same origin as its API, so it auto-detects the server and works
+  with zero config. This is the battle-tested, full-featured UI (contacts, groups, media, calls) —
+  use this.
+- **http://localhost:8088 — experimental Svelte client.** A newer, lighter UI still being built out;
+  not as complete. (Note: served on a different origin, so on first screen set the server to
+  `localhost:6060` if prompted.)
 
 | URL | What |
 |---|---|
-| http://localhost:8088 | Sunrise messenger (web client) |
+| **http://localhost:6060** | **Sunrise messenger — primary React client + API** |
+| http://localhost:8088 | Experimental Svelte client |
 | http://localhost:3000 | cotton-id SSO (sign-up / login / consent UI) |
 | http://localhost:8080/healthz | cotton-id backend health |
 | http://localhost:4444/.well-known/openid-configuration | Hydra OIDC discovery |
@@ -39,7 +49,7 @@ Open the messenger at **http://localhost:8088**.
 
 ## First-run E2E checklist
 1. `make ps` — all services `healthy`/`running` (sunrise has no healthcheck label; check `make smoke`).
-2. Open http://localhost:8088 → **register** (login + password) → you land in the messenger.
+2. Open http://localhost:6060 → **register** (login + password) → you land in the messenger.
 3. Open a second browser/profile, register a second user.
 4. Find the other user via the **＋ (new chat)** search → send messages both ways (realtime).
 5. Send a photo, a voice message, a **round video note**.
