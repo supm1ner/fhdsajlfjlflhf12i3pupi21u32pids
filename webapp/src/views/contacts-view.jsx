@@ -4,6 +4,7 @@ import { FormattedMessage, defineMessages, injectIntl } from 'react-intl';
 import { Sunrise } from 'sunrise-sdk';
 
 import ContactList from '../widgets/contact-list.jsx';
+import StoryTray from '../widgets/story-tray.jsx';
 
 import { updateFavicon } from '../lib/utils.js';
 
@@ -162,6 +163,8 @@ class ContactsView extends React.Component {
 
     return (
       <>
+        {showFolders && this.props.myUserId ?
+          <StoryTray myUserId={this.props.myUserId} onError={this.props.onError} /> : null}
         {folderTabs}
         <FormattedMessage id="contacts_not_found"
           defaultMessage="You have no chats\n¯∖_(ツ)_/¯"

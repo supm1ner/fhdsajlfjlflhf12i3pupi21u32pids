@@ -8438,6 +8438,62 @@ class HashNavigation {
 
 /***/ }),
 
+/***/ "./src/lib/stories.js":
+/*!****************************!*\
+  !*** ./src/lib/stories.js ***!
+  \****************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   addStory: function() { return /* binding */ addStory; },
+/* harmony export */   hasStories: function() { return /* binding */ hasStories; },
+/* harmony export */   loadStories: function() { return /* binding */ loadStories; },
+/* harmony export */   storyTtlMs: function() { return /* binding */ storyTtlMs; }
+/* harmony export */ });
+const STORY_TTL_MS = 24 * 60 * 60 * 1000;
+const KEY_PREFIX = 'sunrise.stories.';
+function key(uid) {
+  return KEY_PREFIX + (uid || 'me');
+}
+function loadStories(uid) {
+  let list = [];
+  try {
+    list = JSON.parse(localStorage.getItem(key(uid)) || '[]');
+  } catch (e) {
+    list = [];
+  }
+  const cutoff = Date.now() - STORY_TTL_MS;
+  const fresh = list.filter(s => s && s.ts > cutoff);
+  if (fresh.length != list.length) {
+    save(uid, fresh);
+  }
+  return fresh;
+}
+function save(uid, list) {
+  try {
+    localStorage.setItem(key(uid), JSON.stringify(list));
+  } catch (e) {}
+}
+function addStory(uid, img) {
+  const list = loadStories(uid);
+  list.push({
+    id: '' + Date.now() + Math.round(Math.random() * 1e6),
+    img,
+    ts: Date.now()
+  });
+  save(uid, list);
+  return list;
+}
+function hasStories(uid) {
+  return loadStories(uid).length > 0;
+}
+function storyTtlMs() {
+  return STORY_TTL_MS;
+}
+
+/***/ }),
+
 /***/ "./src/lib/strformat.js":
 /*!******************************!*\
   !*** ./src/lib/strformat.js ***!
@@ -9284,7 +9340,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "sunrise-sdk");
 /* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _widgets_contact_list_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../widgets/contact-list.jsx */ "./src/widgets/contact-list.jsx");
-/* harmony import */ var _lib_utils_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../lib/utils.js */ "./src/lib/utils.js");
+/* harmony import */ var _widgets_story_tray_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../widgets/story-tray.jsx */ "./src/widgets/story-tray.jsx");
+/* harmony import */ var _lib_utils_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../lib/utils.js */ "./src/lib/utils.js");
+
 
 
 
@@ -9404,7 +9462,7 @@ class ContactsView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
       const newState = ContactsView.deriveStateFromProps(this.props);
       this.setState(newState);
       if (newState.unreadThreads != prevState.unreadThreads) {
-        (0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_4__.updateFavicon)(newState.unreadThreads);
+        (0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_5__.updateFavicon)(newState.unreadThreads);
       }
     }
   }
@@ -9452,7 +9510,10 @@ class ContactsView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
     }, formatMessage(f.label), f.id == 'unread' && this.state.unreadThreads > 0 ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
       className: "folder-badge"
     }, this.state.unreadThreads) : null))) : null;
-    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, folderTabs, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, showFolders && this.props.myUserId ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_story_tray_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      myUserId: this.props.myUserId,
+      onError: this.props.onError
+    }) : null, folderTabs, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
       id: "contacts_not_found",
       defaultMessage: [{
         "type": 0,
@@ -16503,6 +16564,258 @@ class SideNavbar extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureCompo
   }
 }
 ;
+
+/***/ }),
+
+/***/ "./src/widgets/story-tray.jsx":
+/*!************************************!*\
+  !*** ./src/widgets/story-tray.jsx ***!
+  \************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ StoryTray; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
+/* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _story_viewer_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./story-viewer.jsx */ "./src/widgets/story-viewer.jsx");
+/* harmony import */ var _lib_stories_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../lib/stories.js */ "./src/lib/stories.js");
+/* harmony import */ var _lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../lib/blob-helpers.js */ "./src/lib/blob-helpers.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../config.js */ "./src/config.js");
+
+
+
+
+
+
+const STORY_DIM = 720;
+class StoryTray extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      stories: (0,_lib_stories_js__WEBPACK_IMPORTED_MODULE_3__.loadStories)(props.myUserId),
+      viewerOpen: false
+    };
+    this.handleAdd = this.handleAdd.bind(this);
+  }
+  handleAdd(e) {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) {
+      return;
+    }
+    (0,_lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_4__.imageScaled)(file, STORY_DIM, STORY_DIM, _config_js__WEBPACK_IMPORTED_MODULE_5__.MAX_EXTERN_ATTACHMENT_SIZE, false).then(scaled => (0,_lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_4__.blobToBase64)(scaled.blob)).then(b64 => {
+      const dataUrl = 'data:' + b64.mime + ';base64,' + b64.bits;
+      const stories = (0,_lib_stories_js__WEBPACK_IMPORTED_MODULE_3__.addStory)(this.props.myUserId, dataUrl);
+      this.setState({
+        stories
+      });
+    }).catch(err => this.props.onError && this.props.onError(err.message, 'err'));
+  }
+  render() {
+    const has = this.state.stories.length > 0;
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "story-tray"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "story-cell"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: 'story-ring' + (has ? ' has' : ''),
+      onClick: _ => {
+        if (has) {
+          this.setState({
+            viewerOpen: true
+          });
+        } else {
+          this.fileInput.click();
+        }
+      }
+    }, has ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", {
+      src: this.state.stories[this.state.stories.length - 1].img,
+      alt: ""
+    }) : react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "add")), has ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      className: "story-add-badge",
+      onClick: e => {
+        e.preventDefault();
+        this.fileInput.click();
+      }
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "add")) : null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      className: "story-label"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+      id: "your_story",
+      defaultMessage: [{
+        "type": 0,
+        "value": "Your story"
+      }]
+    }))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+      type: "file",
+      accept: "image/*",
+      ref: ref => {
+        this.fileInput = ref;
+      },
+      onChange: this.handleAdd,
+      style: {
+        display: 'none'
+      }
+    }), this.state.viewerOpen ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_story_viewer_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      stories: this.state.stories,
+      onClose: _ => this.setState({
+        viewerOpen: false
+      })
+    }) : null);
+  }
+}
+
+/***/ }),
+
+/***/ "./src/widgets/story-viewer.jsx":
+/*!**************************************!*\
+  !*** ./src/widgets/story-viewer.jsx ***!
+  \**************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ StoryViewer; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+const STORY_DURATION_MS = 5000;
+const TICK_MS = 50;
+class StoryViewer extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      index: 0,
+      progress: 0
+    };
+    this.tick = this.tick.bind(this);
+    this.next = this.next.bind(this);
+    this.prev = this.prev.bind(this);
+    this.handleKey = this.handleKey.bind(this);
+  }
+  componentDidMount() {
+    this.start();
+    document.addEventListener('keydown', this.handleKey);
+  }
+  componentWillUnmount() {
+    clearInterval(this.timer);
+    document.removeEventListener('keydown', this.handleKey);
+  }
+  start() {
+    clearInterval(this.timer);
+    this.setState({
+      progress: 0
+    });
+    this.elapsed = 0;
+    this.timer = setInterval(this.tick, TICK_MS);
+  }
+  tick() {
+    this.elapsed += TICK_MS;
+    const progress = Math.min(1, this.elapsed / STORY_DURATION_MS);
+    this.setState({
+      progress
+    });
+    if (progress >= 1) {
+      this.next();
+    }
+  }
+  next() {
+    const {
+      index
+    } = this.state;
+    if (index + 1 >= this.props.stories.length) {
+      clearInterval(this.timer);
+      this.props.onClose();
+      return;
+    }
+    this.setState({
+      index: index + 1
+    }, () => this.start());
+  }
+  prev() {
+    const index = Math.max(0, this.state.index - 1);
+    this.setState({
+      index
+    }, () => this.start());
+  }
+  handleKey(e) {
+    if (e.key === 'Escape') {
+      this.props.onClose();
+    } else if (e.key === 'ArrowRight') {
+      this.next();
+    } else if (e.key === 'ArrowLeft') {
+      this.prev();
+    }
+  }
+  render() {
+    const {
+      stories
+    } = this.props;
+    const {
+      index,
+      progress
+    } = this.state;
+    const story = stories[index];
+    if (!story) {
+      return null;
+    }
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "story-viewer-overlay",
+      onClick: this.props.onClose
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "story-viewer",
+      onClick: e => e.stopPropagation()
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "story-progress"
+    }, stories.map((s, i) => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "story-progress-track",
+      key: s.id
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "story-progress-fill",
+      style: {
+        width: (i < index ? 100 : i == index ? progress * 100 : 0) + '%'
+      }
+    })))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      className: "story-close",
+      onClick: e => {
+        e.preventDefault();
+        this.props.onClose();
+      }
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "close")), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", {
+      className: "story-image",
+      src: story.img,
+      alt: ""
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "story-nav"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      className: "story-nav-prev",
+      onClick: e => {
+        e.preventDefault();
+        this.prev();
+      }
+    }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      className: "story-nav-next",
+      onClick: e => {
+        e.preventDefault();
+        this.next();
+      }
+    }))));
+  }
+}
 
 /***/ }),
 
