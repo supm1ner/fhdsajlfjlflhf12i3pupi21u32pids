@@ -12,6 +12,16 @@ import '../widgets/glass.dart';
 import '../widgets/message_bubble.dart';
 import 'video_note_recorder.dart';
 
+/// Emoji offered in the composer picker.
+const List<String> kComposerEmoji = [
+  '😀', '😁', '😂', '🤣', '😊', '😍', '😘', '😉', '😎', '🥰', '😇', '🙂', '🙃', '😌', '😔', '😒',
+  '😢', '😭', '😤', '😠', '😡', '🥺', '😳', '😱', '🤔', '🤨', '😐', '😴', '🤗', '🤭', '🥳', '😜',
+  '👍', '👎', '👌', '✌️', '🤞', '🤟', '👏', '🙌', '🙏', '💪', '👋', '🤝', '👀', '🫶', '🤦', '🤷',
+  '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '💔', '💕', '💖', '💯', '🔥', '✨', '🎉', '🎊',
+  '🎁', '🏆', '⭐', '🌟', '💡', '✅', '❌', '⚡', '🚀', '🎯', '🌸', '🌹', '🌈', '☀️', '🌙', '🍀',
+  '🐶', '🐱', '🦊', '🐻', '🐼', '🦄', '🍕', '🍔', '🍟', '🍣', '🎂', '☕', '🍺', '🥂', '🍎', '🍓',
+];
+
 /// The message feed + composer for the selected conversation.
 class ConversationScreen extends StatefulWidget {
   const ConversationScreen({super.key, required this.state, required this.title, this.onBack});
@@ -40,6 +50,45 @@ class _ConversationScreenState extends State<ConversationScreen> {
     if (text.trim().isEmpty) return;
     _input.clear();
     widget.state.sendText(text);
+  }
+
+  // Insert [emoji] at the current caret position in the composer.
+  void _insertEmoji(String emoji) {
+    final sel = _input.selection;
+    final text = _input.text;
+    final start = sel.start >= 0 ? sel.start : text.length;
+    final end = sel.end >= 0 ? sel.end : text.length;
+    final next = text.replaceRange(start, end, emoji);
+    _input.value = TextEditingValue(
+      text: next,
+      selection: TextSelection.collapsed(offset: start + emoji.length),
+    );
+  }
+
+  Future<void> _showEmojiPicker() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Palette.bg,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: SizedBox(
+          height: 280,
+          child: GridView.count(
+            crossAxisCount: 8,
+            padding: const EdgeInsets.all(12),
+            children: kComposerEmoji
+                .map((emoji) => InkWell(
+                      borderRadius: BorderRadius.circular(10),
+                      onTap: () => _insertEmoji(emoji),
+                      child: Center(child: Text(emoji, style: const TextStyle(fontSize: 26))),
+                    ))
+                .toList(),
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _showReactionPicker(AppState s, int seq) async {
@@ -249,6 +298,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
               : Row(
                   children: [
                     IconButton(onPressed: _attachImage, icon: const Icon(Icons.image_outlined, color: Palette.textSecondary)),
+                    IconButton(onPressed: _showEmojiPicker, icon: const Icon(Icons.emoji_emotions_outlined, color: Palette.textSecondary)),
                     Expanded(
                       child: TextField(
                         controller: _input,
