@@ -51,7 +51,12 @@ LiveKit JWT (HS256, signed with the API secret) carrying a video grant scoped to
 LIVEKIT_URL=wss://livekit.example.com   # or ws://localhost:7880 for local
 LIVEKIT_API_KEY=devkey
 LIVEKIT_API_SECRET=<32+ byte secret>
+LIVEKIT_TOKEN_TTL_MIN=360               # optional access-token lifetime (default 6h)
 ```
+
+The token grant is room-scoped. Request a **view-only** (listener) token with
+`?publish=false` — the grant then allows subscribe but not publish (useful for large
+broadcast-style rooms). The mint logic is unit-tested (`hdl_livekit_test.go`).
 
 **Run a LiveKit server (local dev):**
 

@@ -17,6 +17,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -75,22 +76,14 @@ func livekitTokenHandler(wrt http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	identity := uid.UserId()
-	claims := jwt.MapClaims{
-		"iss":  apiKey,
-		"sub":  identity,
-		"name": identity,
-		"nbf":  now.Unix(),
-		"exp":  now.Add(6 * time.Hour).Unix(),
-		"video": map[string]any{
-			"roomJoin":       true,
-			"room":           room,
-			"canPublish":     true,
-			"canSubscribe":   true,
-			"canPublishData": true,
-		},
+	// View-only participants: ?publish=false|0 yields a subscribe-only grant (listeners).
+	canPublish := true
+	if p := req.FormValue("publish"); p == "false" || p == "0" || p == "no" {
+		canPublish = false
 	}
-	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(apiSecret))
+
+	identity := uid.UserId()
+	token, err := mintLiveKitToken(apiKey, apiSecret, identity, room, canPublish, livekitTokenTTL(), now)
 	if err != nil {
 		logs.Warn.Println("livekit: failed to sign token:", err)
 		writeErr(http.StatusInternalServerError, "failed to mint token")
@@ -99,4 +92,35 @@ func livekitTokenHandler(wrt http.ResponseWriter, req *http.Request) {
 
 	wrt.WriteHeader(http.StatusOK)
 	json.NewEncoder(wrt).Encode(livekitTokenResponse{URL: url, Token: token, Room: room, Identity: identity})
+}
+
+// livekitTokenTTL returns the access-token lifetime from LIVEKIT_TOKEN_TTL_MIN (minutes),
+// defaulting to 6 hours.
+func livekitTokenTTL() time.Duration {
+	if v := os.Getenv("LIVEKIT_TOKEN_TTL_MIN"); v != "" {
+		if min, err := strconv.Atoi(v); err == nil && min > 0 {
+			return time.Duration(min) * time.Minute
+		}
+	}
+	return 6 * time.Hour
+}
+
+// mintLiveKitToken builds a LiveKit access JWT (HS256) with a room-scoped video grant.
+// It is a pure function so it can be unit-tested without a running server.
+func mintLiveKitToken(apiKey, apiSecret, identity, room string, canPublish bool, ttl time.Duration, now time.Time) (string, error) {
+	claims := jwt.MapClaims{
+		"iss":  apiKey,
+		"sub":  identity,
+		"name": identity,
+		"nbf":  now.Unix(),
+		"exp":  now.Add(ttl).Unix(),
+		"video": map[string]any{
+			"roomJoin":       true,
+			"room":           room,
+			"canPublish":     canPublish,
+			"canSubscribe":   true,
+			"canPublishData": canPublish,
+		},
+	}
+	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(apiSecret))
 }
