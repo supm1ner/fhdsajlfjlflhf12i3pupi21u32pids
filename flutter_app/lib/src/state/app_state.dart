@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../sunrise/drafty.dart';
 import '../sunrise/models.dart';
@@ -67,6 +70,13 @@ class AppState extends ChangeNotifier {
     });
   }
 
+  Future<void> register(String login, String password) async {
+    await _withConnection(() async {
+      await client.register(login, password);
+      displayName = login;
+    });
+  }
+
   Future<void> loginOidc(String idToken) async {
     await _withConnection(() async {
       await client.loginOidc(idToken);
@@ -80,8 +90,10 @@ class AppState extends ChangeNotifier {
     notifyListeners();
     try {
       await client.connect();
+      _rewire();
       await body();
       await _loadContacts();
+      await _restoreAndSubscribe();
       phase = Phase.ready;
     } catch (e) {
       error = e.toString();
@@ -90,12 +102,72 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _rewire() {
+    _dataSub?.cancel();
+    _metaSub?.cancel();
+    _presSub?.cancel();
+    _infoSub?.cancel();
+    _wire();
+  }
+
   Future<void> _loadContacts() async {
     final meta = await client.subscribe('me', wantSub: true, wantDesc: true);
     // The subscribe response is a ctrl; the actual sub list arrives via {meta}.
     // Some servers also inline it; handle both.
     final subs = (meta['params'] as Map?)?['sub'];
     if (subs is List) _ingestSubs(subs);
+  }
+
+  // --- Search -------------------------------------------------------------
+
+  List<Map<String, dynamic>> searchResults = [];
+  bool searchBusy = false;
+
+  Future<void> searchUsers(String query) async {
+    searchBusy = true;
+    notifyListeners();
+    try {
+      searchResults = await client.searchUsers(query);
+    } catch (e) {
+      error = e.toString();
+      searchResults = [];
+    }
+    searchBusy = false;
+    notifyListeners();
+  }
+
+  void clearSearch() {
+    searchResults = [];
+    notifyListeners();
+  }
+
+  /// Open a conversation with a user found via search.
+  Future<void> openConversationWith(String userTopic, {String? name}) async {
+    currentTopic = userTopic;
+    messages.clear();
+    peerTyping = false;
+    peerReadSeq = 0;
+
+    // Add to contacts if not already there.
+    if (!contacts.any((c) => c.topic == userTopic)) {
+      contacts.add(Contact(
+        topic: userTopic,
+        name: name ?? userTopic,
+        touched: DateTime.now(),
+      ));
+      _sortContacts();
+      _persistContacts();
+    }
+
+    notifyListeners();
+    try {
+      await client.subscribe(userTopic, dataLimit: 24);
+      await client.getMessages(userTopic, limit: 24);
+      client.note(userTopic, 'read');
+    } catch (e) {
+      error = e.toString();
+      notifyListeners();
+    }
   }
 
   // --- Conversations -----------------------------------------------------
@@ -300,14 +372,18 @@ class AppState extends ChangeNotifier {
     }
     // Reactions are metadata: don't surface them in the contact preview.
     if (_isReaction(msg)) return;
-    // Update the contact preview.
-    final c = contacts.firstWhere((c) => c.topic == data['topic'], orElse: () => Contact(topic: '', name: ''));
-    if (c.topic.isNotEmpty) {
-      c.lastMessage = Drafty.preview(msg.content, head: msg.head);
-      c.touched = msg.ts;
-      _sortContacts();
-      notifyListeners();
+    // Update the contact preview — create if missing.
+    var idx = contacts.indexWhere((c) => c.topic == data['topic']);
+    if (idx < 0) {
+      contacts.add(Contact(topic: msg.topic, name: msg.topic));
+      idx = contacts.length - 1;
     }
+    final c = contacts[idx];
+    c.lastMessage = Drafty.preview(msg.content, head: msg.head);
+    c.touched = msg.ts;
+    _sortContacts();
+    _persistContacts();
+    notifyListeners();
   }
 
   void _handleMeta(Map<String, dynamic> meta) {
@@ -355,10 +431,72 @@ class AppState extends ChangeNotifier {
       }
     }
     _sortContacts();
+    _persistContacts();
   }
 
   void _sortContacts() {
     contacts.sort((a, b) => (b.touched ?? DateTime(0)).compareTo(a.touched ?? DateTime(0)));
+  }
+
+  // --- Local persistence ---------------------------------------------------
+
+  Future<File> get _contactsFile async {
+    final dir = await getApplicationDocumentsDirectory();
+    return File('${dir.path}/contacts.json');
+  }
+
+  Future<void> _persistContacts() async {
+    try {
+      final data = contacts.map((c) => {
+        'topic': c.topic,
+        'name': c.name,
+        'photoRef': c.photoRef,
+        'lastMessage': c.lastMessage,
+        'unread': c.unread,
+        'touched': c.touched?.toIso8601String(),
+      }).toList();
+      final file = await _contactsFile;
+      await file.writeAsString(jsonEncode(data));
+    } catch (_) {}
+  }
+
+  Future<void> _restoreContacts() async {
+    try {
+      final file = await _contactsFile;
+      if (!await file.exists()) return;
+      final data = jsonDecode(await file.readAsString()) as List;
+      for (final m in data) {
+        if (m is! Map) continue;
+        final topic = m['topic'] as String? ?? '';
+        if (topic.isEmpty) continue;
+        final i = contacts.indexWhere((c) => c.topic == topic);
+        if (i < 0) {
+          contacts.add(Contact(
+            topic: topic,
+            name: m['name'] as String? ?? topic,
+            photoRef: m['photoRef'] as String?,
+            lastMessage: m['lastMessage'] as String? ?? '',
+            touched: DateTime.tryParse(m['touched'] as String? ?? ''),
+          ));
+        }
+      }
+      _sortContacts();
+    } catch (_) {}
+  }
+
+  /// After login, load persisted contacts and subscribe to each p2p topic
+  /// so messages are delivered in real time.
+  Future<void> _restoreAndSubscribe() async {
+    await _restoreContacts();
+    notifyListeners();
+    for (final c in List.of(contacts)) {
+      try {
+        await client.subscribe(c.topic, dataLimit: 24);
+        await client.getMessages(c.topic, limit: 24);
+        client.note(c.topic, 'read');
+      } catch (_) {}
+    }
+    notifyListeners();
   }
 
   void logout() {

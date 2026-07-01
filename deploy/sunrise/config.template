@@ -109,6 +109,8 @@
 		"gc_min_account_age": 48
 	},
 
+	"push": [],
+
 	"webrtc": {
 		"enabled": $WEBRTC_ENABLED,
 		"call_establishment_timeout": 30,

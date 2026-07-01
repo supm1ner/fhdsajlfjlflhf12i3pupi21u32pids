@@ -17,8 +17,8 @@ WORKDIR /src
 COPY chat/ ./chat/
 WORKDIR /src/chat
 # The server binary is "sunrise"; the schema initializer is "init-db".
-RUN CGO_ENABLED=0 go build -o /out/sunrise ./server \
- && CGO_ENABLED=0 go build -o /out/init-db ./sunrise-db
+RUN CGO_ENABLED=0 go build -tags postgres -o /out/sunrise ./server \
+ && CGO_ENABLED=0 go build -tags postgres -o /out/init-db ./sunrise-db
 
 # ---- Runtime stage -----------------------------------------------------------
 FROM alpine:3.20

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../state/app_state.dart';
@@ -24,9 +25,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String _search = '';
   final _searchCtrl = TextEditingController();
+  bool _searchMode = false;
+  Timer? _debounce;
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _searchCtrl.dispose();
     super.dispose();
   }
@@ -39,6 +43,33 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _open(Contact c) => widget.state.openConversation(c.topic);
+
+  void _onSearchChanged(String v) {
+    _debounce?.cancel();
+    if (v.length < 2) {
+      _searchMode = false;
+      _search = v;
+      widget.state.clearSearch();
+      return;
+    }
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      setState(() => _search = v);
+      _searchMode = true;
+      widget.state.searchUsers(v);
+    });
+  }
+
+  void _openSearchResult(Map<String, dynamic> r) {
+    final topic = r['topic'] as String;
+    final name = r['name'] as String?;
+    widget.state.openConversationWith(topic, name: name);
+    setState(() {
+      _searchMode = false;
+      _search = '';
+      _searchCtrl.clear();
+    });
+    widget.state.clearSearch();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,29 +154,60 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: GlassField(
             controller: _searchCtrl,
-            hint: 'Search…',
+            hint: 'Search users…',
             icon: Icons.search,
-            onChanged: (v) => setState(() => _search = v),
+            onChanged: _onSearchChanged,
           ),
         ),
         Expanded(
-          child: _filtered.isEmpty
-              ? const Center(
-                  child: Text('No conversations yet', style: TextStyle(color: Palette.textSecondary)))
-              : ListView.builder(
-                  padding: const EdgeInsets.all(6),
-                  itemCount: _filtered.length,
-                  itemBuilder: (ctx, i) {
-                    final c = _filtered[i];
-                    return ContactTile(
-                      contact: c,
-                      active: c.topic == widget.state.currentTopic,
-                      onTap: () => _open(c),
-                    );
-                  },
-                ),
+          child: _searchMode
+              ? _searchResults()
+              : _filtered.isEmpty
+                  ? const Center(
+                      child: Text('No conversations yet',
+                          style: TextStyle(color: Palette.textSecondary)))
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(6),
+                      itemCount: _filtered.length,
+                      itemBuilder: (ctx, i) {
+                        final c = _filtered[i];
+                        return ContactTile(
+                          contact: c,
+                          active: c.topic == widget.state.currentTopic,
+                          onTap: () => _open(c),
+                        );
+                      },
+                    ),
         ),
       ],
+    );
+  }
+
+  Widget _searchResults() {
+    final results = widget.state.searchResults;
+    final busy = widget.state.searchBusy;
+    if (busy) {
+      return const Center(child: CircularProgressIndicator(color: Palette.accent));
+    }
+    if (results.isEmpty) {
+      return const Center(
+        child: Text('No users found', style: TextStyle(color: Palette.textSecondary)),
+      );
+    }
+    return ListView.builder(
+      padding: const EdgeInsets.all(6),
+      itemCount: results.length,
+      itemBuilder: (ctx, i) {
+        final r = results[i];
+        return ListTile(
+          leading: GlassAvatar(name: r['name'] as String, size: 36),
+          title: Text(r['name'] as String,
+              style: const TextStyle(color: Palette.textPrimary, fontSize: 14)),
+          subtitle: Text(r['topic'] as String,
+              style: const TextStyle(color: Palette.textTertiary, fontSize: 11)),
+          onTap: () => _openSearchResult(r),
+        );
+      },
     );
   }
 

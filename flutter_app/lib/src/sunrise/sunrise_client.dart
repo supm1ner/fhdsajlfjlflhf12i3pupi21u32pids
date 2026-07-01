@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -16,7 +17,16 @@ class SunriseClient {
     this.apiKey = 'AQEAAAABAAD_rAp4DJh05a1HAwFT3A6K',
     this.secure = false,
     this.appName = 'SunriseFlutter/0.1',
-  });
+  }) {
+    _initStreams();
+  }
+
+  void _initStreams() {
+    _data = StreamController<Map<String, dynamic>>.broadcast();
+    _meta = StreamController<Map<String, dynamic>>.broadcast();
+    _pres = StreamController<Map<String, dynamic>>.broadcast();
+    _info = StreamController<Map<String, dynamic>>.broadcast();
+  }
 
   final String host;
   final String apiKey;
@@ -31,17 +41,18 @@ class SunriseClient {
   String? authToken;
   DateTime? tokenExpires;
 
-  final _data = StreamController<Map<String, dynamic>>.broadcast();
-  final _meta = StreamController<Map<String, dynamic>>.broadcast();
-  final _pres = StreamController<Map<String, dynamic>>.broadcast();
-  final _info = StreamController<Map<String, dynamic>>.broadcast();
+  late StreamController<Map<String, dynamic>> _data;
+  late StreamController<Map<String, dynamic>> _meta;
+  late StreamController<Map<String, dynamic>> _pres;
+  late StreamController<Map<String, dynamic>> _info;
 
   Stream<Map<String, dynamic>> get onData => _data.stream;
   Stream<Map<String, dynamic>> get onMeta => _meta.stream;
   Stream<Map<String, dynamic>> get onPres => _pres.stream;
   Stream<Map<String, dynamic>> get onInfo => _info.stream;
 
-  bool get isConnected => _ch != null;
+  bool _closed = false;
+  bool get isConnected => _ch != null && !_closed;
 
   String get _scheme => secure ? 'wss' : 'ws';
   String get baseHttp => '${secure ? 'https' : 'http'}://$host';
@@ -52,6 +63,9 @@ class SunriseClient {
   /// Opens the WebSocket and performs the {hi} handshake.
   Future<void> connect() async {
     if (_ch != null) return;
+    _closed = false;
+    _fndSubscribed = false;
+    _initStreams();
     final ch = WebSocketChannel.connect(Uri.parse(wsUrl));
     _ch = ch;
     ch.stream.listen(_onMessage, onError: _onError, onDone: _onDone, cancelOnError: false);
@@ -62,6 +76,7 @@ class SunriseClient {
   }
 
   void _onMessage(dynamic raw) {
+    if (_closed) return;
     final Map<String, dynamic> pkt;
     try {
       pkt = (jsonDecode(raw as String) as Map).cast<String, dynamic>();
@@ -100,6 +115,12 @@ class SunriseClient {
 
   void _onDone() {
     _ch = null;
+    if (_closed) return;
+    _closed = true;
+    for (final c in _pending.values) {
+      if (!c.isCompleted) c.completeError(StateError('connection closed'));
+    }
+    _pending.clear();
   }
 
   Future<Map<String, dynamic>> _send(Map<String, dynamic> packet) {
@@ -126,6 +147,24 @@ class SunriseClient {
 
   /// Login with a previously issued session token.
   Future<void> loginToken(String token) => _login('token', token);
+
+  /// Register a new account (basic auth: login + password).
+  Future<void> register(String login, String password) async {
+    final ctrl = await _send({
+      'acc': {
+        'id': _nextId(),
+        'user': 'new',
+        'scheme': 'basic',
+        'secret': _b64('$login:$password'),
+        'login': true,
+        'desc': {'public': {'fn': login}},
+      },
+    });
+    final params = (ctrl['params'] as Map?)?.cast<String, dynamic>() ?? {};
+    userId = params['user'] as String?;
+    authToken = params['token'] as String?;
+    tokenExpires = DateTime.tryParse(params['expires'] as String? ?? '');
+  }
 
   /// Login with an external OIDC ID token (SSO).
   Future<void> loginOidc(String idToken) => _login('oidc', _b64(idToken));
@@ -276,6 +315,83 @@ class SunriseClient {
     });
   }
 
+  // --- User search (fnd topic) -----------------------------------------------
+
+  bool _fndSubscribed = false;
+
+  /// Search users by query string (e.g. "alice", "email:alice@example.com").
+  /// Returns a list of maps: {topic, name, online}.
+  Future<List<Map<String, dynamic>>> searchUsers(String query) async {
+    if (query.trim().isEmpty) return [];
+
+    final ch = _ch;
+    if (ch == null) return [];
+
+    // Subscribe to fnd topic once.
+    if (!_fndSubscribed) {
+      await _send({
+        'sub': {
+          'id': _nextId(),
+          'topic': 'fnd',
+        },
+      });
+      _fndSubscribed = true;
+    }
+
+    // Format query: search with basic: prefix since tags are stored as "basic:<username>".
+    final q = query.trim();
+    final fq = '$q,basic:$q';
+
+    // Set the search query via desc.public.
+    await _send({
+      'set': {
+        'id': _nextId(),
+        'topic': 'fnd',
+        'desc': {'public': fq},
+      },
+    });
+
+    // Listen for meta response BEFORE sending get.
+    final metaCompleter = Completer<Map<String, dynamic>>();
+    late final StreamSubscription metaSub;
+    metaSub = _meta.stream.listen((meta) {
+      if (!metaCompleter.isCompleted) {
+        metaCompleter.complete(meta);
+      }
+    });
+
+    try {
+      // Send get (ctrl is just an ack, we care about the meta).
+      final getId = _nextId();
+      ch.sink.add(jsonEncode({
+        'get': {
+          'id': getId,
+          'topic': 'fnd',
+          'what': 'sub',
+        },
+      }));
+
+      // Wait for meta response with results.
+      final meta = await metaCompleter.future.timeout(
+          const Duration(seconds: 10), onTimeout: () => <String, dynamic>{});
+
+      final results = <Map<String, dynamic>>[];
+      final subs = (meta['sub'] as List?) ?? [];
+      for (final s in subs) {
+        if (s is! Map) continue;
+        final m = s.cast<String, dynamic>();
+        final topic = m['user'] as String? ?? m['topic'] as String? ?? '';
+        if (topic.isEmpty) continue;
+        final pub = m['public'];
+        final name = (pub is Map) ? (pub['fn'] as String? ?? topic) : topic;
+        results.add({'topic': topic, 'name': name, 'online': m['online'] == true});
+      }
+      return results;
+    } finally {
+      metaSub.cancel();
+    }
+  }
+
   /// Build an authorized download URL for a server file ref ("/v0/file/s/..").
   String fileUrl(String ref) {
     if (ref.startsWith('http')) return ref;
@@ -289,6 +405,7 @@ class SunriseClient {
   }
 
   void dispose() {
+    _closed = true;
     _ch?.sink.close();
     _ch = null;
     _data.close();

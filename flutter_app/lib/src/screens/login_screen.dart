@@ -32,6 +32,10 @@ class _LoginScreenState extends State<LoginScreen> {
     await widget.state.loginBasic(_login.text.trim(), _password.text);
   }
 
+  Future<void> _register() async {
+    await widget.state.register(_login.text.trim(), _password.text);
+  }
+
   Future<void> _signInSso() async {
     final pkce = Pkce.generate();
     final url = _sso.authorizationUrl(pkce);
@@ -104,6 +108,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         onSubmitted: (_) => _signIn()),
                     const SizedBox(height: 18),
                     GlassButton(label: 'Sign In', primary: true, expand: true, loading: _busy, onTap: _signIn),
+                    const SizedBox(height: 8),
+                    GlassButton(label: 'Register New Account', expand: true, loading: _busy, onTap: _register),
                     const SizedBox(height: 12),
                     Row(children: const [
                       Expanded(child: Divider(color: Palette.glassBorder)),
