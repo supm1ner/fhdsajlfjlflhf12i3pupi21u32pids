@@ -31,6 +31,8 @@ class AppState extends ChangeNotifier {
   String? currentTopic;
   final List<Message> messages = [];
   bool peerTyping = false;
+  // Highest message seq the peer has read in the open conversation (0 = none yet).
+  int peerReadSeq = 0;
   Timer? _typingTimer;
 
   StreamSubscription? _dataSub, _metaSub, _presSub, _infoSub;
@@ -40,7 +42,19 @@ class AppState extends ChangeNotifier {
     _metaSub = client.onMeta.listen(_handleMeta);
     _presSub = client.onPres.listen(_handlePres);
     _infoSub = client.onInfo.listen((info) {
-      if (info['what'] == 'call') call.onSignal(info);
+      final what = info['what'];
+      if (what == 'call') {
+        call.onSignal(info);
+        return;
+      }
+      // The peer read our messages up to info.seq: drive the delivery ticks.
+      if (what == 'read' && info['topic'] == currentTopic && info['from'] != client.userId) {
+        final seq = (info['seq'] as num?)?.toInt() ?? 0;
+        if (seq > peerReadSeq) {
+          peerReadSeq = seq;
+          notifyListeners();
+        }
+      }
     });
   }
 
@@ -90,6 +104,7 @@ class AppState extends ChangeNotifier {
     currentTopic = topic;
     messages.clear();
     peerTyping = false;
+    peerReadSeq = 0;
     notifyListeners();
     try {
       await client.subscribe(topic, dataLimit: 24);
@@ -106,6 +121,7 @@ class AppState extends ChangeNotifier {
     currentTopic = null;
     messages.clear();
     peerTyping = false;
+    peerReadSeq = 0;
     notifyListeners();
   }
 

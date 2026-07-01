@@ -231,6 +231,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                         client: s.client,
                         reactions: s.reactionsFor(m.seq),
                         myUserId: s.client.userId,
+                        peerReadSeq: s.peerReadSeq,
                         onReact: (emoji) => s.toggleReaction(m.seq, emoji),
                         onLongPress: () => _showReactionPicker(s, m.seq),
                       );

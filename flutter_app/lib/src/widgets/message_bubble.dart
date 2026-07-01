@@ -20,6 +20,7 @@ class MessageBubble extends StatelessWidget {
     this.myUserId,
     this.onReact,
     this.onLongPress,
+    this.peerReadSeq = 0,
   });
 
   final Message message;
@@ -35,6 +36,9 @@ class MessageBubble extends StatelessWidget {
 
   /// Long-press handler (opens the reaction picker).
   final VoidCallback? onLongPress;
+
+  /// Highest message seq the peer has read (drives delivery ticks on own messages).
+  final int peerReadSeq;
 
   String? _src(Map<String, dynamic>? data) {
     if (data == null) return null;
@@ -155,7 +159,20 @@ class MessageBubble extends StatelessWidget {
                   const SizedBox(height: 3),
                   Align(
                     alignment: Alignment.centerRight,
-                    child: Text(time, style: TextStyle(color: metaColor, fontSize: 10.5, letterSpacing: 0.2)),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(time, style: TextStyle(color: metaColor, fontSize: 10.5, letterSpacing: 0.2)),
+                        if (isOwn && !message.isCall) ...[
+                          const SizedBox(width: 3),
+                          Icon(
+                            (peerReadSeq > 0 && message.seq <= peerReadSeq) ? Icons.done_all : Icons.done,
+                            size: 13,
+                            color: (peerReadSeq > 0 && message.seq <= peerReadSeq) ? Colors.white : metaColor,
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 ],
               ),
