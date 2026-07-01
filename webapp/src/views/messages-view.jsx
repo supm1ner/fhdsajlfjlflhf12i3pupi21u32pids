@@ -1937,6 +1937,7 @@ class MessagesView extends React.Component {
               <SendMessage
                 sunrise={this.props.sunrise}
                 topicName={this.state.topic}
+                myUserId={this.props.myUserId}
                 noInput={!!this.props.forwardMessage}
                 disabled={!this.state.isWriter || this.state.deleted}
                 reply={this.state.reply}

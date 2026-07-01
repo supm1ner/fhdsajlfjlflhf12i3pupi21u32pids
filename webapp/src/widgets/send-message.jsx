@@ -8,6 +8,8 @@ import { Drafty } from 'sunrise-sdk';
 const AudioRecorder = React.lazy(_ => import('./audio-recorder.jsx'));
 // Lazy-loading VideoNoteRecorder (кружок) for the same reason.
 const VideoNoteRecorder = React.lazy(_ => import('./video-note-recorder.jsx'));
+// Lazy-loading EmojiPicker: only pulled in when the user opens it.
+const EmojiPicker = React.lazy(_ => import('./emoji-picker.jsx'));
 
 import { KEYPRESS_DELAY } from '../config.js';
 import { filePasted } from '../lib/blob-helpers.js';
@@ -44,6 +46,11 @@ const messages = defineMessages({
     defaultMessage: 'Record voice message',
     description: 'Icon tool tip for recording a voice message'
   },
+  icon_title_emoji: {
+    id: 'icon_title_emoji',
+    defaultMessage: 'Emoji',
+    description: 'Icon tool tip for the emoji picker'
+  },
   icon_title_record_video_note: {
     id: 'icon_title_record_video_note',
     defaultMessage: 'Record video note',
@@ -75,17 +82,27 @@ class SendMessage extends React.PureComponent {
       message: '',
       audioRec: false,
       videoNoteRec: false,
+      emojiOpen: false,
+      mentionMatches: [],
+      mentionActive: -1,
       audioAvailable: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
     };
 
     // Timestamp when the previous key press was sent to the server.
     this.keypressTimestamp = 0;
+    // Caret index of the '@' that opened the mention dropdown (-1 = none).
+    this.mentionAnchor = -1;
+    // Mentions the user picked from the dropdown: [{name, uid}].
+    this.pendingMentions = [];
 
     this.handlePasteEvent = this.handlePasteEvent.bind(this);
     this.handleAttachImage = this.handleAttachImage.bind(this);
     this.handleAttachFile = this.handleAttachFile.bind(this);
     this.handleAttachAudio = this.handleAttachAudio.bind(this);
     this.handleAttachVideoNote = this.handleAttachVideoNote.bind(this);
+    this.handleInsertEmoji = this.handleInsertEmoji.bind(this);
+    this.toggleEmoji = this.toggleEmoji.bind(this);
+    this.selectMention = this.selectMention.bind(this);
     this.handleSend = this.handleSend.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.handleMessageTyping = this.handleMessageTyping.bind(this);
@@ -127,7 +144,10 @@ class SendMessage extends React.PureComponent {
     }
 
     if (prevProps.topicName != this.props.topicName) {
-      this.setState({message: this.props.initMessage || '', audioRec: false, videoNoteRec: false, quote: null});
+      this.mentionAnchor = -1;
+      this.pendingMentions = [];
+      this.setState({message: this.props.initMessage || '', audioRec: false, videoNoteRec: false,
+        emojiOpen: false, mentionMatches: [], mentionActive: -1, quote: null});
     } else if (prevProps.initMessage != this.props.initMessage) {
       const msg = this.props.initMessage || '';
       this.setState({message: msg}, _ => {
@@ -196,12 +216,159 @@ class SendMessage extends React.PureComponent {
     this.props.onAttachVideoNote(videoBlob, preview, params);
   }
 
+  toggleEmoji(e) {
+    e.preventDefault();
+    this.setState(prev => ({emojiOpen: !prev.emojiOpen}));
+  }
+
+  // Insert an emoji at the current caret position in the message input.
+  handleInsertEmoji(emoji) {
+    const ta = this.messageEditArea;
+    const msg = this.state.message;
+    let start = msg.length, end = msg.length;
+    if (ta && typeof ta.selectionStart == 'number') {
+      start = ta.selectionStart;
+      end = ta.selectionEnd;
+    }
+    const next = msg.slice(0, start) + emoji + msg.slice(end);
+    this.setState({message: next}, () => {
+      if (this.messageEditArea) {
+        const pos = start + emoji.length;
+        this.messageEditArea.focus();
+        this.messageEditArea.setSelectionRange(pos, pos);
+      }
+    });
+    if (this.props.onKeyPress) {
+      this.props.onKeyPress();
+    }
+  }
+
+  // --- @-mention autocomplete -------------------------------------------
+
+  // Group members eligible to be mentioned: [{user, name}] (excludes self).
+  getGroupMembers() {
+    const topic = (this.props.sunrise && this.props.topicName) ?
+      this.props.sunrise.getTopic(this.props.topicName) : null;
+    if (!topic || !topic.isGroupType || !topic.isGroupType()) {
+      return [];
+    }
+    const members = [];
+    topic.subscribers(sub => {
+      if (!sub || !sub.user || sub.user == this.props.myUserId) {
+        return;
+      }
+      const name = (sub.public && sub.public.fn) ? sub.public.fn : sub.user;
+      members.push({user: sub.user, name: name});
+    });
+    return members;
+  }
+
+  // Detect an "@query" token ending at the caret and update the suggestion list.
+  updateMentionContext(value, caret) {
+    const upto = value.slice(0, caret);
+    const match = /(^|\s)@([^\s@]*)$/.exec(upto);
+    if (!match) {
+      this.mentionAnchor = -1;
+      if (this.state.mentionMatches.length) {
+        this.setState({mentionMatches: [], mentionActive: -1});
+      }
+      return;
+    }
+    const query = match[2].toLowerCase();
+    const members = this.getGroupMembers();
+    if (members.length == 0) {
+      this.mentionAnchor = -1;
+      if (this.state.mentionMatches.length) {
+        this.setState({mentionMatches: [], mentionActive: -1});
+      }
+      return;
+    }
+    const matches = members
+      .filter(m => m.name.toLowerCase().includes(query))
+      .slice(0, 8);
+    // Position of the '@' character.
+    this.mentionAnchor = caret - match[2].length - 1;
+    this.setState({mentionMatches: matches, mentionActive: matches.length ? 0 : -1});
+  }
+
+  // Insert the picked member as "@Name " and remember it for Drafty conversion on send.
+  selectMention(member) {
+    const ta = this.messageEditArea;
+    const caret = (ta && typeof ta.selectionStart == 'number') ? ta.selectionStart : this.state.message.length;
+    const anchor = this.mentionAnchor;
+    if (anchor < 0) {
+      return;
+    }
+    const before = this.state.message.slice(0, anchor);
+    const after = this.state.message.slice(caret);
+    const insert = '@' + member.name + ' ';
+    this.pendingMentions.push({name: member.name, uid: member.user});
+    this.mentionAnchor = -1;
+    this.setState({message: before + insert + after, mentionMatches: [], mentionActive: -1}, () => {
+      if (this.messageEditArea) {
+        const pos = (before + insert).length;
+        this.messageEditArea.focus();
+        this.messageEditArea.setSelectionRange(pos, pos);
+      }
+    });
+  }
+
+  // Convert plain text with "@Name" tokens into Drafty with clickable MN entities.
+  // Returns the original string when no recorded mention is present in the text.
+  buildOutgoing(text) {
+    const toks = this.pendingMentions
+      .filter(m => text.includes('@' + m.name))
+      .map(m => ({tok: '@' + m.name, name: m.name, uid: m.uid}))
+      .sort((a, b) => b.tok.length - a.tok.length);
+    if (toks.length == 0) {
+      return text;
+    }
+    let result = null;
+    let plain = '';
+    const flush = () => {
+      if (plain) {
+        const d = Drafty.parse(plain);
+        result = result ? Drafty.append(result, d) : d;
+        plain = '';
+      }
+    };
+    let i = 0, used = false;
+    while (i < text.length) {
+      let matched = null;
+      for (const t of toks) {
+        if (text.startsWith(t.tok, i)) {
+          const nextCh = text[i + t.tok.length];
+          // Require a token boundary so "@Ann" doesn't match inside "@Anna".
+          if (nextCh === undefined || /[\s.,!?;:)]/.test(nextCh)) {
+            matched = t;
+            break;
+          }
+        }
+      }
+      if (matched) {
+        flush();
+        const men = Drafty.mention(matched.name, matched.uid);
+        result = result ? Drafty.append(result, men) : men;
+        i += matched.tok.length;
+        used = true;
+      } else {
+        plain += text[i];
+        i++;
+      }
+    }
+    flush();
+    return used ? result : text;
+  }
+
   handleSend(e) {
     e.preventDefault();
-    const message = this.state.message.trim();
-    if (message || this.props.acceptBlank || this.props.noInput) {
-      this.props.onSendMessage(message);
-      this.setState({message: ''});
+    const raw = this.state.message.trim();
+    if (raw || this.props.acceptBlank || this.props.noInput) {
+      // Convert "@Name" tokens into Drafty mentions when the user picked any.
+      const outgoing = this.buildOutgoing(raw);
+      this.props.onSendMessage(outgoing);
+      this.pendingMentions = [];
+      this.setState({message: '', emojiOpen: false, mentionMatches: [], mentionActive: -1});
     }
   }
 
@@ -212,6 +379,36 @@ class SendMessage extends React.PureComponent {
       e.preventDefault();
       e.stopPropagation();
       return;
+    }
+
+    // When the @-mention dropdown is open, navigate/select with the keyboard.
+    const matches = this.state.mentionMatches;
+    if (matches.length > 0) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        this.setState({mentionActive: (this.state.mentionActive + 1) % matches.length});
+        return;
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        this.setState({mentionActive: (this.state.mentionActive - 1 + matches.length) % matches.length});
+        return;
+      }
+      if (e.key === 'Enter' || e.key === 'Tab') {
+        const chosen = matches[this.state.mentionActive] || matches[0];
+        if (chosen) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.selectMention(chosen);
+          return;
+        }
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        this.mentionAnchor = -1;
+        this.setState({mentionMatches: [], mentionActive: -1});
+        return;
+      }
     }
 
     // Enter pressed: either send, or enter a new line.
@@ -237,6 +434,7 @@ class SendMessage extends React.PureComponent {
 
   handleMessageTyping(e) {
     this.setState({message: e.target.value});
+    this.updateMentionContext(e.target.value, e.target.selectionStart);
     if (this.props.onKeyPress) {
       const now = new Date().getTime();
       if (now - this.keypressTimestamp > KEYPRESS_DELAY) {
@@ -276,8 +474,25 @@ class SendMessage extends React.PureComponent {
     const audioEnabled = this.state.audioAvailable && this.props.onAttachAudio;
     const videoNoteEnabled = this.state.audioAvailable && this.props.onAttachVideoNote;
     const recording = this.state.audioRec || this.state.videoNoteRec;
+    const emojiEnabled = !this.props.noInput && !recording;
     return (
       <div id="send-message-wrapper">
+        {this.state.emojiOpen && emojiEnabled ?
+          <Suspense fallback={null}>
+            <EmojiPicker onPick={this.handleInsertEmoji} />
+          </Suspense> : null}
+        {this.state.mentionMatches.length > 0 ?
+          <div className="mention-suggest" onMouseDown={e => e.preventDefault()}>
+            {this.state.mentionMatches.map((m, i) => (
+              <div key={m.user}
+                className={'mention-item' + (i == this.state.mentionActive ? ' active' : '')}
+                onClick={() => this.selectMention(m)}
+                onMouseEnter={() => this.setState({mentionActive: i})}>
+                <span className="mention-name">{m.name}</span>
+                {m.name != m.user ? <span className="mention-id">{m.user}</span> : null}
+              </div>
+            ))}
+          </div> : null}
         {!this.props.noInput ? quote : null}
         <div id="send-message-panel">
           {!this.props.disabled ?
@@ -293,6 +508,11 @@ class SendMessage extends React.PureComponent {
                 </>
                 :
                 null}
+              {emojiEnabled ?
+                <a href="#" className={this.state.emojiOpen ? 'active' : ''} onClick={this.toggleEmoji}
+                  title={formatMessage(messages.icon_title_emoji)}>
+                  <i className="material-icons secondary">mood</i>
+                </a> : null}
               {this.props.noInput ?
                 (quote || <div className="hr thin" />) :
                 (this.state.audioRec ?

@@ -1982,6 +1982,7 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
         }) : react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_send_message_jsx__WEBPACK_IMPORTED_MODULE_13__["default"], {
           sunrise: this.props.sunrise,
           topicName: this.state.topic,
+          myUserId: this.props.myUserId,
           noInput: !!this.props.forwardMessage,
           disabled: !this.state.isWriter || this.state.deleted,
           reply: this.state.reply,
@@ -3042,6 +3043,7 @@ __webpack_require__.r(__webpack_exports__);
 
 const AudioRecorder = react__WEBPACK_IMPORTED_MODULE_0___default().lazy(_ => Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_webm-duration-fix_lib_index_js"), __webpack_require__.e("src_widgets_audio-recorder_jsx")]).then(__webpack_require__.bind(__webpack_require__, /*! ./audio-recorder.jsx */ "./src/widgets/audio-recorder.jsx")));
 const VideoNoteRecorder = react__WEBPACK_IMPORTED_MODULE_0___default().lazy(_ => Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_webm-duration-fix_lib_index_js"), __webpack_require__.e("src_widgets_video-note-recorder_jsx")]).then(__webpack_require__.bind(__webpack_require__, /*! ./video-note-recorder.jsx */ "./src/widgets/video-note-recorder.jsx")));
+const EmojiPicker = react__WEBPACK_IMPORTED_MODULE_0___default().lazy(_ => __webpack_require__.e(/*! import() */ "src_widgets_emoji-picker_jsx").then(__webpack_require__.bind(__webpack_require__, /*! ./emoji-picker.jsx */ "./src/widgets/emoji-picker.jsx")));
 
 
 
@@ -3100,6 +3102,13 @@ const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
       "value": "Record voice message"
     }]
   },
+  icon_title_emoji: {
+    id: "icon_title_emoji",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Emoji"
+    }]
+  },
   icon_title_record_video_note: {
     id: "icon_title_record_video_note",
     defaultMessage: [{
@@ -3137,14 +3146,22 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
       message: '',
       audioRec: false,
       videoNoteRec: false,
+      emojiOpen: false,
+      mentionMatches: [],
+      mentionActive: -1,
       audioAvailable: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
     };
     this.keypressTimestamp = 0;
+    this.mentionAnchor = -1;
+    this.pendingMentions = [];
     this.handlePasteEvent = this.handlePasteEvent.bind(this);
     this.handleAttachImage = this.handleAttachImage.bind(this);
     this.handleAttachFile = this.handleAttachFile.bind(this);
     this.handleAttachAudio = this.handleAttachAudio.bind(this);
     this.handleAttachVideoNote = this.handleAttachVideoNote.bind(this);
+    this.handleInsertEmoji = this.handleInsertEmoji.bind(this);
+    this.toggleEmoji = this.toggleEmoji.bind(this);
+    this.selectMention = this.selectMention.bind(this);
     this.handleSend = this.handleSend.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.handleMessageTyping = this.handleMessageTyping.bind(this);
@@ -3177,10 +3194,15 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
       this.messageEditArea.style.height = this.messageEditArea.scrollHeight + 'px';
     }
     if (prevProps.topicName != this.props.topicName) {
+      this.mentionAnchor = -1;
+      this.pendingMentions = [];
       this.setState({
         message: this.props.initMessage || '',
         audioRec: false,
         videoNoteRec: false,
+        emojiOpen: false,
+        mentionMatches: [],
+        mentionActive: -1,
         quote: null
       });
     } else if (prevProps.initMessage != this.props.initMessage) {
@@ -3245,13 +3267,169 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
     });
     this.props.onAttachVideoNote(videoBlob, preview, params);
   }
+  toggleEmoji(e) {
+    e.preventDefault();
+    this.setState(prev => ({
+      emojiOpen: !prev.emojiOpen
+    }));
+  }
+  handleInsertEmoji(emoji) {
+    const ta = this.messageEditArea;
+    const msg = this.state.message;
+    let start = msg.length,
+      end = msg.length;
+    if (ta && typeof ta.selectionStart == 'number') {
+      start = ta.selectionStart;
+      end = ta.selectionEnd;
+    }
+    const next = msg.slice(0, start) + emoji + msg.slice(end);
+    this.setState({
+      message: next
+    }, () => {
+      if (this.messageEditArea) {
+        const pos = start + emoji.length;
+        this.messageEditArea.focus();
+        this.messageEditArea.setSelectionRange(pos, pos);
+      }
+    });
+    if (this.props.onKeyPress) {
+      this.props.onKeyPress();
+    }
+  }
+  getGroupMembers() {
+    const topic = this.props.sunrise && this.props.topicName ? this.props.sunrise.getTopic(this.props.topicName) : null;
+    if (!topic || !topic.isGroupType || !topic.isGroupType()) {
+      return [];
+    }
+    const members = [];
+    topic.subscribers(sub => {
+      if (!sub || !sub.user || sub.user == this.props.myUserId) {
+        return;
+      }
+      const name = sub.public && sub.public.fn ? sub.public.fn : sub.user;
+      members.push({
+        user: sub.user,
+        name: name
+      });
+    });
+    return members;
+  }
+  updateMentionContext(value, caret) {
+    const upto = value.slice(0, caret);
+    const match = /(^|\s)@([^\s@]*)$/.exec(upto);
+    if (!match) {
+      this.mentionAnchor = -1;
+      if (this.state.mentionMatches.length) {
+        this.setState({
+          mentionMatches: [],
+          mentionActive: -1
+        });
+      }
+      return;
+    }
+    const query = match[2].toLowerCase();
+    const members = this.getGroupMembers();
+    if (members.length == 0) {
+      this.mentionAnchor = -1;
+      if (this.state.mentionMatches.length) {
+        this.setState({
+          mentionMatches: [],
+          mentionActive: -1
+        });
+      }
+      return;
+    }
+    const matches = members.filter(m => m.name.toLowerCase().includes(query)).slice(0, 8);
+    this.mentionAnchor = caret - match[2].length - 1;
+    this.setState({
+      mentionMatches: matches,
+      mentionActive: matches.length ? 0 : -1
+    });
+  }
+  selectMention(member) {
+    const ta = this.messageEditArea;
+    const caret = ta && typeof ta.selectionStart == 'number' ? ta.selectionStart : this.state.message.length;
+    const anchor = this.mentionAnchor;
+    if (anchor < 0) {
+      return;
+    }
+    const before = this.state.message.slice(0, anchor);
+    const after = this.state.message.slice(caret);
+    const insert = '@' + member.name + ' ';
+    this.pendingMentions.push({
+      name: member.name,
+      uid: member.user
+    });
+    this.mentionAnchor = -1;
+    this.setState({
+      message: before + insert + after,
+      mentionMatches: [],
+      mentionActive: -1
+    }, () => {
+      if (this.messageEditArea) {
+        const pos = (before + insert).length;
+        this.messageEditArea.focus();
+        this.messageEditArea.setSelectionRange(pos, pos);
+      }
+    });
+  }
+  buildOutgoing(text) {
+    const toks = this.pendingMentions.filter(m => text.includes('@' + m.name)).map(m => ({
+      tok: '@' + m.name,
+      name: m.name,
+      uid: m.uid
+    })).sort((a, b) => b.tok.length - a.tok.length);
+    if (toks.length == 0) {
+      return text;
+    }
+    let result = null;
+    let plain = '';
+    const flush = () => {
+      if (plain) {
+        const d = sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.parse(plain);
+        result = result ? sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.append(result, d) : d;
+        plain = '';
+      }
+    };
+    let i = 0,
+      used = false;
+    while (i < text.length) {
+      let matched = null;
+      for (const t of toks) {
+        if (text.startsWith(t.tok, i)) {
+          const nextCh = text[i + t.tok.length];
+          if (nextCh === undefined || /[\s.,!?;:)]/.test(nextCh)) {
+            matched = t;
+            break;
+          }
+        }
+      }
+      if (matched) {
+        flush();
+        const men = sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.mention(matched.name, matched.uid);
+        result = result ? sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.append(result, men) : men;
+        i += matched.tok.length;
+        used = true;
+      } else {
+        plain += text[i];
+        i++;
+      }
+    }
+    flush();
+    return used ? result : text;
+  }
   handleSend(e) {
     e.preventDefault();
-    const message = this.state.message.trim();
-    if (message || this.props.acceptBlank || this.props.noInput) {
-      this.props.onSendMessage(message);
+    const raw = this.state.message.trim();
+    if (raw || this.props.acceptBlank || this.props.noInput) {
+      const outgoing = this.buildOutgoing(raw);
+      this.props.onSendMessage(outgoing);
+      this.pendingMentions = [];
       this.setState({
-        message: ''
+        message: '',
+        emojiOpen: false,
+        mentionMatches: [],
+        mentionActive: -1
       });
     }
   }
@@ -3260,6 +3438,41 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
       e.preventDefault();
       e.stopPropagation();
       return;
+    }
+    const matches = this.state.mentionMatches;
+    if (matches.length > 0) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        this.setState({
+          mentionActive: (this.state.mentionActive + 1) % matches.length
+        });
+        return;
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        this.setState({
+          mentionActive: (this.state.mentionActive - 1 + matches.length) % matches.length
+        });
+        return;
+      }
+      if (e.key === 'Enter' || e.key === 'Tab') {
+        const chosen = matches[this.state.mentionActive] || matches[0];
+        if (chosen) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.selectMention(chosen);
+          return;
+        }
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        this.mentionAnchor = -1;
+        this.setState({
+          mentionMatches: [],
+          mentionActive: -1
+        });
+        return;
+      }
     }
     if (e.key === 'Enter') {
       if (this.props.sendOnEnter == 'plain') {
@@ -3281,6 +3494,7 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
     this.setState({
       message: e.target.value
     });
+    this.updateMentionContext(e.target.value, e.target.selectionStart);
     if (this.props.onKeyPress) {
       const now = new Date().getTime();
       if (now - this.keypressTimestamp > _config_js__WEBPACK_IMPORTED_MODULE_3__.KEYPRESS_DELAY) {
@@ -3319,9 +3533,28 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
     const audioEnabled = this.state.audioAvailable && this.props.onAttachAudio;
     const videoNoteEnabled = this.state.audioAvailable && this.props.onAttachVideoNote;
     const recording = this.state.audioRec || this.state.videoNoteRec;
+    const emojiEnabled = !this.props.noInput && !recording;
     return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
       id: "send-message-wrapper"
-    }, !this.props.noInput ? quote : null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    }, this.state.emojiOpen && emojiEnabled ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react__WEBPACK_IMPORTED_MODULE_0__.Suspense, {
+      fallback: null
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(EmojiPicker, {
+      onPick: this.handleInsertEmoji
+    })) : null, this.state.mentionMatches.length > 0 ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "mention-suggest",
+      onMouseDown: e => e.preventDefault()
+    }, this.state.mentionMatches.map((m, i) => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      key: m.user,
+      className: 'mention-item' + (i == this.state.mentionActive ? ' active' : ''),
+      onClick: () => this.selectMention(m),
+      onMouseEnter: () => this.setState({
+        mentionActive: i
+      })
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      className: "mention-name"
+    }, m.name), m.name != m.user ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      className: "mention-id"
+    }, m.user) : null))) : null, !this.props.noInput ? quote : null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
       id: "send-message-panel"
     }, !this.props.disabled ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, this.props.onAttachFile && !recording ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
       href: "#",
@@ -3341,7 +3574,14 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
       title: formatMessage(messages.icon_title_attach_file)
     }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
       className: "material-icons secondary"
-    }, "attach_file"))) : null, this.props.noInput ? quote || react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    }, "attach_file"))) : null, emojiEnabled ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      className: this.state.emojiOpen ? 'active' : '',
+      onClick: this.toggleEmoji,
+      title: formatMessage(messages.icon_title_emoji)
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons secondary"
+    }, "mood")) : null, this.props.noInput ? quote || react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
       className: "hr thin"
     }) : this.state.audioRec ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react__WEBPACK_IMPORTED_MODULE_0__.Suspense, {
       fallback: react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
