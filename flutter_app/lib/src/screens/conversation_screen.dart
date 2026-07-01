@@ -8,6 +8,7 @@ import 'package:record/record.dart';
 
 import '../state/app_state.dart';
 import '../sunrise/drafty.dart';
+import '../sunrise/models.dart';
 import '../theme/glass_theme.dart';
 import '../widgets/glass.dart';
 import '../widgets/message_bubble.dart';
@@ -49,6 +50,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
   String _searchQuery = '';
   final _searchCtrl = TextEditingController();
   bool _showJump = false;
+  // @-mention autocomplete state.
+  List<Contact> _mentionMatches = [];
+  int _mentionAnchor = -1;
+  final List<Map<String, String>> _pendingMentions = [];
 
   @override
   void initState() {
@@ -83,8 +88,57 @@ class _ConversationScreenState extends State<ConversationScreen> {
   void _send() {
     final text = _input.text;
     if (text.trim().isEmpty) return;
+    // Keep only mentions whose "@Name" token is still present in the text.
+    final mentions = _pendingMentions.where((m) => text.contains('@${m['name']}')).toList();
     _input.clear();
-    widget.state.sendText(text);
+    setState(() {
+      _mentionMatches = [];
+      _mentionAnchor = -1;
+      _pendingMentions.clear();
+    });
+    widget.state.sendMentionText(text, mentions);
+  }
+
+  // Detect an "@query" token ending at the caret and update the suggestion list.
+  void _updateMentionContext(String value) {
+    final caret = _input.selection.baseOffset;
+    if (caret < 0 || caret > value.length) {
+      if (_mentionMatches.isNotEmpty) setState(() => _mentionMatches = []);
+      return;
+    }
+    final upto = value.substring(0, caret);
+    final match = RegExp(r'(^|\s)@([^\s@]*)$').firstMatch(upto);
+    if (match == null) {
+      _mentionAnchor = -1;
+      if (_mentionMatches.isNotEmpty) setState(() => _mentionMatches = []);
+      return;
+    }
+    final query = (match.group(2) ?? '').toLowerCase();
+    final matches = widget.state.contacts
+        .where((c) => c.topic.isNotEmpty && c.name.toLowerCase().contains(query))
+        .take(6)
+        .toList();
+    _mentionAnchor = caret - (match.group(2) ?? '').length - 1; // position of '@'
+    setState(() => _mentionMatches = matches);
+  }
+
+  void _selectMention(Contact c) {
+    final caret = _input.selection.baseOffset;
+    final anchor = _mentionAnchor;
+    if (anchor < 0 || caret < 0) return;
+    final text = _input.text;
+    final safeCaret = caret > text.length ? text.length : caret;
+    final before = text.substring(0, anchor);
+    final after = text.substring(safeCaret);
+    final insert = '@${c.name} ';
+    _pendingMentions.add({'name': c.name, 'uid': c.topic});
+    _mentionAnchor = -1;
+    final next = before + insert + after;
+    _input.value = TextEditingValue(
+      text: next,
+      selection: TextSelection.collapsed(offset: (before + insert).length),
+    );
+    setState(() => _mentionMatches = []);
   }
 
   // Insert [emoji] at the current caret position in the composer.
@@ -159,7 +213,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
     );
   }
 
-  void _onChanged(String _) {
+  void _onChanged(String value) {
+    _updateMentionContext(value);
     final now = DateTime.now();
     if (now.difference(_lastTyping).inSeconds >= 3) {
       _lastTyping = now;
@@ -345,10 +400,35 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   ],
                 ),
         ),
+        if (_mentionMatches.isNotEmpty) _mentionList(),
         _composer(),
       ],
     );
   }
+
+  // Dropdown of member suggestions shown above the composer while typing "@".
+  Widget _mentionList() => Container(
+        constraints: const BoxConstraints(maxHeight: 200),
+        margin: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          color: Palette.bg,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Palette.border),
+        ),
+        child: ListView(
+          shrinkWrap: true,
+          padding: EdgeInsets.zero,
+          children: _mentionMatches
+              .map((c) => ListTile(
+                    dense: true,
+                    leading: GlassAvatar(name: c.name, size: 30),
+                    title: Text(c.name,
+                        style: const TextStyle(color: Palette.textPrimary, fontSize: 14, fontWeight: FontWeight.w500)),
+                    onTap: () => _selectMention(c),
+                  ))
+              .toList(),
+        ),
+      );
 
   Widget _header(AppState s) => Padding(
         padding: const EdgeInsets.all(10),

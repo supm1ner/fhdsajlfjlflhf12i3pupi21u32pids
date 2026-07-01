@@ -97,6 +97,43 @@ class Drafty {
         'size': size,
       });
 
+  /// Builds a Drafty document from [text], turning each "@Name" token that matches
+  /// one of [mentions] ({'name','uid'}) into an MN (mention) entity. Returns null when
+  /// no mention token is present, so the caller can send plain text instead.
+  static Map<String, dynamic>? withMentions(String text, List<Map<String, String>> mentions) {
+    if (mentions.isEmpty) return null;
+    // Longest names first so "@Anna" wins over "@Ann".
+    final toks = [...mentions]..sort((a, b) => (b['name'] ?? '').length.compareTo((a['name'] ?? '').length));
+    final boundary = RegExp(r'[\s.,!?;:)]');
+    final fmt = <Map<String, dynamic>>[];
+    final ent = <Map<String, dynamic>>[];
+    var i = 0;
+    while (i < text.length) {
+      Map<String, String>? matched;
+      for (final m in toks) {
+        final tok = '@${m['name']}';
+        if (text.startsWith(tok, i)) {
+          final nextIdx = i + tok.length;
+          final nextCh = nextIdx < text.length ? text[nextIdx] : null;
+          if (nextCh == null || boundary.hasMatch(nextCh)) {
+            matched = m;
+            break;
+          }
+        }
+      }
+      if (matched != null) {
+        final tok = '@${matched['name']}';
+        fmt.add({'at': i, 'len': tok.length, 'key': ent.length});
+        ent.add({'tp': 'MN', 'data': {'val': matched['uid']}});
+        i += tok.length;
+      } else {
+        i++;
+      }
+    }
+    if (ent.isEmpty) return null;
+    return {'txt': text, 'fmt': fmt, 'ent': ent};
+  }
+
   static Map<String, dynamic> audio({
     required String ref,
     required String mime,

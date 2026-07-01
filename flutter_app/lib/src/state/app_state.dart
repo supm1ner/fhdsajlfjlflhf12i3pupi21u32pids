@@ -141,6 +141,20 @@ class AppState extends ChangeNotifier {
     if (topic != null) client.note(topic, 'kp');
   }
 
+  /// Send [text], converting recorded "@Name" tokens into Drafty mentions.
+  Future<void> sendMentionText(String text, List<Map<String, String>> mentions) async {
+    final topic = currentTopic;
+    final trimmed = text.trim();
+    if (topic == null || trimmed.isEmpty) return;
+    final content = Drafty.withMentions(trimmed, mentions) ?? trimmed;
+    try {
+      await client.publish(topic, content);
+    } catch (e) {
+      error = e.toString();
+      notifyListeners();
+    }
+  }
+
   // --- Reactions ---------------------------------------------------------
 
   /// A reaction message carries its target message's seq in head.react_to.
