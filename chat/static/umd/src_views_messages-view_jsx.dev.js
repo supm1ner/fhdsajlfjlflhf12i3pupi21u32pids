@@ -3167,9 +3167,25 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
     this.handleMessageTyping = this.handleMessageTyping.bind(this);
     this.handleDropAttach = this.handleDropAttach.bind(this);
     this.handleQuoteClick = this.handleQuoteClick.bind(this);
+    this.handleClickAway = this.handleClickAway.bind(this);
     this.formatReply = this.formatReply.bind(this);
+    this.wrapperRef = react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
+  }
+  handleClickAway(e) {
+    if (this.wrapperRef.current && this.wrapperRef.current.contains(e.target)) {
+      return;
+    }
+    if (this.state.emojiOpen || this.state.mentionMatches.length) {
+      this.mentionAnchor = -1;
+      this.setState({
+        emojiOpen: false,
+        mentionMatches: [],
+        mentionActive: -1
+      });
+    }
   }
   componentDidMount() {
+    document.addEventListener('mousedown', this.handleClickAway, false);
     if (this.messageEditArea) {
       this.messageEditArea.addEventListener('paste', this.handlePasteEvent, false);
       if (window.getComputedStyle(this.messageEditArea).getPropertyValue('transition-property') == 'all') {
@@ -3181,6 +3197,7 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
     });
   }
   componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleClickAway, false);
     if (this.messageEditArea) {
       this.messageEditArea.removeEventListener('paste', this.handlePasteEvent, false);
     }
@@ -3535,7 +3552,8 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
     const recording = this.state.audioRec || this.state.videoNoteRec;
     const emojiEnabled = !this.props.noInput && !recording;
     return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-      id: "send-message-wrapper"
+      id: "send-message-wrapper",
+      ref: this.wrapperRef
     }, this.state.emojiOpen && emojiEnabled ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react__WEBPACK_IMPORTED_MODULE_0__.Suspense, {
       fallback: null
     }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(EmojiPicker, {

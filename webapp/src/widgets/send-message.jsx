@@ -109,11 +109,25 @@ class SendMessage extends React.PureComponent {
     this.handleDropAttach = this.handleDropAttach.bind(this);
 
     this.handleQuoteClick = this.handleQuoteClick.bind(this);
+    this.handleClickAway = this.handleClickAway.bind(this);
 
     this.formatReply = this.formatReply.bind(this);
+    this.wrapperRef = React.createRef();
+  }
+
+  // Close the emoji picker / mention dropdown when clicking outside the composer.
+  handleClickAway(e) {
+    if (this.wrapperRef.current && this.wrapperRef.current.contains(e.target)) {
+      return;
+    }
+    if (this.state.emojiOpen || this.state.mentionMatches.length) {
+      this.mentionAnchor = -1;
+      this.setState({emojiOpen: false, mentionMatches: [], mentionActive: -1});
+    }
   }
 
   componentDidMount() {
+    document.addEventListener('mousedown', this.handleClickAway, false);
     if (this.messageEditArea) {
       this.messageEditArea.addEventListener('paste', this.handlePasteEvent, false);
       if (window.getComputedStyle(this.messageEditArea).getPropertyValue('transition-property') == 'all') {
@@ -126,6 +140,7 @@ class SendMessage extends React.PureComponent {
   }
 
   componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleClickAway, false);
     if (this.messageEditArea) {
       this.messageEditArea.removeEventListener('paste', this.handlePasteEvent, false);
     }
@@ -476,7 +491,7 @@ class SendMessage extends React.PureComponent {
     const recording = this.state.audioRec || this.state.videoNoteRec;
     const emojiEnabled = !this.props.noInput && !recording;
     return (
-      <div id="send-message-wrapper">
+      <div id="send-message-wrapper" ref={this.wrapperRef}>
         {this.state.emojiOpen && emojiEnabled ?
           <Suspense fallback={null}>
             <EmojiPicker onPick={this.handleInsertEmoji} />
