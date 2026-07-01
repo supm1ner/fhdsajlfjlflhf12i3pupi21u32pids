@@ -1797,6 +1797,14 @@ img.channel {
   color: var(--clr-primary-accent);
 }
 
+/* In-message search term highlight (readable on both light and accent bubbles). */
+mark.search-hl {
+  background-color: rgba(255, 208, 0, 0.55);
+  color: inherit;
+  border-radius: 0.15rem;
+  padding: 0 0.05rem;
+}
+
 #hide-message-view {
   display: block;
   margin-right: 0.35rem;

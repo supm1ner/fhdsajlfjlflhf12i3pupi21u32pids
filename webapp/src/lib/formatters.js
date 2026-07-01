@@ -45,6 +45,38 @@ const messages = defineMessages({
   }
 });
 
+// Wraps occurrences of `term` (case-insensitive) inside plain-string children of `values`
+// with a <mark> for in-chat search highlighting. Non-string children pass through untouched.
+export function highlightText(values, term, key) {
+  if (values == null || !term) {
+    return values;
+  }
+  const arr = Array.isArray(values) ? values : [values];
+  const lowerTerm = term.toLowerCase();
+  const len = term.length;
+  let counter = 0;
+  const out = [];
+  arr.forEach(child => {
+    if (typeof child != 'string') {
+      out.push(child);
+      return;
+    }
+    const lower = child.toLowerCase();
+    let pos = 0, hit;
+    while ((hit = lower.indexOf(lowerTerm, pos)) != -1) {
+      if (hit > pos) {
+        out.push(child.slice(pos, hit));
+      }
+      out.push(<mark className="search-hl" key={(key || 'hl') + '-' + (counter++)}>{child.slice(hit, hit + len)}</mark>);
+      pos = hit + len;
+    }
+    if (pos < child.length) {
+      out.push(child.slice(pos));
+    }
+  });
+  return out;
+}
+
 // The main Drafty formatter: converts Drafty elements into React classes. 'this' is set by the caller.
 // 'this' must contain:
 //    viewportWidth:
@@ -56,7 +88,10 @@ export function fullFormatter(style, data, values, key, stack) {
   }
 
   if (!style) {
-    // Unformatted.
+    // Unformatted. Optionally highlight the active in-chat search term.
+    if (this.highlight) {
+      return highlightText(values, this.highlight, key);
+    }
     return values;
   }
 

@@ -9,7 +9,7 @@ import LetterTile from './letter-tile.jsx';
 import MessageReactions from './message-reactions.jsx';
 import ReceivedMarker from './received-marker.jsx'
 
-import { fullFormatter } from '../lib/formatters.js';
+import { fullFormatter, highlightText } from '../lib/formatters.js';
 import { sanitizeUrl } from '../lib/utils.js';
 import HashNavigation from '../lib/navigation.js';
 
@@ -212,6 +212,9 @@ class BaseChatMessage extends React.PureComponent {
     const fullDisplay = (this.props.isGroup && this.props.response &&
       (this.props.sequence == 'single' || this.props.sequence == 'last'));
 
+    // Keep the highlight term current for the in-chat search formatter.
+    this.formatterContext.highlight = this.props.highlightTerm || null;
+
     let content = this.props.content;
     const attachments = [];
     if (this.props.mimeType == Drafty.getContentType() && Drafty.isValid(content)) {
@@ -241,6 +244,9 @@ class BaseChatMessage extends React.PureComponent {
       if (new RegExp('^\\p{RGI_Emoji}{1,5}$', 'v').test(content || '')) {
         // Content consists of 1-5 emoji characters. Count how many and use it to increase the font size.
         textSizeClass += ' emoji-' + (content || '').match(/\p{RGI_Emoji}/vg).length;
+      } else if (this.props.highlightTerm) {
+        // Highlight the active in-chat search term in plain-text messages.
+        content = React.createElement(React.Fragment, null, highlightText([content], this.props.highlightTerm, 'hl'));
       }
     } else {
       content = <><i className="material-icons gray">warning_amber</i> <i className="gray">

@@ -7686,6 +7686,7 @@ function importVCard(fileOrBlob) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   fullFormatter: function() { return /* binding */ fullFormatter; },
+/* harmony export */   highlightText: function() { return /* binding */ highlightText; },
 /* harmony export */   previewFormatter: function() { return /* binding */ previewFormatter; },
 /* harmony export */   replyFormatter: function() { return /* binding */ replyFormatter; }
 /* harmony export */ });
@@ -7757,11 +7758,47 @@ const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
     }]
   }
 });
+function highlightText(values, term, key) {
+  if (values == null || !term) {
+    return values;
+  }
+  const arr = Array.isArray(values) ? values : [values];
+  const lowerTerm = term.toLowerCase();
+  const len = term.length;
+  let counter = 0;
+  const out = [];
+  arr.forEach(child => {
+    if (typeof child != 'string') {
+      out.push(child);
+      return;
+    }
+    const lower = child.toLowerCase();
+    let pos = 0,
+      hit;
+    while ((hit = lower.indexOf(lowerTerm, pos)) != -1) {
+      if (hit > pos) {
+        out.push(child.slice(pos, hit));
+      }
+      out.push(react__WEBPACK_IMPORTED_MODULE_0___default().createElement("mark", {
+        className: "search-hl",
+        key: (key || 'hl') + '-' + counter++
+      }, child.slice(hit, hit + len)));
+      pos = hit + len;
+    }
+    if (pos < child.length) {
+      out.push(child.slice(pos));
+    }
+  });
+  return out;
+}
 function fullFormatter(style, data, values, key, stack) {
   if (stack.includes('QQ')) {
     return quoteFormatter.call(this, style, data, values, key);
   }
   if (!style) {
+    if (this.highlight) {
+      return highlightText(values, this.highlight, key);
+    }
     return values;
   }
   let el = sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.tagName(style);

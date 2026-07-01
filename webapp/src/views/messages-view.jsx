@@ -1940,6 +1940,7 @@ class MessagesView extends React.Component {
                 reactions={this.reactionsForSeq(this.reactionData[msg.seq])}
                 onToggleReaction={this.handleToggleReaction}
                 myUserId={this.props.myUserId}
+                highlightTerm={this.state.searchOpen ? this.state.searchQuery.trim() : ''}
                 viewportWidth={this.props.viewportWidth}  // Used by `formatter`.
                 showContextMenu={this.handleShowMessageContextMenu}
                 onExpandMedia={this.handleExpandMedia}
