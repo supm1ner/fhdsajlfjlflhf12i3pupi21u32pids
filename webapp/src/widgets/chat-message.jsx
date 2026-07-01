@@ -207,7 +207,11 @@ class BaseChatMessage extends React.PureComponent {
 
   render() {
     const sideClass = this.props.sequence + ' ' + (this.props.response ? 'left' : 'right');
-    const bubbleClass = (this.props.sequence == 'single' || this.props.sequence == 'last') ? 'bubble tip' : 'bubble';
+    let bubbleClass = (this.props.sequence == 'single' || this.props.sequence == 'last') ? 'bubble tip' : 'bubble';
+    if (this.props.sticker) {
+      // Stickers have no bubble background/tail.
+      bubbleClass = 'bubble sticker';
+    }
     const avatar = this.props.userAvatar || true;
     let textSizeClass = 'message-content';
     const fullDisplay = (this.props.isGroup && this.props.response &&
@@ -221,6 +225,9 @@ class BaseChatMessage extends React.PureComponent {
     if (this.props.poll) {
       // Poll message: render the interactive poll widget instead of Drafty content.
       content = <PollMessage {...this.props.poll} onVote={idx => this.props.onVote(this.props.seq, idx)} />;
+    } else if (this.props.sticker && typeof content == 'string') {
+      // Glyph sticker: render oversized; the bubble chrome is removed via CSS.
+      content = <div className="sticker-message">{content}</div>;
     } else if (this.props.mimeType == Drafty.getContentType() && Drafty.isValid(content)) {
       Drafty.attachments(content, (att, i) => {
         if (Drafty.isFormResponseType(att.mime)) {

@@ -10,6 +10,8 @@ const AudioRecorder = React.lazy(_ => import('./audio-recorder.jsx'));
 const VideoNoteRecorder = React.lazy(_ => import('./video-note-recorder.jsx'));
 // Lazy-loading EmojiPicker: only pulled in when the user opens it.
 const EmojiPicker = React.lazy(_ => import('./emoji-picker.jsx'));
+// Lazy-loading StickerPicker.
+const StickerPicker = React.lazy(_ => import('./sticker-picker.jsx'));
 
 import { KEYPRESS_DELAY } from '../config.js';
 import { filePasted } from '../lib/blob-helpers.js';
@@ -56,6 +58,11 @@ const messages = defineMessages({
     defaultMessage: 'Create poll',
     description: 'Icon tool tip for creating a poll'
   },
+  icon_title_stickers: {
+    id: 'icon_title_stickers',
+    defaultMessage: 'Stickers',
+    description: 'Icon tool tip for the sticker picker'
+  },
   icon_title_record_video_note: {
     id: 'icon_title_record_video_note',
     defaultMessage: 'Record video note',
@@ -88,6 +95,7 @@ class SendMessage extends React.PureComponent {
       audioRec: false,
       videoNoteRec: false,
       emojiOpen: false,
+      stickerOpen: false,
       mentionMatches: [],
       mentionActive: -1,
       audioAvailable: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
@@ -107,6 +115,8 @@ class SendMessage extends React.PureComponent {
     this.handleAttachVideoNote = this.handleAttachVideoNote.bind(this);
     this.handleInsertEmoji = this.handleInsertEmoji.bind(this);
     this.toggleEmoji = this.toggleEmoji.bind(this);
+    this.toggleSticker = this.toggleSticker.bind(this);
+    this.handleSendSticker = this.handleSendSticker.bind(this);
     this.selectMention = this.selectMention.bind(this);
     this.handleSend = this.handleSend.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -125,9 +135,9 @@ class SendMessage extends React.PureComponent {
     if (this.wrapperRef.current && this.wrapperRef.current.contains(e.target)) {
       return;
     }
-    if (this.state.emojiOpen || this.state.mentionMatches.length) {
+    if (this.state.emojiOpen || this.state.stickerOpen || this.state.mentionMatches.length) {
       this.mentionAnchor = -1;
-      this.setState({emojiOpen: false, mentionMatches: [], mentionActive: -1});
+      this.setState({emojiOpen: false, stickerOpen: false, mentionMatches: [], mentionActive: -1});
     }
   }
 
@@ -167,7 +177,7 @@ class SendMessage extends React.PureComponent {
       this.mentionAnchor = -1;
       this.pendingMentions = [];
       this.setState({message: this.props.initMessage || '', audioRec: false, videoNoteRec: false,
-        emojiOpen: false, mentionMatches: [], mentionActive: -1, quote: null});
+        emojiOpen: false, stickerOpen: false, mentionMatches: [], mentionActive: -1, quote: null});
     } else if (prevProps.initMessage != this.props.initMessage) {
       const msg = this.props.initMessage || '';
       this.setState({message: msg}, _ => {
@@ -238,7 +248,17 @@ class SendMessage extends React.PureComponent {
 
   toggleEmoji(e) {
     e.preventDefault();
-    this.setState(prev => ({emojiOpen: !prev.emojiOpen}));
+    this.setState(prev => ({emojiOpen: !prev.emojiOpen, stickerOpen: false}));
+  }
+
+  toggleSticker(e) {
+    e.preventDefault();
+    this.setState(prev => ({stickerOpen: !prev.stickerOpen, emojiOpen: false}));
+  }
+
+  handleSendSticker(sticker) {
+    this.setState({stickerOpen: false});
+    this.props.onSendSticker(sticker);
   }
 
   // Insert an emoji at the current caret position in the message input.
@@ -495,11 +515,17 @@ class SendMessage extends React.PureComponent {
     const videoNoteEnabled = this.state.audioAvailable && this.props.onAttachVideoNote;
     const recording = this.state.audioRec || this.state.videoNoteRec;
     const emojiEnabled = !this.props.noInput && !recording;
+    const stickerEnabled = !this.props.noInput && !recording && this.props.onSendSticker;
     return (
       <div id="send-message-wrapper" ref={this.wrapperRef}>
         {this.state.emojiOpen && emojiEnabled ?
           <Suspense fallback={null}>
             <EmojiPicker onPick={this.handleInsertEmoji} />
+          </Suspense> : null}
+        {this.state.stickerOpen && stickerEnabled ?
+          <Suspense fallback={null}>
+            <StickerPicker onPick={this.handleSendSticker}
+              authorizeURL={this.props.sunrise && this.props.sunrise.authorizeURL.bind(this.props.sunrise)} />
           </Suspense> : null}
         {this.state.mentionMatches.length > 0 ?
           <div className="mention-suggest" onMouseDown={e => e.preventDefault()}>
@@ -536,6 +562,11 @@ class SendMessage extends React.PureComponent {
                 <a href="#" className={this.state.emojiOpen ? 'active' : ''} onClick={this.toggleEmoji}
                   title={formatMessage(messages.icon_title_emoji)}>
                   <i className="material-icons secondary">mood</i>
+                </a> : null}
+              {stickerEnabled ?
+                <a href="#" className={this.state.stickerOpen ? 'active' : ''} onClick={this.toggleSticker}
+                  title={formatMessage(messages.icon_title_stickers)}>
+                  <i className="material-icons secondary">emoji_emotions</i>
                 </a> : null}
               {this.props.noInput ?
                 (quote || <div className="hr thin" />) :

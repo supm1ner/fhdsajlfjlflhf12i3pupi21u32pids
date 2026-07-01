@@ -402,6 +402,7 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
     this.handleToggleReaction = this.handleToggleReaction.bind(this);
     this.handleVote = this.handleVote.bind(this);
     this.sendPoll = this.sendPoll.bind(this);
+    this.sendSticker = this.sendSticker.bind(this);
     this.sendFileAttachment = this.sendFileAttachment.bind(this);
     this.sendAudioAttachment = this.sendAudioAttachment.bind(this);
     this.sendTheCardAttachment = this.sendTheCardAttachment.bind(this);
@@ -1562,6 +1563,23 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
       vote: '' + optIdx
     });
   }
+  sendSticker(sticker) {
+    if (typeof sticker == 'object' && sticker.ref) {
+      this.props.sendMessage(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.insertImage(null, 0, {
+        mime: sticker.mime || 'image/webp',
+        ref: sticker.ref,
+        width: sticker.width || 256,
+        height: sticker.height || 256,
+        size: sticker.size || 0
+      }), undefined, undefined, {
+        sticker: '1'
+      });
+      return;
+    }
+    this.props.sendMessage('' + sticker, undefined, undefined, {
+      sticker: '1'
+    });
+  }
   sendPoll(question, options) {
     this.setState({
       pollComposer: false
@@ -2110,6 +2128,7 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
               onToggleReaction: this.handleToggleReaction,
               poll: msg.head && msg.head.poll ? this.pollDataForMsg(msg) : null,
               onVote: this.handleVote,
+              sticker: !!(msg.head && msg.head.sticker),
               myUserId: this.props.myUserId,
               highlightTerm: this.state.searchOpen ? this.state.searchQuery.trim() : '',
               viewportWidth: this.props.viewportWidth,
@@ -2220,6 +2239,7 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
           onAttachImage: this.props.forwardMessage ? null : this.handleAttachImageOrVideo,
           onAttachAudio: this.props.forwardMessage ? null : this.sendAudioAttachment,
           onAttachVideoNote: this.props.forwardMessage ? null : this.sendVideoNote,
+          onSendSticker: this.props.forwardMessage ? null : this.sendSticker,
           onCreatePoll: this.props.forwardMessage ? null : _ => this.setState({
             pollComposer: true
           }),
@@ -2719,7 +2739,10 @@ class BaseChatMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().Pure
   }
   render() {
     const sideClass = this.props.sequence + ' ' + (this.props.response ? 'left' : 'right');
-    const bubbleClass = this.props.sequence == 'single' || this.props.sequence == 'last' ? 'bubble tip' : 'bubble';
+    let bubbleClass = this.props.sequence == 'single' || this.props.sequence == 'last' ? 'bubble tip' : 'bubble';
+    if (this.props.sticker) {
+      bubbleClass = 'bubble sticker';
+    }
     const avatar = this.props.userAvatar || true;
     let textSizeClass = 'message-content';
     const fullDisplay = this.props.isGroup && this.props.response && (this.props.sequence == 'single' || this.props.sequence == 'last');
@@ -2730,6 +2753,10 @@ class BaseChatMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().Pure
       content = react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_poll_message_jsx__WEBPACK_IMPORTED_MODULE_6__["default"], _extends({}, this.props.poll, {
         onVote: idx => this.props.onVote(this.props.seq, idx)
       }));
+    } else if (this.props.sticker && typeof content == 'string') {
+      content = react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+        className: "sticker-message"
+      }, content);
     } else if (this.props.mimeType == sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.getContentType() && sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.isValid(content)) {
       sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.attachments(content, (att, i) => {
         if (sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.isFormResponseType(att.mime)) {
@@ -3453,6 +3480,7 @@ __webpack_require__.r(__webpack_exports__);
 const AudioRecorder = react__WEBPACK_IMPORTED_MODULE_0___default().lazy(_ => Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_webm-duration-fix_lib_index_js"), __webpack_require__.e("src_widgets_audio-recorder_jsx")]).then(__webpack_require__.bind(__webpack_require__, /*! ./audio-recorder.jsx */ "./src/widgets/audio-recorder.jsx")));
 const VideoNoteRecorder = react__WEBPACK_IMPORTED_MODULE_0___default().lazy(_ => Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_webm-duration-fix_lib_index_js"), __webpack_require__.e("src_widgets_video-note-recorder_jsx")]).then(__webpack_require__.bind(__webpack_require__, /*! ./video-note-recorder.jsx */ "./src/widgets/video-note-recorder.jsx")));
 const EmojiPicker = react__WEBPACK_IMPORTED_MODULE_0___default().lazy(_ => __webpack_require__.e(/*! import() */ "src_widgets_emoji-picker_jsx").then(__webpack_require__.bind(__webpack_require__, /*! ./emoji-picker.jsx */ "./src/widgets/emoji-picker.jsx")));
+const StickerPicker = react__WEBPACK_IMPORTED_MODULE_0___default().lazy(_ => __webpack_require__.e(/*! import() */ "src_widgets_sticker-picker_jsx").then(__webpack_require__.bind(__webpack_require__, /*! ./sticker-picker.jsx */ "./src/widgets/sticker-picker.jsx")));
 
 
 
@@ -3525,6 +3553,13 @@ const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
       "value": "Create poll"
     }]
   },
+  icon_title_stickers: {
+    id: "icon_title_stickers",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Stickers"
+    }]
+  },
   icon_title_record_video_note: {
     id: "icon_title_record_video_note",
     defaultMessage: [{
@@ -3563,6 +3598,7 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
       audioRec: false,
       videoNoteRec: false,
       emojiOpen: false,
+      stickerOpen: false,
       mentionMatches: [],
       mentionActive: -1,
       audioAvailable: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
@@ -3577,6 +3613,8 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
     this.handleAttachVideoNote = this.handleAttachVideoNote.bind(this);
     this.handleInsertEmoji = this.handleInsertEmoji.bind(this);
     this.toggleEmoji = this.toggleEmoji.bind(this);
+    this.toggleSticker = this.toggleSticker.bind(this);
+    this.handleSendSticker = this.handleSendSticker.bind(this);
     this.selectMention = this.selectMention.bind(this);
     this.handleSend = this.handleSend.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -3591,10 +3629,11 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
     if (this.wrapperRef.current && this.wrapperRef.current.contains(e.target)) {
       return;
     }
-    if (this.state.emojiOpen || this.state.mentionMatches.length) {
+    if (this.state.emojiOpen || this.state.stickerOpen || this.state.mentionMatches.length) {
       this.mentionAnchor = -1;
       this.setState({
         emojiOpen: false,
+        stickerOpen: false,
         mentionMatches: [],
         mentionActive: -1
       });
@@ -3634,6 +3673,7 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
         audioRec: false,
         videoNoteRec: false,
         emojiOpen: false,
+        stickerOpen: false,
         mentionMatches: [],
         mentionActive: -1,
         quote: null
@@ -3703,8 +3743,22 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
   toggleEmoji(e) {
     e.preventDefault();
     this.setState(prev => ({
-      emojiOpen: !prev.emojiOpen
+      emojiOpen: !prev.emojiOpen,
+      stickerOpen: false
     }));
+  }
+  toggleSticker(e) {
+    e.preventDefault();
+    this.setState(prev => ({
+      stickerOpen: !prev.stickerOpen,
+      emojiOpen: false
+    }));
+  }
+  handleSendSticker(sticker) {
+    this.setState({
+      stickerOpen: false
+    });
+    this.props.onSendSticker(sticker);
   }
   handleInsertEmoji(emoji) {
     const ta = this.messageEditArea;
@@ -3967,6 +4021,7 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
     const videoNoteEnabled = this.state.audioAvailable && this.props.onAttachVideoNote;
     const recording = this.state.audioRec || this.state.videoNoteRec;
     const emojiEnabled = !this.props.noInput && !recording;
+    const stickerEnabled = !this.props.noInput && !recording && this.props.onSendSticker;
     return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
       id: "send-message-wrapper",
       ref: this.wrapperRef
@@ -3974,6 +4029,11 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
       fallback: null
     }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(EmojiPicker, {
       onPick: this.handleInsertEmoji
+    })) : null, this.state.stickerOpen && stickerEnabled ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react__WEBPACK_IMPORTED_MODULE_0__.Suspense, {
+      fallback: null
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(StickerPicker, {
+      onPick: this.handleSendSticker,
+      authorizeURL: this.props.sunrise && this.props.sunrise.authorizeURL.bind(this.props.sunrise)
     })) : null, this.state.mentionMatches.length > 0 ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
       className: "mention-suggest",
       onMouseDown: e => e.preventDefault()
@@ -4024,7 +4084,14 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
       title: formatMessage(messages.icon_title_emoji)
     }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
       className: "material-icons secondary"
-    }, "mood")) : null, this.props.noInput ? quote || react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    }, "mood")) : null, stickerEnabled ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      className: this.state.stickerOpen ? 'active' : '',
+      onClick: this.toggleSticker,
+      title: formatMessage(messages.icon_title_stickers)
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons secondary"
+    }, "emoji_emotions")) : null, this.props.noInput ? quote || react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
       className: "hr thin"
     }) : this.state.audioRec ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react__WEBPACK_IMPORTED_MODULE_0__.Suspense, {
       fallback: react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {

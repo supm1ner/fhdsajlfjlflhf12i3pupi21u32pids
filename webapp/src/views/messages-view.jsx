@@ -182,6 +182,7 @@ class MessagesView extends React.Component {
     this.handleToggleReaction = this.handleToggleReaction.bind(this);
     this.handleVote = this.handleVote.bind(this);
     this.sendPoll = this.sendPoll.bind(this);
+    this.sendSticker = this.sendSticker.bind(this);
     this.sendFileAttachment = this.sendFileAttachment.bind(this);
     this.sendAudioAttachment = this.sendAudioAttachment.bind(this);
     this.sendTheCardAttachment = this.sendTheCardAttachment.bind(this);
@@ -1530,6 +1531,20 @@ class MessagesView extends React.Component {
     this.props.sendMessage(label, undefined, undefined, {vote_to: '' + pollSeq, vote: '' + optIdx});
   }
 
+  // sendSticker sends a sticker as a standalone message (glyph in content, marked
+  // with head.sticker so it renders oversized and without bubble chrome).
+  sendSticker(sticker) {
+    if (typeof sticker == 'object' && sticker.ref) {
+      // Image sticker: send as an image entity with the sticker marker.
+      this.props.sendMessage(
+        Drafty.insertImage(null, 0, {mime: sticker.mime || 'image/webp', ref: sticker.ref,
+          width: sticker.width || 256, height: sticker.height || 256, size: sticker.size || 0}),
+        undefined, undefined, {sticker: '1'});
+      return;
+    }
+    this.props.sendMessage('' + sticker, undefined, undefined, {sticker: '1'});
+  }
+
   // sendPoll publishes a new poll message.
   sendPoll(question, options) {
     this.setState({pollComposer: false});
@@ -2057,6 +2072,7 @@ class MessagesView extends React.Component {
                 onToggleReaction={this.handleToggleReaction}
                 poll={msg.head && msg.head.poll ? this.pollDataForMsg(msg) : null}
                 onVote={this.handleVote}
+                sticker={!!(msg.head && msg.head.sticker)}
                 myUserId={this.props.myUserId}
                 highlightTerm={this.state.searchOpen ? this.state.searchQuery.trim() : ''}
                 viewportWidth={this.props.viewportWidth}  // Used by `formatter`.
@@ -2155,6 +2171,7 @@ class MessagesView extends React.Component {
                 onAttachImage={this.props.forwardMessage ? null : this.handleAttachImageOrVideo}
                 onAttachAudio={this.props.forwardMessage ? null : this.sendAudioAttachment}
                 onAttachVideoNote={this.props.forwardMessage ? null : this.sendVideoNote}
+                onSendSticker={this.props.forwardMessage ? null : this.sendSticker}
                 onCreatePoll={this.props.forwardMessage ? null : (_ => this.setState({pollComposer: true}))}
                 onError={this.props.onError}
                 onQuoteClick={this.handleQuoteClick}

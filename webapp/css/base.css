@@ -2588,6 +2588,88 @@ video {
   filter: drop-shadow(0.5px 0.5px 0.7px var(--clr-shadow-bubble-drop));
 }
 
+/* Stickers: oversized, no bubble chrome. */
+.bubble.sticker {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+  min-width: 0;
+  padding: 0.15rem 0.25rem;
+}
+.sticker-message {
+  font-size: 5rem;
+  line-height: 1.1;
+}
+.bubble.sticker .inline-image {
+  max-width: 12rem;
+  max-height: 12rem;
+}
+
+/* Sticker picker. */
+.sticker-picker {
+  position: absolute;
+  left: 0.5rem;
+  bottom: calc(100% + 0.4rem);
+  width: 20rem;
+  height: 17rem;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--clr-body-background);
+  border: 1px solid var(--clr-border-light);
+  border-radius: 0.75rem;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+  z-index: 10;
+  overflow: hidden;
+}
+.sticker-grid {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.25rem;
+  padding: 0.5rem;
+}
+.sticker-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 4rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+.sticker-item:hover {
+  background-color: var(--clr-audio-bg);
+}
+.sticker-item .sticker-glyph {
+  font-size: 2.8rem;
+  line-height: 1;
+}
+.sticker-item img {
+  max-width: 3.5rem;
+  max-height: 3.5rem;
+}
+.sticker-tabs {
+  display: flex;
+  gap: 0.15rem;
+  padding: 0.35rem 0.5rem;
+  border-top: 1px solid var(--clr-border-light);
+  overflow-x: auto;
+}
+.sticker-tab {
+  font-size: 1.4rem;
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.4rem;
+  text-decoration: none;
+  cursor: pointer;
+  opacity: 0.6;
+}
+.sticker-tab.active,
+.sticker-tab:hover {
+  opacity: 1;
+  background-color: var(--clr-audio-bg);
+}
+
 /* Poll message. */
 .poll {
   min-width: 15rem;
