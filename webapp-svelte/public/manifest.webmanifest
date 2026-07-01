@@ -1,6 +1,6 @@
 {
-  "name": "Sunrise Messenger",
-  "short_name": "Sunrise",
+  "name": "cotton Talk",
+  "short_name": "Talk",
   "description": "Minimalist messenger — chat, calls, video notes.",
   "start_url": "/",
   "scope": "/",

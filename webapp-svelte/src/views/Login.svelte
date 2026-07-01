@@ -66,7 +66,7 @@
   <div class="bg-glow"></div>
   <GlassPanel class="login-card">
     <div class="logo">☀️</div>
-    <h1 class="title">Sunrise</h1>
+    <h1 class="title">cotton Talk</h1>
     <p class="subtitle">Welcome back</p>
 
     {#if error}

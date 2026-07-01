@@ -4,7 +4,7 @@ import * as TinodeModule from 'tinode-sdk';
 const env = import.meta.env ?? {};
 const API_KEY = env.VITE_API_KEY || 'AQEAAAABAAD_rAp4DJh05a1HAwFT3A6K';
 const HOST = env.VITE_HOST || 'localhost:6060';
-const APP_NAME = env.VITE_APP_NAME || 'SunriseWeb';
+const APP_NAME = env.VITE_APP_NAME || 'cottonTalk';
 const SECURE = String(env.VITE_TLS ?? 'false') === 'true';
 const TOKEN_KEY = 'sunrise_auth_token';
 

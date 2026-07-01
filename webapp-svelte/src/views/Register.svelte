@@ -33,7 +33,7 @@
   <GlassPanel class="reg-card">
     <div class="logo">☀️</div>
     <h1 class="title">Create Account</h1>
-    <p class="subtitle">Join Sunrise</p>
+    <p class="subtitle">Join cotton Talk</p>
 
     {#if error}
       <div class="error">{error}</div>

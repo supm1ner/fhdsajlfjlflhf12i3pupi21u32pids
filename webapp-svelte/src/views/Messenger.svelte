@@ -193,7 +193,7 @@
       <div class="welcome">
         <GlassPanel class="welcome-card">
           <div class="welcome-icon">☀️</div>
-          <h2>Welcome to Sunrise</h2>
+          <h2>Welcome to cotton Talk</h2>
           <p>Select a conversation to start messaging</p>
         </GlassPanel>
       </div>
