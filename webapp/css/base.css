@@ -42,14 +42,14 @@
 
   /* Secondary/Neutral Grays & Backgrounds */
   --clr-body-background: var(--clr-std-ltgray); /* Main page background */
-  --clr-text-primary: light-dark(#666, #999); /* Default text color */
-  --clr-text-secondary: light-dark(#757575, #8a8a8a); /* Muted text, icons e.g. menu trigger */
-  --clr-text-tertiary: light-dark(#999, #787878); /* Even more muted text, borders, some icons */
-  --clr-text-tertiary-activated: #888; /* Activated (hover, focus) tertiary text */
-  --clr-text-placeholder: light-dark(#bbb, #555); /* Placeholder text */
-  --clr-text-disabled: light-dark(#888, #777); /* Disabled text e.g. in-place-edit */
-  --clr-border-light: light-dark(#ccc, #555); /* Common light border, separator */
-  --clr-border-muted: light-dark(#ddd, #444); /* Softer border, e.g. in-place-edit dashed */
+  --clr-text-primary: light-dark(#09090b, #fafafa); /* Crisp near-black / near-white (minimalist) */
+  --clr-text-secondary: light-dark(#52525b, #adadb6); /* Muted text, icons e.g. menu trigger */
+  --clr-text-tertiary: light-dark(#8e8e96, #8a8a94); /* Even more muted text, borders, some icons */
+  --clr-text-tertiary-activated: light-dark(#52525b, #adadb6); /* Activated (hover, focus) tertiary text */
+  --clr-text-placeholder: light-dark(#a1a1aa, #6b6b74); /* Placeholder text */
+  --clr-text-disabled: light-dark(#a1a1aa, #6b6b74); /* Disabled text e.g. in-place-edit */
+  --clr-border-light: light-dark(rgba(9,9,11,0.12), rgba(255,255,255,0.14)); /* Common hairline border, separator */
+  --clr-border-muted: light-dark(rgba(9,9,11,0.07), rgba(255,255,255,0.09)); /* Softer border */
   --clr-background-off-white: light-dark(#fafafa, #222); /* Common very light background */
   --clr-background-light-gray: light-dark(#f0f0f0, #0f0f0f); /* HR background, action button hover */
   --clr-background-extra-light-gray: light-dark(#eee, #222); /* Flat button faux bg, tabbar bg, chip bg */
@@ -80,7 +80,7 @@
   --clr-info-text-dark: light-dark(#0288d1, #00151f); /* Info box info text, icon */
 
   /* Special UI Elements Colors */
-  --clr-header-stripe-bg: light-dark(#7c3aed, #1c1233); /* Violet stripe at top (cotton) */
+  --clr-header-stripe-bg: light-dark(#111113, #0d0d0f); /* Minimalist near-black top bar */
   --clr-scrollbar-thumb: light-dark(rgba(0,0,0,0.3), rgba(255,255,255,0.3));
   --clr-scrollbar-track: light-dark(rgba(255,255,255,0.1), rgba(0,0,0,0.1));
   --clr-menu-item-hover-bg: light-dark(#f5f5f5, #0a0a0a);
@@ -100,13 +100,13 @@
   --clr-shadow-input-underline: rgba(0,0,0, 0.1);
   --clr-shadow-hr-inset: rgba(0,0,0,0.15);
   --clr-shadow-scrollbar-track-webkit: rgba(0,0,0,0.2);
-  --clr-shadow-button: rgba(0,0,0, 0.25); /* General purpose shadow for buttons, spinners etc. */
-  --clr-shadow-button-inset-active: rgba(0,0,0, 0.125);
-  --clr-shadow-dialog: rgba(0,0,0, 0.45); /* For menus, alerts, dialogs */
-  --clr-shadow-panel-divider: rgba(0,0,0,0.1); /* For subtle shadows under/above panels */
+  --clr-shadow-button: rgba(0,0,0, 0.10); /* General purpose shadow for buttons, spinners etc. */
+  --clr-shadow-button-inset-active: rgba(0,0,0, 0.08);
+  --clr-shadow-dialog: rgba(0,0,0, 0.18); /* For menus, alerts, dialogs */
+  --clr-shadow-panel-divider: rgba(0,0,0,0.06); /* For subtle shadows under/above panels */
   --clr-shadow-gray-strong: light-dark(var(--clr-std-gray), #333); /* For panel box-shadows using 'gray' keyword */
   --clr-shadow-silver-subtle: light-dark(var(--clr-std-ltgray), #333); /* For panel box-shadows using 'silver' keyword */
-  --clr-shadow-bubble-drop: rgba(0,0,0,0.3);
+  --clr-shadow-bubble-drop: rgba(0,0,0,0.10);
 
   /* Buttons */
   --clr-button-primary-bg: var(--clr-primary-action);
