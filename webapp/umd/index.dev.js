@@ -9277,15 +9277,15 @@ class AccSupportView extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureC
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": function() { return /* binding */ ContactsView; }
-/* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
 /* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _widgets_contact_list_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../widgets/contact-list.jsx */ "./src/widgets/contact-list.jsx");
-/* harmony import */ var _lib_utils_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../lib/utils.js */ "./src/lib/utils.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "sunrise-sdk");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _widgets_contact_list_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../widgets/contact-list.jsx */ "./src/widgets/contact-list.jsx");
+/* harmony import */ var _lib_utils_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../lib/utils.js */ "./src/lib/utils.js");
+
 
 
 
@@ -9303,13 +9303,58 @@ const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
       "type": 0,
       "value": ")"
     }]
+  },
+  folder_all: {
+    id: "folder_all",
+    defaultMessage: [{
+      "type": 0,
+      "value": "All"
+    }]
+  },
+  folder_unread: {
+    id: "folder_unread",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Unread"
+    }]
+  },
+  folder_direct: {
+    id: "folder_direct",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Direct"
+    }]
+  },
+  folder_groups: {
+    id: "folder_groups",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Groups"
+    }]
   }
 });
+const FOLDERS = [{
+  id: 'all',
+  label: messages.folder_all
+}, {
+  id: 'unread',
+  label: messages.folder_unread
+}, {
+  id: 'direct',
+  label: messages.folder_direct
+}, {
+  id: 'groups',
+  label: messages.folder_groups
+}];
+function isGroupLike(topic) {
+  return !!topic && (sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.isGroupTopicName(topic) || sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Sunrise.isChannelTopicName(topic));
+}
 class ContactsView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
   constructor(props) {
     super(props);
     this.handleAction = this.handleAction.bind(this);
     this.state = ContactsView.deriveStateFromProps(props);
+    this.state.folder = 'all';
   }
   static deriveStateFromProps(props) {
     const contacts = [];
@@ -9359,24 +9404,64 @@ class ContactsView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
       const newState = ContactsView.deriveStateFromProps(this.props);
       this.setState(newState);
       if (newState.unreadThreads != prevState.unreadThreads) {
-        (0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_3__.updateFavicon)(newState.unreadThreads);
+        (0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_4__.updateFavicon)(newState.unreadThreads);
       }
     }
   }
   handleAction(action_ignored) {
     this.props.onShowArchive();
   }
+  filteredContacts() {
+    const folder = this.state.folder;
+    if (folder == 'all') {
+      return this.state.contactList;
+    }
+    return this.state.contactList.filter(c => {
+      if (c.action) {
+        return true;
+      }
+      switch (folder) {
+        case 'unread':
+          return c.unread > 0;
+        case 'direct':
+          return !isGroupLike(c.topic);
+        case 'groups':
+          return isGroupLike(c.topic);
+        default:
+          return true;
+      }
+    });
+  }
   render() {
-    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+    const {
+      formatMessage
+    } = this.props.intl;
+    const showFolders = !this.props.archive && !this.props.blocked && this.state.contactList.length > 0;
+    const folderTabs = showFolders ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      id: "chat-folders"
+    }, FOLDERS.map(f => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      key: f.id,
+      href: "#",
+      className: 'folder-tab' + (this.state.folder == f.id ? ' active' : ''),
+      onClick: e => {
+        e.preventDefault();
+        this.setState({
+          folder: f.id
+        });
+      }
+    }, formatMessage(f.label), f.id == 'unread' && this.state.unreadThreads > 0 ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      className: "folder-badge"
+    }, this.state.unreadThreads) : null))) : null;
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, folderTabs, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
       id: "contacts_not_found",
       defaultMessage: [{
         "type": 0,
         "value": "You have no chats\\n¯∖_(ツ)_/¯"
       }]
-    }, no_contacts => react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_contact_list_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    }, no_contacts => react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_contact_list_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], {
       sunrise: this.props.sunrise,
       connected: this.props.connected,
-      contacts: this.state.contactList,
+      contacts: this.filteredContacts(),
       emptyListMessage: no_contacts,
       topicSelected: this.props.topicSelected,
       myUserId: this.props.myUserId,
@@ -9385,10 +9470,11 @@ class ContactsView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
       onTopicSelected: this.props.onTopicSelected,
       showContextMenu: this.props.showContextMenu,
       onAction: this.handleAction
-    }));
+    })));
   }
 }
 ;
+/* harmony default export */ __webpack_exports__["default"] = ((0,react_intl__WEBPACK_IMPORTED_MODULE_1__.injectIntl)(ContactsView));
 
 /***/ }),
 
