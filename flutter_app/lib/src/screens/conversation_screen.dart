@@ -48,6 +48,27 @@ class _ConversationScreenState extends State<ConversationScreen> {
   bool _searchOpen = false;
   String _searchQuery = '';
   final _searchCtrl = TextEditingController();
+  bool _showJump = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scroll.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (!_scroll.hasClients) return;
+    final pos = _scroll.position;
+    final show = (pos.maxScrollExtent - pos.pixels) > 400;
+    if (show != _showJump) setState(() => _showJump = show);
+  }
+
+  void _jumpToLatest() {
+    if (_scroll.hasClients) {
+      _scroll.animateTo(_scroll.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
+    }
+  }
 
   void _toggleSearch() {
     setState(() {
@@ -281,8 +302,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   child: Text(
                       q.isEmpty ? 'No messages yet. Say hello!' : 'No matches',
                       style: const TextStyle(color: Palette.textSecondary)))
-              : Builder(builder: (ctx) {
-                  return ListView.builder(
+              : Stack(
+                  children: [
+                    ListView.builder(
                     controller: _scroll,
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     itemCount: msgs.length,
@@ -307,8 +329,21 @@ class _ConversationScreenState extends State<ConversationScreen> {
                         children: [_dateChip(m.ts), bubble],
                       );
                     },
-                  );
-                }),
+                    ),
+                    if (_showJump)
+                      Positioned(
+                        right: 16,
+                        bottom: 16,
+                        child: FloatingActionButton.small(
+                          backgroundColor: Palette.surface,
+                          foregroundColor: Palette.textPrimary,
+                          elevation: 2,
+                          onPressed: _jumpToLatest,
+                          child: const Icon(Icons.keyboard_arrow_down),
+                        ),
+                      ),
+                  ],
+                ),
         ),
         _composer(),
       ],
