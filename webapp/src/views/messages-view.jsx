@@ -109,6 +109,16 @@ const messages = defineMessages({
     id: 'cannot_parse_vcard',
     defaultMessage: 'Cannot parse vCard file.',
     description: 'Error message when vCard file cannot be parsed'
+  },
+  icon_title_search: {
+    id: 'icon_title_search_messages',
+    defaultMessage: 'Search messages',
+    description: 'Tooltip for the in-chat message search button'
+  },
+  search_messages_prompt: {
+    id: 'search_messages_prompt',
+    defaultMessage: 'Search messages',
+    description: 'Placeholder in the in-chat message search field'
   }
 });
 
@@ -141,6 +151,18 @@ class MessagesView extends React.Component {
     super(props);
 
     this.state = MessagesView.getDerivedStateFromProps(props, {});
+    // In-chat message search (client-side, over loaded history).
+    Object.assign(this.state, {
+      searchOpen: false,
+      searchQuery: '',
+      searchResults: [], // matching message seq ids, newest first
+      searchIndex: 0
+    });
+
+    this.toggleSearch = this.toggleSearch.bind(this);
+    this.handleSearchChange = this.handleSearchChange.bind(this);
+    this.searchNext = this.searchNext.bind(this);
+    this.searchPrev = this.searchPrev.bind(this);
 
     this.componentSetup = this.componentSetup.bind(this);
     this.leave = this.leave.bind(this);
@@ -313,6 +335,11 @@ class MessagesView extends React.Component {
         topic.onSubsUpdated = this.handleSubsUpdated;
         topic.onPres = this.handleSubsUpdated;
         topic.onAuxUpdated = this.handleAuxUpdate;
+      }
+
+      // Reset in-chat search when switching conversations.
+      if (this.state.searchOpen || this.state.searchQuery) {
+        this.setState({searchOpen: false, searchQuery: '', searchResults: [], searchIndex: 0});
       }
     }
 
@@ -1589,6 +1616,65 @@ class MessagesView extends React.Component {
     }
   }
 
+  // --- In-chat message search -------------------------------------------
+
+  toggleSearch() {
+    if (this.state.searchOpen) {
+      this.setState({searchOpen: false, searchQuery: '', searchResults: [], searchIndex: 0});
+    } else {
+      this.setState({searchOpen: true});
+    }
+  }
+
+  // Search loaded messages for the query; results are seq ids, newest first.
+  handleSearchChange(e) {
+    const query = e.target.value;
+    const trimmed = query.trim().toLowerCase();
+    if (!trimmed) {
+      this.setState({searchQuery: query, searchResults: [], searchIndex: 0});
+      return;
+    }
+    const topic = this.props.sunrise.getTopic(this.state.topic);
+    const results = [];
+    if (topic) {
+      topic.messages(msg => {
+        if (!msg || msg.hi) {
+          return;
+        }
+        const text = (typeof msg.content == 'string') ?
+          msg.content : (Drafty.isValid(msg.content) ? Drafty.toPlainText(msg.content) : '');
+        if (text && text.toLowerCase().includes(trimmed)) {
+          results.push(msg.seq);
+        }
+      });
+    }
+    // Newest matches first.
+    results.reverse();
+    this.setState({searchQuery: query, searchResults: results, searchIndex: 0}, () => {
+      if (results.length > 0) {
+        this.handleQuoteClick(results[0]);
+      }
+    });
+  }
+
+  searchNext() {
+    const {searchResults, searchIndex} = this.state;
+    if (searchResults.length == 0) {
+      return;
+    }
+    const next = (searchIndex + 1) % searchResults.length;
+    this.setState({searchIndex: next}, () => this.handleQuoteClick(searchResults[next]));
+  }
+
+  searchPrev() {
+    const {searchResults, searchIndex} = this.state;
+    if (searchResults.length == 0) {
+      return;
+    }
+    const prev = (searchIndex - 1 + searchResults.length) % searchResults.length;
+    this.setState({searchIndex: prev}, () => this.handleQuoteClick(searchResults[prev]));
+  }
+
   handleUnpinMessage(seq) {
     const topic = this.props.sunrise.getTopic(this.state.topic);
     topic.pinMessage(seq, false);
@@ -2001,11 +2087,46 @@ class MessagesView extends React.Component {
                 null
               }
               <div>
+                <a href="#" onClick={e => {e.preventDefault(); this.toggleSearch();}}
+                  title={formatMessage(messages.icon_title_search)}>
+                  <i className={'material-icons' + (this.state.searchOpen ? ' primary' : '')}>search</i>
+                </a>
+              </div>
+              <div>
                 <a href="#" onClick={this.handleContextClick}>
                   <i className="material-icons">more_vert</i>
                 </a>
               </div>
             </div>
+            {this.state.searchOpen ?
+              <div id="message-search-bar">
+                <i className="material-icons gray">search</i>
+                <input type="text" autoFocus
+                  placeholder={formatMessage(messages.search_messages_prompt)}
+                  value={this.state.searchQuery}
+                  onChange={this.handleSearchChange}
+                  onKeyDown={e => {
+                    if (e.key == 'Enter') { e.preventDefault(); e.shiftKey ? this.searchPrev() : this.searchNext(); }
+                    else if (e.key == 'Escape') { e.preventDefault(); this.toggleSearch(); }
+                  }} />
+                <span className="search-count">
+                  {this.state.searchQuery.trim() ?
+                    (this.state.searchResults.length ?
+                      `${this.state.searchIndex + 1}/${this.state.searchResults.length}` : '0/0') : ''}
+                </span>
+                <a href="#" onClick={e => {e.preventDefault(); this.searchPrev();}}
+                  className={this.state.searchResults.length ? '' : 'disabled'} title="Newer">
+                  <i className="material-icons">keyboard_arrow_up</i>
+                </a>
+                <a href="#" onClick={e => {e.preventDefault(); this.searchNext();}}
+                  className={this.state.searchResults.length ? '' : 'disabled'} title="Older">
+                  <i className="material-icons">keyboard_arrow_down</i>
+                </a>
+                <a href="#" onClick={e => {e.preventDefault(); this.toggleSearch();}} title="Close">
+                  <i className="material-icons gray">close</i>
+                </a>
+              </div>
+              : null}
             {this.props.displayMobile ?
               <>
                 {this.state.pins.length > 0 ?

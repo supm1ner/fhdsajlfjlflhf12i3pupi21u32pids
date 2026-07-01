@@ -335,6 +335,20 @@ const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
       "type": 0,
       "value": "Cannot parse vCard file."
     }]
+  },
+  icon_title_search: {
+    id: "icon_title_search_messages",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Search messages"
+    }]
+  },
+  search_messages_prompt: {
+    id: "search_messages_prompt",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Search messages"
+    }]
   }
 });
 function isUnconfirmed(acs) {
@@ -358,6 +372,16 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
   constructor(props) {
     super(props);
     this.state = MessagesView.getDerivedStateFromProps(props, {});
+    Object.assign(this.state, {
+      searchOpen: false,
+      searchQuery: '',
+      searchResults: [],
+      searchIndex: 0
+    });
+    this.toggleSearch = this.toggleSearch.bind(this);
+    this.handleSearchChange = this.handleSearchChange.bind(this);
+    this.searchNext = this.searchNext.bind(this);
+    this.searchPrev = this.searchPrev.bind(this);
     this.componentSetup = this.componentSetup.bind(this);
     this.leave = this.leave.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
@@ -504,6 +528,14 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
         topic.onSubsUpdated = this.handleSubsUpdated;
         topic.onPres = this.handleSubsUpdated;
         topic.onAuxUpdated = this.handleAuxUpdate;
+      }
+      if (this.state.searchOpen || this.state.searchQuery) {
+        this.setState({
+          searchOpen: false,
+          searchQuery: '',
+          searchResults: [],
+          searchIndex: 0
+        });
       }
     }
     if (topic) {
@@ -1600,6 +1632,81 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
       console.error("Unresolved message ref", replyToSeq);
     }
   }
+  toggleSearch() {
+    if (this.state.searchOpen) {
+      this.setState({
+        searchOpen: false,
+        searchQuery: '',
+        searchResults: [],
+        searchIndex: 0
+      });
+    } else {
+      this.setState({
+        searchOpen: true
+      });
+    }
+  }
+  handleSearchChange(e) {
+    const query = e.target.value;
+    const trimmed = query.trim().toLowerCase();
+    if (!trimmed) {
+      this.setState({
+        searchQuery: query,
+        searchResults: [],
+        searchIndex: 0
+      });
+      return;
+    }
+    const topic = this.props.sunrise.getTopic(this.state.topic);
+    const results = [];
+    if (topic) {
+      topic.messages(msg => {
+        if (!msg || msg.hi) {
+          return;
+        }
+        const text = typeof msg.content == 'string' ? msg.content : sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.isValid(msg.content) ? sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.toPlainText(msg.content) : '';
+        if (text && text.toLowerCase().includes(trimmed)) {
+          results.push(msg.seq);
+        }
+      });
+    }
+    results.reverse();
+    this.setState({
+      searchQuery: query,
+      searchResults: results,
+      searchIndex: 0
+    }, () => {
+      if (results.length > 0) {
+        this.handleQuoteClick(results[0]);
+      }
+    });
+  }
+  searchNext() {
+    const {
+      searchResults,
+      searchIndex
+    } = this.state;
+    if (searchResults.length == 0) {
+      return;
+    }
+    const next = (searchIndex + 1) % searchResults.length;
+    this.setState({
+      searchIndex: next
+    }, () => this.handleQuoteClick(searchResults[next]));
+  }
+  searchPrev() {
+    const {
+      searchResults,
+      searchIndex
+    } = this.state;
+    if (searchResults.length == 0) {
+      return;
+    }
+    const prev = (searchIndex - 1 + searchResults.length) % searchResults.length;
+    this.setState({
+      searchIndex: prev
+    }, () => this.handleQuoteClick(searchResults[prev]));
+  }
   handleUnpinMessage(seq) {
     const topic = this.props.sunrise.getTopic(this.state.topic);
     topic.pinMessage(seq, false);
@@ -2057,10 +2164,69 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
           subscribers: this.state.onlineSubs
         }) : null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
           href: "#",
+          onClick: e => {
+            e.preventDefault();
+            this.toggleSearch();
+          },
+          title: formatMessage(messages.icon_title_search)
+        }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+          className: 'material-icons' + (this.state.searchOpen ? ' primary' : '')
+        }, "search"))), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+          href: "#",
           onClick: this.handleContextClick
         }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
           className: "material-icons"
-        }, "more_vert")))), this.props.displayMobile ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, this.state.pins.length > 0 ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_pinned_messages_jsx__WEBPACK_IMPORTED_MODULE_12__["default"], {
+        }, "more_vert")))), this.state.searchOpen ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+          id: "message-search-bar"
+        }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+          className: "material-icons gray"
+        }, "search"), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+          type: "text",
+          autoFocus: true,
+          placeholder: formatMessage(messages.search_messages_prompt),
+          value: this.state.searchQuery,
+          onChange: this.handleSearchChange,
+          onKeyDown: e => {
+            if (e.key == 'Enter') {
+              e.preventDefault();
+              e.shiftKey ? this.searchPrev() : this.searchNext();
+            } else if (e.key == 'Escape') {
+              e.preventDefault();
+              this.toggleSearch();
+            }
+          }
+        }), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+          className: "search-count"
+        }, this.state.searchQuery.trim() ? this.state.searchResults.length ? `${this.state.searchIndex + 1}/${this.state.searchResults.length}` : '0/0' : ''), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+          href: "#",
+          onClick: e => {
+            e.preventDefault();
+            this.searchPrev();
+          },
+          className: this.state.searchResults.length ? '' : 'disabled',
+          title: "Newer"
+        }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+          className: "material-icons"
+        }, "keyboard_arrow_up")), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+          href: "#",
+          onClick: e => {
+            e.preventDefault();
+            this.searchNext();
+          },
+          className: this.state.searchResults.length ? '' : 'disabled',
+          title: "Older"
+        }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+          className: "material-icons"
+        }, "keyboard_arrow_down")), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+          href: "#",
+          onClick: e => {
+            e.preventDefault();
+            this.toggleSearch();
+          },
+          title: "Close"
+        }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+          className: "material-icons gray"
+        }, "close"))) : null, this.props.displayMobile ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, this.state.pins.length > 0 ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_widgets_pinned_messages_jsx__WEBPACK_IMPORTED_MODULE_12__["default"], {
           sunrise: this.props.sunrise,
           pins: this.state.pins,
           messages: pinnedMessages,

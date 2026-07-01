@@ -1755,6 +1755,48 @@ img.channel {
   overflow-x: hidden;
 }
 
+#topic-caption-panel .material-icons.primary {
+  color: var(--clr-primary-accent);
+}
+
+/* In-chat message search bar (below the topic caption). */
+#message-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  background-color: var(--clr-background-blue-gray-50);
+  border-top: 1px solid var(--clr-border-light);
+}
+#message-search-bar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--clr-text-primary);
+  font-size: 1rem;
+  padding: 0.25rem;
+}
+#message-search-bar .search-count {
+  color: var(--clr-text-tertiary);
+  font-size: 0.85rem;
+  min-width: 2.5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+#message-search-bar a {
+  color: var(--clr-text-secondary);
+  text-decoration: none;
+  display: flex;
+}
+#message-search-bar a.disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+#message-search-bar a:hover {
+  color: var(--clr-primary-accent);
+}
+
 #hide-message-view {
   display: block;
   margin-right: 0.35rem;
