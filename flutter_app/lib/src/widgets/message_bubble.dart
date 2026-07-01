@@ -44,6 +44,20 @@ class MessageBubble extends StatelessWidget {
   /// Active in-chat search term to highlight within the message text.
   final String? highlight;
 
+  /// True when [text] is 1-3 emoji/pictographs only (no letters, digits or ASCII).
+  bool _looksEmojiOnly(String text) {
+    // Drop spaces; ZWJ/variation selectors are >= U+2000 so they pass the check below.
+    final stripped = text.replaceAll(RegExp(r'\s'), '');
+    if (stripped.isEmpty) return false;
+    final runes = stripped.runes.toList();
+    if (runes.length > 3) return false;
+    for (final r in runes) {
+      // Anything below U+2000 is ASCII/latin/digits/punctuation — not an emoji.
+      if (r < 0x2000) return false;
+    }
+    return true;
+  }
+
   /// Renders [text] with the active search term highlighted, if any.
   Widget _highlighted(String text, TextStyle style) {
     final term = highlight;
@@ -141,7 +155,9 @@ class MessageBubble extends StatelessWidget {
         ]);
         break;
       default:
-        body = _highlighted(text, TextStyle(color: textColor, fontSize: 14, height: 1.4));
+        // Emoji-only messages render larger (like Telegram / the web client).
+        final big = _looksEmojiOnly(text);
+        body = _highlighted(text, TextStyle(color: textColor, fontSize: big ? 34 : 14, height: big ? 1.1 : 1.4));
     }
 
     // v0-style minimalist bubble: soft 18px corners with a small "tail" corner on the sender side.
