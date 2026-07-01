@@ -3,6 +3,9 @@ import './app.css'
 import App from './App.svelte'
 import { appState } from './lib/stores.svelte.js'
 import { loginWithSavedToken, myUID } from './lib/tinode.js'
+import { initTheme } from './lib/theme.svelte.js'
+
+initTheme()
 
 // Register the service worker for PWA install + offline app shell.
 if ('serviceWorker' in navigator) {

@@ -13,24 +13,26 @@
 </button>
 
 <style>
+  /* cotton button conventions: mono-ish weight, B/W primary, violet accent. */
   .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 10px 20px; border-radius: var(--radius-sm);
-    font-size: 14px; font-weight: 500; cursor: pointer;
-    transition: var(--transition); white-space: nowrap;
+    display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+    height: 44px; padding: 0 20px; border-radius: var(--radius-sm);
+    font-size: 15px; font-weight: 600; line-height: 1; cursor: pointer;
+    border: 1px solid transparent;
+    transition: background 0.18s var(--ease), border-color 0.18s var(--ease), color 0.18s var(--ease), transform 0.12s var(--ease);
+    white-space: nowrap;
   }
+  .btn:active:not(:disabled) { transform: translateY(1px); }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn-primary {
-    background: var(--accent); color: white;
-    box-shadow: 0 2px 12px var(--accent-glow);
-  }
-  .btn-primary:hover:not(:disabled) { background: var(--accent-hover); box-shadow: 0 4px 20px var(--accent-glow); }
-  .btn-ghost {
-    background: transparent; color: var(--text-secondary);
-    border: 1px solid var(--border-glass);
-  }
-  .btn-ghost:hover:not(:disabled) { background: var(--bg-glass-hover); color: var(--text-primary); }
-  .btn-danger { background: var(--danger); color: white; }
-  .btn-danger:hover:not(:disabled) { filter: brightness(1.1); }
+  /* primary = high-contrast black/white (cotton .btn-primary) */
+  .btn-primary { background: var(--text-primary); color: var(--bg-primary); }
+  .btn-primary:hover:not(:disabled) { filter: brightness(1.1); }
+  /* accent = violet (cotton .btn-accent) */
+  .btn-accent { background: var(--accent); color: #fff; }
+  .btn-accent:hover:not(:disabled) { background: var(--accent-hover); }
+  .btn-ghost { background: transparent; color: var(--text-primary); border-color: var(--border-hover); }
+  .btn-ghost:hover:not(:disabled) { background: var(--bg-glass-hover); border-color: var(--text-tertiary); }
+  .btn-danger { background: transparent; color: var(--danger); border-color: var(--border-hover); }
+  .btn-danger:hover:not(:disabled) { background: var(--accent-soft); border-color: var(--danger); }
   .full-width { width: 100%; }
 </style>

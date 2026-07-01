@@ -3,6 +3,7 @@
   import { appState } from '../lib/stores.svelte.js';
   import { getClient, subscribeMe, getMe, mapContacts, myUID, searchUsers, installSession, setConnectionListener, messagePreview, logout as doLogout } from '../lib/tinode.js';
   import { ensureNotifyPermission, notifyMessage } from '../lib/notify.js';
+  import { theme, toggleTheme } from '../lib/theme.svelte.js';
   import { callState, handleIncoming } from '../lib/calls.svelte.js';
   import { groupCall, handleSignal as handleGroupSignal } from '../lib/groupcall.svelte.js';
   import { liveKit } from '../lib/livekit.svelte.js';
@@ -120,6 +121,7 @@
         <div class="user-name">{appState.user?.name || 'User'}</div>
         <div class="user-status">{appState.connected ? 'Online' : 'Connecting…'}</div>
       </div>
+      <button class="settings-btn" title="Toggle theme" onclick={toggleTheme}>{theme.isDark ? '☀' : '🌙'}</button>
       <button class="settings-btn" title="Settings" onclick={() => appState.view = 'settings'}>⚙️</button>
     </GlassPanel>
 
