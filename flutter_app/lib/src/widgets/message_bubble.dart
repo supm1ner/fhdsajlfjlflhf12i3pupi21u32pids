@@ -21,6 +21,7 @@ class MessageBubble extends StatelessWidget {
     this.onReact,
     this.onLongPress,
     this.peerReadSeq = 0,
+    this.highlight,
   });
 
   final Message message;
@@ -39,6 +40,34 @@ class MessageBubble extends StatelessWidget {
 
   /// Highest message seq the peer has read (drives delivery ticks on own messages).
   final int peerReadSeq;
+
+  /// Active in-chat search term to highlight within the message text.
+  final String? highlight;
+
+  /// Renders [text] with the active search term highlighted, if any.
+  Widget _highlighted(String text, TextStyle style) {
+    final term = highlight;
+    if (term == null || term.isEmpty) return Text(text, style: style);
+    final lower = text.toLowerCase();
+    final q = term.toLowerCase();
+    if (!lower.contains(q)) return Text(text, style: style);
+    final spans = <TextSpan>[];
+    var pos = 0;
+    while (true) {
+      final idx = lower.indexOf(q, pos);
+      if (idx < 0) {
+        spans.add(TextSpan(text: text.substring(pos)));
+        break;
+      }
+      if (idx > pos) spans.add(TextSpan(text: text.substring(pos, idx)));
+      spans.add(TextSpan(
+        text: text.substring(idx, idx + term.length),
+        style: const TextStyle(backgroundColor: Color(0x8CFFD000)),
+      ));
+      pos = idx + term.length;
+    }
+    return Text.rich(TextSpan(style: style, children: spans));
+  }
 
   String? _src(Map<String, dynamic>? data) {
     if (data == null) return null;
@@ -112,7 +141,7 @@ class MessageBubble extends StatelessWidget {
         ]);
         break;
       default:
-        body = Text(text, style: TextStyle(color: textColor, fontSize: 14, height: 1.4));
+        body = _highlighted(text, TextStyle(color: textColor, fontSize: 14, height: 1.4));
     }
 
     // v0-style minimalist bubble: soft 18px corners with a small "tail" corner on the sender side.
@@ -154,7 +183,7 @@ class MessageBubble extends StatelessWidget {
                   body,
                   if (text.isNotEmpty && tp != 'text' && tp != 'call') ...[
                     const SizedBox(height: 6),
-                    Text(text, style: TextStyle(color: textColor, fontSize: 14)),
+                    _highlighted(text, TextStyle(color: textColor, fontSize: 14)),
                   ],
                   const SizedBox(height: 3),
                   Align(

@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
 import '../state/app_state.dart';
+import '../sunrise/drafty.dart';
 import '../theme/glass_theme.dart';
 import '../widgets/glass.dart';
 import '../widgets/message_bubble.dart';
@@ -44,6 +45,19 @@ class _ConversationScreenState extends State<ConversationScreen> {
   Timer? _voiceTicker;
   int _lastMsgCount = 0;
   bool _didInitialScroll = false;
+  bool _searchOpen = false;
+  String _searchQuery = '';
+  final _searchCtrl = TextEditingController();
+
+  void _toggleSearch() {
+    setState(() {
+      _searchOpen = !_searchOpen;
+      if (!_searchOpen) {
+        _searchQuery = '';
+        _searchCtrl.clear();
+      }
+    });
+  }
 
   void _send() {
     final text = _input.text;
@@ -185,6 +199,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   void dispose() {
     _input.dispose();
     _scroll.dispose();
+    _searchCtrl.dispose();
     _recorder.dispose();
     _voiceTicker?.cancel();
     super.dispose();
@@ -193,31 +208,42 @@ class _ConversationScreenState extends State<ConversationScreen> {
   @override
   Widget build(BuildContext context) {
     final s = widget.state;
-    final msgs = s.visibleMessages;
+    final all = s.visibleMessages;
+    final q = _searchQuery.trim().toLowerCase();
+    // While searching, show only matching messages (with the term highlighted).
+    final msgs = q.isEmpty ? all : all.where((m) => Drafty.plainText(m.content).toLowerCase().contains(q)).toList();
+
     // Auto-scroll to the newest message only when new messages arrived AND the user
     // is already near the bottom — never yank the view while they're reading history.
-    final grew = msgs.length > _lastMsgCount;
-    // A shrinking list means the conversation was switched/cleared: re-anchor to bottom.
-    if (msgs.length < _lastMsgCount) _didInitialScroll = false;
-    _lastMsgCount = msgs.length;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_scroll.hasClients) return;
-      final pos = _scroll.position;
-      if (!_didInitialScroll && msgs.isNotEmpty) {
-        _scroll.jumpTo(pos.maxScrollExtent);
-        _didInitialScroll = true;
-        return;
-      }
-      final nearBottom = pos.maxScrollExtent - pos.pixels < 240;
-      if (grew && nearBottom) _scroll.jumpTo(pos.maxScrollExtent);
-    });
+    // Skip entirely while searching so the filtered view stays put.
+    if (!_searchOpen) {
+      final grew = msgs.length > _lastMsgCount;
+      // A shrinking list means the conversation was switched/cleared: re-anchor to bottom.
+      if (msgs.length < _lastMsgCount) _didInitialScroll = false;
+      _lastMsgCount = msgs.length;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!_scroll.hasClients) return;
+        final pos = _scroll.position;
+        if (!_didInitialScroll && msgs.isNotEmpty) {
+          _scroll.jumpTo(pos.maxScrollExtent);
+          _didInitialScroll = true;
+          return;
+        }
+        final nearBottom = pos.maxScrollExtent - pos.pixels < 240;
+        if (grew && nearBottom) _scroll.jumpTo(pos.maxScrollExtent);
+      });
+    }
 
     return Column(
       children: [
         _header(s),
+        if (_searchOpen) _searchBar(msgs.length),
         Expanded(
           child: msgs.isEmpty
-              ? const Center(child: Text('No messages yet. Say hello!', style: TextStyle(color: Palette.textSecondary)))
+              ? Center(
+                  child: Text(
+                      q.isEmpty ? 'No messages yet. Say hello!' : 'No matches',
+                      style: const TextStyle(color: Palette.textSecondary)))
               : Builder(builder: (ctx) {
                   return ListView.builder(
                     controller: _scroll,
@@ -232,6 +258,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                         reactions: s.reactionsFor(m.seq),
                         myUserId: s.client.userId,
                         peerReadSeq: s.peerReadSeq,
+                        highlight: q.isEmpty ? null : _searchQuery.trim(),
                         onReact: (emoji) => s.toggleReaction(m.seq, emoji),
                         onLongPress: () => _showReactionPicker(s, m.seq),
                       );
@@ -268,6 +295,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 ),
               ),
               IconButton(
+                  onPressed: _toggleSearch,
+                  icon: Icon(Icons.search, color: _searchOpen ? Palette.accent : Palette.textSecondary)),
+              IconButton(
                   onPressed: () => s.startCall(audioOnly: true),
                   icon: const Icon(Icons.call, color: Palette.textSecondary)),
               IconButton(
@@ -276,6 +306,43 @@ class _ConversationScreenState extends State<ConversationScreen> {
               IconButton(
                   onPressed: s.startGroupCall,
                   icon: const Icon(Icons.groups, color: Palette.textSecondary)),
+            ],
+          ),
+        ),
+      );
+
+  Widget _searchBar(int count) => Padding(
+        padding: const EdgeInsets.fromLTRB(10, 0, 10, 4),
+        child: GlassPanel(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          radius: 14,
+          child: Row(
+            children: [
+              const Icon(Icons.search, color: Palette.textTertiary, size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: TextField(
+                  controller: _searchCtrl,
+                  autofocus: true,
+                  onChanged: (v) => setState(() => _searchQuery = v),
+                  style: const TextStyle(color: Palette.textPrimary, fontSize: 14),
+                  decoration: const InputDecoration(
+                    hintText: 'Search messages…',
+                    hintStyle: TextStyle(color: Palette.textTertiary),
+                    border: InputBorder.none,
+                    isDense: true,
+                  ),
+                ),
+              ),
+              if (_searchQuery.trim().isNotEmpty)
+                Text('$count',
+                    style: const TextStyle(color: Palette.textTertiary, fontSize: 12)),
+              IconButton(
+                onPressed: _toggleSearch,
+                icon: const Icon(Icons.close, color: Palette.textSecondary, size: 20),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+              ),
             ],
           ),
         ),
