@@ -349,6 +349,13 @@ const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
       "type": 0,
       "value": "Search messages"
     }]
+  },
+  search_load_earlier: {
+    id: "search_load_earlier",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Search earlier messages"
+    }]
   }
 });
 function isUnconfirmed(acs) {
@@ -382,6 +389,7 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
     this.handleSearchChange = this.handleSearchChange.bind(this);
     this.searchNext = this.searchNext.bind(this);
     this.searchPrev = this.searchPrev.bind(this);
+    this.loadEarlierAndSearch = this.loadEarlierAndSearch.bind(this);
     this.componentSetup = this.componentSetup.bind(this);
     this.leave = this.leave.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
@@ -1646,6 +1654,23 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
       });
     }
   }
+  computeSearchResults(trimmedLower) {
+    const topic = this.props.sunrise.getTopic(this.state.topic);
+    const results = [];
+    if (topic && trimmedLower) {
+      topic.messages(msg => {
+        if (!msg || msg.hi) {
+          return;
+        }
+        const text = typeof msg.content == 'string' ? msg.content : sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.isValid(msg.content) ? sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.toPlainText(msg.content) : '';
+        if (text && text.toLowerCase().includes(trimmedLower)) {
+          results.push(msg.seq);
+        }
+      });
+    }
+    results.reverse();
+    return results;
+  }
   handleSearchChange(e) {
     const query = e.target.value;
     const trimmed = query.trim().toLowerCase();
@@ -1657,20 +1682,7 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
       });
       return;
     }
-    const topic = this.props.sunrise.getTopic(this.state.topic);
-    const results = [];
-    if (topic) {
-      topic.messages(msg => {
-        if (!msg || msg.hi) {
-          return;
-        }
-        const text = typeof msg.content == 'string' ? msg.content : sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.isValid(msg.content) ? sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.toPlainText(msg.content) : '';
-        if (text && text.toLowerCase().includes(trimmed)) {
-          results.push(msg.seq);
-        }
-      });
-    }
-    results.reverse();
+    const results = this.computeSearchResults(trimmed);
     this.setState({
       searchQuery: query,
       searchResults: results,
@@ -1679,6 +1691,24 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
       if (results.length > 0) {
         this.handleQuoteClick(results[0]);
       }
+    });
+  }
+  loadEarlierAndSearch() {
+    const topic = this.props.sunrise.getTopic(this.state.topic);
+    if (!topic || !topic.isSubscribed() || this.state.fetchingMessages) {
+      return;
+    }
+    this.setState({
+      fetchingMessages: true
+    });
+    topic.getMeta(topic.startMetaQuery().withEarlierData(_config_js__WEBPACK_IMPORTED_MODULE_14__.MESSAGES_PAGE).build()).catch(err => this.props.onError(err.message, 'err')).finally(_ => {
+      const trimmed = this.state.searchQuery.trim().toLowerCase();
+      const results = trimmed ? this.computeSearchResults(trimmed) : [];
+      this.setState({
+        fetchingMessages: false,
+        searchResults: results,
+        searchIndex: Math.min(this.state.searchIndex, Math.max(0, results.length - 1))
+      });
     });
   }
   searchNext() {
@@ -2218,7 +2248,17 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
           title: "Older"
         }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
           className: "material-icons"
-        }, "keyboard_arrow_down")), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+        }, "keyboard_arrow_down")), this.state.searchQuery.trim() && this.state.minSeqId > 1 ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+          href: "#",
+          onClick: e => {
+            e.preventDefault();
+            this.loadEarlierAndSearch();
+          },
+          className: this.state.fetchingMessages ? 'disabled' : '',
+          title: formatMessage(messages.search_load_earlier)
+        }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+          className: "material-icons"
+        }, this.state.fetchingMessages ? 'hourglass_empty' : 'history')) : null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
           href: "#",
           onClick: e => {
             e.preventDefault();

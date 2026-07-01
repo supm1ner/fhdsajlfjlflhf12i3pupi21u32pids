@@ -119,6 +119,11 @@ const messages = defineMessages({
     id: 'search_messages_prompt',
     defaultMessage: 'Search messages',
     description: 'Placeholder in the in-chat message search field'
+  },
+  search_load_earlier: {
+    id: 'search_load_earlier',
+    defaultMessage: 'Search earlier messages',
+    description: 'Tooltip for loading older history while searching'
   }
 });
 
@@ -163,6 +168,7 @@ class MessagesView extends React.Component {
     this.handleSearchChange = this.handleSearchChange.bind(this);
     this.searchNext = this.searchNext.bind(this);
     this.searchPrev = this.searchPrev.bind(this);
+    this.loadEarlierAndSearch = this.loadEarlierAndSearch.bind(this);
 
     this.componentSetup = this.componentSetup.bind(this);
     this.leave = this.leave.bind(this);
@@ -1626,7 +1632,28 @@ class MessagesView extends React.Component {
     }
   }
 
-  // Search loaded messages for the query; results are seq ids, newest first.
+  // Compute matches (seq ids, newest first) over the currently loaded messages.
+  computeSearchResults(trimmedLower) {
+    const topic = this.props.sunrise.getTopic(this.state.topic);
+    const results = [];
+    if (topic && trimmedLower) {
+      topic.messages(msg => {
+        if (!msg || msg.hi) {
+          return;
+        }
+        const text = (typeof msg.content == 'string') ?
+          msg.content : (Drafty.isValid(msg.content) ? Drafty.toPlainText(msg.content) : '');
+        if (text && text.toLowerCase().includes(trimmedLower)) {
+          results.push(msg.seq);
+        }
+      });
+    }
+    // Newest matches first.
+    results.reverse();
+    return results;
+  }
+
+  // Search loaded messages for the query; jumps to the newest match.
   handleSearchChange(e) {
     const query = e.target.value;
     const trimmed = query.trim().toLowerCase();
@@ -1634,27 +1661,30 @@ class MessagesView extends React.Component {
       this.setState({searchQuery: query, searchResults: [], searchIndex: 0});
       return;
     }
-    const topic = this.props.sunrise.getTopic(this.state.topic);
-    const results = [];
-    if (topic) {
-      topic.messages(msg => {
-        if (!msg || msg.hi) {
-          return;
-        }
-        const text = (typeof msg.content == 'string') ?
-          msg.content : (Drafty.isValid(msg.content) ? Drafty.toPlainText(msg.content) : '');
-        if (text && text.toLowerCase().includes(trimmed)) {
-          results.push(msg.seq);
-        }
-      });
-    }
-    // Newest matches first.
-    results.reverse();
+    const results = this.computeSearchResults(trimmed);
     this.setState({searchQuery: query, searchResults: results, searchIndex: 0}, () => {
       if (results.length > 0) {
         this.handleQuoteClick(results[0]);
       }
     });
+  }
+
+  // Load an older page of history from the server, then re-run the current search
+  // so matches beyond the initially-loaded window are found too.
+  loadEarlierAndSearch() {
+    const topic = this.props.sunrise.getTopic(this.state.topic);
+    if (!topic || !topic.isSubscribed() || this.state.fetchingMessages) {
+      return;
+    }
+    this.setState({fetchingMessages: true});
+    topic.getMeta(topic.startMetaQuery().withEarlierData(MESSAGES_PAGE).build())
+      .catch(err => this.props.onError(err.message, 'err'))
+      .finally(_ => {
+        const trimmed = this.state.searchQuery.trim().toLowerCase();
+        const results = trimmed ? this.computeSearchResults(trimmed) : [];
+        this.setState({fetchingMessages: false, searchResults: results,
+          searchIndex: Math.min(this.state.searchIndex, Math.max(0, results.length - 1))});
+      });
   }
 
   searchNext() {
@@ -2123,6 +2153,12 @@ class MessagesView extends React.Component {
                   className={this.state.searchResults.length ? '' : 'disabled'} title="Older">
                   <i className="material-icons">keyboard_arrow_down</i>
                 </a>
+                {this.state.searchQuery.trim() && this.state.minSeqId > 1 ?
+                  <a href="#" onClick={e => {e.preventDefault(); this.loadEarlierAndSearch();}}
+                    className={this.state.fetchingMessages ? 'disabled' : ''}
+                    title={formatMessage(messages.search_load_earlier)}>
+                    <i className="material-icons">{this.state.fetchingMessages ? 'hourglass_empty' : 'history'}</i>
+                  </a> : null}
                 <a href="#" onClick={e => {e.preventDefault(); this.toggleSearch();}} title="Close">
                   <i className="material-icons gray">close</i>
                 </a>
