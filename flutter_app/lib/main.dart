@@ -1,11 +1,37 @@
+import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'src/screens/home_screen.dart';
 import 'src/screens/login_screen.dart';
 import 'src/state/app_state.dart';
 import 'src/theme/glass_theme.dart';
 
-void main() {
+bool get _isDesktop =>
+    !kIsWeb &&
+    (defaultTargetPlatform == TargetPlatform.macOS ||
+        defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.linux);
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Desktop: give the window a sensible default + minimum size and a clean title bar.
+  if (_isDesktop) {
+    await windowManager.ensureInitialized();
+    const options = WindowOptions(
+      size: Size(1120, 740),
+      minimumSize: Size(720, 520),
+      center: true,
+      title: 'Sunrise',
+      titleBarStyle: TitleBarStyle.normal,
+    );
+    await windowManager.waitUntilReadyToShow(options, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
+
   runApp(const SunriseApp());
 }
 

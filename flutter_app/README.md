@@ -13,11 +13,16 @@ Go server as the web client, over the same WebSocket/JSON protocol, and authenti
 
 ## Design
 
-Minimalist **white/black with a violet accent** (`#7C3AED`). Clean `GlassPanel` cards (white surface,
-hairline border, soft shadow), generous whitespace, crisp typography. Own messages are solid violet
-with white text (iMessage-style); the call screen and video-note recorder stay immersive dark.
-The shell is responsive — a master-detail split on wide screens (desktop/tablet) and a navigated
-stack on phones.
+Strict **cotton** minimalism — white/black with a single violet accent (`#7C3AED`), crisp near-black
+typography, hairline borders, soft shadows, no decorative gradients. Message bubbles are **v0-style**:
+soft 18px corners with a small tail on the sender side; own = solid violet, other = light surface with
+a hairline border. The call screen and video-note recorder stay immersive dark.
+
+**Responsive & desktop.** A master-detail split on wide screens (desktop/tablet) and a navigated stack
+on phones. On desktop (macOS/Windows/Linux) `window_manager` sets a sensible default (1120×740) and
+minimum (720×520) window size and centers the window.
+
+Runs from one codebase on **iOS, Android, macOS, Windows, Linux** (and web).
 
 ## Architecture
 
@@ -61,6 +66,10 @@ flutter create .          # generates platform runners (won't touch lib/ or pubs
 flutter pub get
 flutter run -d macos      # or windows / linux / chrome / <device-id>
 ```
+
+Desktop needs the desktop runners (created by `flutter create .`) and desktop support enabled
+(`flutter config --enable-macos-desktop` / `--enable-windows-desktop` / `--enable-linux-desktop`).
+`window_manager` uses those native runners; no extra setup beyond `flutter create .`.
 
 **Permissions** (add after `flutter create .`, required by calls / video notes / voice / photos):
 

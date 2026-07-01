@@ -86,16 +86,25 @@ class MessageBubble extends StatelessWidget {
         body = Text(text, style: TextStyle(color: textColor, fontSize: 14, height: 1.4));
     }
 
+    // v0-style minimalist bubble: soft 18px corners with a small "tail" corner on the sender side.
+    const r = Radius.circular(18);
+    const tail = Radius.circular(5);
+    final radius = BorderRadius.only(
+      topLeft: r,
+      topRight: r,
+      bottomLeft: isOwn ? r : tail,
+      bottomRight: isOwn ? tail : r,
+    );
     return Align(
       alignment: isOwn ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 320),
-        margin: const EdgeInsets.symmetric(vertical: 3),
-        padding: const EdgeInsets.fromLTRB(12, 10, 12, 6),
+        constraints: const BoxConstraints(maxWidth: 360),
+        margin: const EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.fromLTRB(13, 9, 13, 7),
         decoration: BoxDecoration(
           color: bubbleColor,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isOwn ? Colors.transparent : Palette.border),
+          borderRadius: radius,
+          border: isOwn ? null : Border.all(color: Palette.border),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,8 +115,11 @@ class MessageBubble extends StatelessWidget {
               const SizedBox(height: 6),
               Text(text, style: TextStyle(color: textColor, fontSize: 14)),
             ],
-            const SizedBox(height: 2),
-            Text(time, style: TextStyle(color: metaColor, fontSize: 11)),
+            const SizedBox(height: 3),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(time, style: TextStyle(color: metaColor, fontSize: 10.5, letterSpacing: 0.2)),
+            ),
           ],
         ),
       ),

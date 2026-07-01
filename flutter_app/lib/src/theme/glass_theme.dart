@@ -1,43 +1,44 @@
 import 'package:flutter/material.dart';
 
-/// Minimalist light palette — white/black with a violet accent.
+/// Minimalist cotton palette — white/black with a single violet accent (matches the SSO).
 class Palette {
   static const accent = Color(0xFF7C3AED);
   static const accent2 = Color(0xFF6D28D9);
 
   static const bg = Color(0xFFFFFFFF);
-  static const surface = Color(0xFFF7F7F8);
-  static const surfaceHover = Color(0x0D000000); // 5% black
+  static const surface = Color(0xFFFAFAFA);
+  static const surfaceHover = Color(0xFFF4F4F5);
 
-  static const textPrimary = Color(0xFF0A0A0A);
-  static const textSecondary = Color(0x8F0A0A0A); // 56%
-  static const textTertiary = Color(0x610A0A0A); // 38%
+  static const textPrimary = Color(0xFF09090B); // crisp near-black
+  static const textSecondary = Color(0xFF52525B);
+  static const textTertiary = Color(0xFF8E8E96);
 
-  static const border = Color(0x14000000); // 8% black
-  static const danger = Color(0xFFEF4444);
-  static const success = Color(0xFF22C55E);
+  static const border = Color(0x1A09090B); // ~10% black hairline
+  static const borderStrong = Color(0x2E09090B); // ~18% black
+  static const danger = Color(0xFFB91C1C);
+  static const success = Color(0xFF15803D);
 
-  // Immersive dark surface for the call screen (stays dark like Telegram).
-  static const callBg = Color(0xFF0B0B12);
+  // Radii (cotton).
+  static const rSm = 10.0;
+  static const rMd = 13.0;
+  static const rLg = 18.0;
+
+  // Immersive dark surface for the call / recorder screens.
+  static const callBg = Color(0xFF09090B);
 
   // Backwards-compatible aliases used across widgets.
-  static const glassFill = Color(0x08000000); // 3% black
-  static const glassFillStrong = Color(0x14000000); // 8% black
+  static const glassFill = surface;
+  static const glassFillStrong = surfaceHover;
   static const glassBorder = border;
   static const bg0 = bg;
   static const bg1 = surface;
 
   static const cardShadow = [
-    BoxShadow(color: Color(0x12000000), blurRadius: 24, offset: Offset(0, 4)),
+    BoxShadow(color: Color(0x0D09090B), blurRadius: 16, offset: Offset(0, 4)),
   ];
 
-  /// Near-white backdrop with a faint violet glow in the corner.
-  static const backdrop = RadialGradient(
-    center: Alignment(0.9, -0.9),
-    radius: 1.3,
-    colors: [Color(0x147C3AED), bg],
-    stops: [0.0, 0.6],
-  );
+  /// Plain background (strict minimalism — no decorative gradient).
+  static const backdrop = LinearGradient(colors: [bg, bg]);
 }
 
 ThemeData buildGlassTheme() {
@@ -54,8 +55,8 @@ ThemeData buildGlassTheme() {
     textTheme: base.textTheme.apply(
       bodyColor: Palette.textPrimary,
       displayColor: Palette.textPrimary,
-      fontFamily: 'Inter',
     ),
     splashFactory: InkRipple.splashFactory,
+    dividerColor: Palette.border,
   );
 }
