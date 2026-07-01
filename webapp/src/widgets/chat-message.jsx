@@ -68,6 +68,14 @@ class BaseChatMessage extends React.PureComponent {
           console.error("Invalid URL:", error);
         }
         break;
+      case 'mention':
+        e.preventDefault();
+        // Open (or start) a direct chat with the mentioned user.
+        const uid = e.target.dataset.val;
+        if (uid) {
+          HashNavigation.navigateTo(HashNavigation.setUrlTopic('', uid));
+        }
+        break;
       case 'contact_find':
         e.preventDefault();
         let hashUrl = HashNavigation.setUrlSidePanel(window.location.hash, 'newtpk');

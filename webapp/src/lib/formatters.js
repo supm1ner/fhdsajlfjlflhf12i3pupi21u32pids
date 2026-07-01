@@ -117,8 +117,12 @@ export function fullFormatter(style, data, values, key, stack) {
     case 'MN':
       // Mention
       attr.className = 'mention'
-      if (data) {
+      if (data && data.val) {
         attr.className += ' ' + idToColorClass(data.val, false, true);
+        // Make the mention clickable: open (or start) a chat with the mentioned user.
+        attr['data-val'] = data.val;
+        attr.className += ' clickable';
+        attr.onClick = (e) => this.onHandleClick(e, 'mention');
       }
       break;
     case 'FM':

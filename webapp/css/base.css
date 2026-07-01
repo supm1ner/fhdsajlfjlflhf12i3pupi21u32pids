@@ -3492,6 +3492,12 @@ ul.tabbar li.active > a {
 .mention {
   font-weight: 500;
 }
+.mention.clickable {
+  cursor: pointer;
+}
+.mention.clickable:hover {
+  text-decoration: underline;
+}
 
 /* Message forwarding. */
 .forward-dialog {

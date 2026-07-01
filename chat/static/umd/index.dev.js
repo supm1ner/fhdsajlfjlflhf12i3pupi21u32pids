@@ -7811,8 +7811,11 @@ function fullFormatter(style, data, values, key, stack) {
       break;
     case 'MN':
       attr.className = 'mention';
-      if (data) {
+      if (data && data.val) {
         attr.className += ' ' + (0,_strformat_js__WEBPACK_IMPORTED_MODULE_12__.idToColorClass)(data.val, false, true);
+        attr['data-val'] = data.val;
+        attr.className += ' clickable';
+        attr.onClick = e => this.onHandleClick(e, 'mention');
       }
       break;
     case 'FM':

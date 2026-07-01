@@ -2285,6 +2285,13 @@ class BaseChatMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().Pure
           console.error("Invalid URL:", error);
         }
         break;
+      case 'mention':
+        e.preventDefault();
+        const uid = e.target.dataset.val;
+        if (uid) {
+          _lib_navigation_js__WEBPACK_IMPORTED_MODULE_9__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_9__["default"].setUrlTopic('', uid));
+        }
+        break;
       case 'contact_find':
         e.preventDefault();
         let hashUrl = _lib_navigation_js__WEBPACK_IMPORTED_MODULE_9__["default"].setUrlSidePanel(window.location.hash, 'newtpk');
