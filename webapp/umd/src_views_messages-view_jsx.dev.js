@@ -365,6 +365,7 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
     this.sendImageAttachment = this.sendImageAttachment.bind(this);
     this.sendVideoAttachment = this.sendVideoAttachment.bind(this);
     this.sendVideoNote = this.sendVideoNote.bind(this);
+    this.handleToggleReaction = this.handleToggleReaction.bind(this);
     this.sendFileAttachment = this.sendFileAttachment.bind(this);
     this.sendAudioAttachment = this.sendAudioAttachment.bind(this);
     this.sendTheCardAttachment = this.sendTheCardAttachment.bind(this);
@@ -953,6 +954,13 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
       });
       return;
     }
+    if (msg.head && msg.head.react_to) {
+      if (msg.from != this.props.myUserId) {
+        this.postReadNotification(msg.seq);
+      }
+      this.forceUpdate();
+      return;
+    }
     clearTimeout(this.keyPressTimer);
     this.setState({
       maxSeqId: topic.maxMsgSeq(),
@@ -1384,6 +1392,64 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
     });
     previewPromise.then(previewBlob => this.sendVideoAttachment(null, videoBlob, previewBlob, params)).catch(err => this.props.onError(err.message || err, 'err'));
   }
+  collectReactions(topic) {
+    const map = {};
+    topic.messages(msg => {
+      const head = msg.head;
+      if (!head || !head.react_to || !head.react) {
+        return;
+      }
+      const target = parseInt(head.react_to);
+      if (isNaN(target)) {
+        return;
+      }
+      const emoji = head.react;
+      const from = msg.from || '';
+      if (!map[target]) {
+        map[target] = {};
+      }
+      if (!map[target][emoji]) {
+        map[target][emoji] = new Set();
+      }
+      if (head.react_op == 'remove') {
+        map[target][emoji].delete(from);
+      } else {
+        map[target][emoji].add(from);
+      }
+    });
+    return map;
+  }
+  reactionsForSeq(bySeq) {
+    if (!bySeq) {
+      return null;
+    }
+    const list = [];
+    Object.keys(bySeq).forEach(emoji => {
+      const users = bySeq[emoji];
+      if (users && users.size > 0) {
+        list.push({
+          emoji: emoji,
+          count: users.size,
+          mine: users.has(this.props.myUserId)
+        });
+      }
+    });
+    if (list.length == 0) {
+      return null;
+    }
+    list.sort((a, b) => b.count - a.count);
+    return list;
+  }
+  handleToggleReaction(seq, emoji) {
+    const bySeq = this.reactionData && this.reactionData[seq];
+    const mine = !!(bySeq && bySeq[emoji] && bySeq[emoji].has(this.props.myUserId));
+    const head = {
+      react_to: '' + seq,
+      react: emoji,
+      react_op: mine ? 'remove' : 'add'
+    };
+    this.props.sendMessage(emoji, undefined, undefined, head);
+  }
   handleAttachImageOrVideo(file) {
     const maxExternAttachmentSize = this.props.sunrise.getServerParam('maxFileUploadSize', _config_js__WEBPACK_IMPORTED_MODULE_14__.MAX_EXTERN_ATTACHMENT_SIZE);
     if (file.type.startsWith('video/')) {
@@ -1744,11 +1810,15 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
         }
         const pinnedMessages = [];
         this.state.pins.forEach(seq => pinnedMessages.push(topic.latestMsgVersion(seq) || topic.findMessage(seq)));
+        this.reactionData = this.collectReactions(topic);
         const messageNodes = [];
         let previousFrom = null;
         let prevDate = null;
         let chatBoxClass = null;
         topic.messages((msg, prev, next, i) => {
+          if (msg.head && msg.head.react_to) {
+            return;
+          }
           let nextFrom = next ? next.from || 'chan' : null;
           let sequence = 'single';
           let thisFrom = msg.from || 'chan';
@@ -1814,6 +1884,9 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
               userIsWriter: this.state.isWriter,
               userIsAdmin: this.state.isAdmin,
               pinned: this.state.pins.includes(msg.seq),
+              reactions: this.reactionsForSeq(this.reactionData[msg.seq]),
+              onToggleReaction: this.handleToggleReaction,
+              myUserId: this.props.myUserId,
               viewportWidth: this.props.viewportWidth,
               showContextMenu: this.handleShowMessageContextMenu,
               onExpandMedia: this.handleExpandMedia,
@@ -2148,11 +2221,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _attachment_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./attachment.jsx */ "./src/widgets/attachment.jsx");
 /* harmony import */ var _letter_tile_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./letter-tile.jsx */ "./src/widgets/letter-tile.jsx");
-/* harmony import */ var _received_marker_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./received-marker.jsx */ "./src/widgets/received-marker.jsx");
-/* harmony import */ var _lib_formatters_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../lib/formatters.js */ "./src/lib/formatters.js");
-/* harmony import */ var _lib_utils_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../lib/utils.js */ "./src/lib/utils.js");
-/* harmony import */ var _lib_navigation_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../lib/navigation.js */ "./src/lib/navigation.js");
+/* harmony import */ var _message_reactions_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./message-reactions.jsx */ "./src/widgets/message-reactions.jsx");
+/* harmony import */ var _received_marker_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./received-marker.jsx */ "./src/widgets/received-marker.jsx");
+/* harmony import */ var _lib_formatters_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../lib/formatters.js */ "./src/lib/formatters.js");
+/* harmony import */ var _lib_utils_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../lib/utils.js */ "./src/lib/utils.js");
+/* harmony import */ var _lib_navigation_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../lib/navigation.js */ "./src/lib/navigation.js");
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+
 
 
 
@@ -2178,6 +2253,7 @@ class BaseChatMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().Pure
     this.handleContextClick = this.handleContextClick.bind(this);
     this.handleCancelUpload = this.handleCancelUpload.bind(this);
     this.handleDraftyClick = this.handleDraftyClick.bind(this);
+    this.handleToggleReaction = this.handleToggleReaction.bind(this);
     this.formatterContext = {
       formatMessage: props.intl.formatMessage.bind(props.intl),
       viewportWidth: props.viewportWidth,
@@ -2204,17 +2280,17 @@ class BaseChatMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().Pure
         try {
           const pathname = new URL(e.target.dataset.val)?.pathname;
           const parts = pathname.split('/').filter(Boolean);
-          _lib_navigation_js__WEBPACK_IMPORTED_MODULE_8__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_8__["default"].setUrlTopic('', parts.pop() || ''));
+          _lib_navigation_js__WEBPACK_IMPORTED_MODULE_9__["default"].navigateTo(_lib_navigation_js__WEBPACK_IMPORTED_MODULE_9__["default"].setUrlTopic('', parts.pop() || ''));
         } catch (error) {
           console.error("Invalid URL:", error);
         }
         break;
       case 'contact_find':
         e.preventDefault();
-        let hashUrl = _lib_navigation_js__WEBPACK_IMPORTED_MODULE_8__["default"].setUrlSidePanel(window.location.hash, 'newtpk');
-        hashUrl = _lib_navigation_js__WEBPACK_IMPORTED_MODULE_8__["default"].addUrlParam(hashUrl, 'q', e.target.dataset.val);
-        hashUrl = _lib_navigation_js__WEBPACK_IMPORTED_MODULE_8__["default"].addUrlParam(hashUrl, 'tab', 'find');
-        _lib_navigation_js__WEBPACK_IMPORTED_MODULE_8__["default"].navigateTo(hashUrl);
+        let hashUrl = _lib_navigation_js__WEBPACK_IMPORTED_MODULE_9__["default"].setUrlSidePanel(window.location.hash, 'newtpk');
+        hashUrl = _lib_navigation_js__WEBPACK_IMPORTED_MODULE_9__["default"].addUrlParam(hashUrl, 'q', e.target.dataset.val);
+        hashUrl = _lib_navigation_js__WEBPACK_IMPORTED_MODULE_9__["default"].addUrlParam(hashUrl, 'tab', 'find');
+        _lib_navigation_js__WEBPACK_IMPORTED_MODULE_9__["default"].navigateTo(hashUrl);
         break;
       default:
         console.info('Unhandled drafty action.', action, e.target.dataset);
@@ -2256,7 +2332,7 @@ class BaseChatMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().Pure
       data.resp[e.target.dataset.name] = e.target.dataset.val ? e.target.dataset.val : e.target.dataset.val === undefined ? 1 : '' + e.target.dataset.val;
     }
     if (e.target.dataset.act == 'url') {
-      data.ref = (0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_7__.sanitizeUrl)(e.target.dataset.ref) || 'about:blank';
+      data.ref = (0,_lib_utils_js__WEBPACK_IMPORTED_MODULE_8__.sanitizeUrl)(e.target.dataset.ref) || 'about:blank';
     }
     const text = e.target.dataset.title || 'unknown';
     this.props.onFormResponse(e.target.dataset.act, text, data);
@@ -2306,6 +2382,11 @@ class BaseChatMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().Pure
       timestamp: this.props.timestamp
     }, menuItems);
   }
+  handleToggleReaction(emoji) {
+    if (this.props.onToggleReaction && this.props.userIsWriter) {
+      this.props.onToggleReaction(this.props.seq, emoji);
+    }
+  }
   handleProgress(ratio) {
     this.setState({
       progress: ratio
@@ -2348,7 +2429,7 @@ class BaseChatMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().Pure
           key: i
         }));
       }, this);
-      const tree = sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.format(content, _lib_formatters_js__WEBPACK_IMPORTED_MODULE_6__.fullFormatter, this.formatterContext);
+      const tree = sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__.Drafty.format(content, _lib_formatters_js__WEBPACK_IMPORTED_MODULE_7__.fullFormatter, this.formatterContext);
       content = react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, tree);
     } else if (typeof content == 'string') {
       if (new RegExp('^\\p{RGI_Emoji}{1,5}$', 'v').test(content || '')) {
@@ -2383,7 +2464,7 @@ class BaseChatMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().Pure
       className: "content-meta"
     }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
       className: textSizeClass
-    }, content, attachments), this.props.timestamp ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_received_marker_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
+    }, content, attachments), this.props.timestamp ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_received_marker_jsx__WEBPACK_IMPORTED_MODULE_6__["default"], {
       edited: this.props.edited,
       timestamp: this.props.timestamp,
       received: this.props.received
@@ -2394,7 +2475,11 @@ class BaseChatMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().Pure
       onClick: this.handleContextClick
     }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
       className: "material-icons"
-    }, "expand_more"))) : null), fullDisplay ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    }, "expand_more"))) : null, this.props.onToggleReaction ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_message_reactions_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      reactions: this.props.reactions,
+      canReact: this.props.userIsWriter,
+      onToggle: this.handleToggleReaction
+    }) : null), fullDisplay ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
       className: "author"
     }, this.props.userName || react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
       id: "user_not_found",
@@ -2558,6 +2643,83 @@ class Invitation extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureCompo
   }
 }
 ;
+
+/***/ }),
+
+/***/ "./src/widgets/message-reactions.jsx":
+/*!*******************************************!*\
+  !*** ./src/widgets/message-reactions.jsx ***!
+  \*******************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   QUICK_REACTIONS: function() { return /* binding */ QUICK_REACTIONS; },
+/* harmony export */   "default": function() { return /* binding */ MessageReactions; }
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+const QUICK_REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '🙏', '🔥', '🎉'];
+class MessageReactions extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComponent) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      pickerOpen: false
+    };
+    this.togglePicker = this.togglePicker.bind(this);
+    this.handlePick = this.handlePick.bind(this);
+  }
+  togglePicker(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.setState(prev => ({
+      pickerOpen: !prev.pickerOpen
+    }));
+  }
+  handlePick(e, emoji) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.setState({
+      pickerOpen: false
+    });
+    this.props.onToggle(emoji);
+  }
+  render() {
+    const reactions = this.props.reactions || [];
+    if (reactions.length == 0 && !this.props.canReact) {
+      return null;
+    }
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "reactions"
+    }, reactions.map(r => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      key: r.emoji,
+      className: 'reaction' + (r.mine ? ' mine' : ''),
+      onClick: e => this.handlePick(e, r.emoji),
+      title: r.mine ? 'Remove your reaction' : 'React'
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      className: "emoji"
+    }, r.emoji), react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      className: "count"
+    }, r.count))), this.props.canReact ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      className: "reaction-add-wrapper"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      className: "reaction-add",
+      onClick: this.togglePicker,
+      title: "Add reaction"
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "add_reaction")), this.state.pickerOpen ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "reaction-picker"
+    }, QUICK_REACTIONS.map(emoji => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      key: emoji,
+      onClick: e => this.handlePick(e, emoji)
+    }, emoji))) : null) : null);
+  }
+}
 
 /***/ }),
 

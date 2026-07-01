@@ -149,6 +149,7 @@ class MessagesView extends React.Component {
     this.sendImageAttachment = this.sendImageAttachment.bind(this);
     this.sendVideoAttachment = this.sendVideoAttachment.bind(this);
     this.sendVideoNote = this.sendVideoNote.bind(this);
+    this.handleToggleReaction = this.handleToggleReaction.bind(this);
     this.sendFileAttachment = this.sendFileAttachment.bind(this);
     this.sendAudioAttachment = this.sendAudioAttachment.bind(this);
     this.sendTheCardAttachment = this.sendTheCardAttachment.bind(this);
@@ -819,6 +820,16 @@ class MessagesView extends React.Component {
       return;
     }
 
+    // Reaction messages are metadata: re-render to update reaction chips, but don't
+    // treat them as new feed messages (no scroll hijack). Acknowledge to avoid inflating unread.
+    if (msg.head && msg.head.react_to) {
+      if (msg.from != this.props.myUserId) {
+        this.postReadNotification(msg.seq);
+      }
+      this.forceUpdate();
+      return;
+    }
+
     clearTimeout(this.keyPressTimer)
     this.setState({maxSeqId: topic.maxMsgSeq(), minSeqId: topic.minMsgSeq(), typingIndicator: false}, _ => {
       // Scroll to the bottom if the message is added to the end of the message
@@ -1347,6 +1358,68 @@ class MessagesView extends React.Component {
       .catch(err => this.props.onError(err.message || err, 'err'));
   }
 
+  // collectReactions scans the topic's messages for reaction messages (head.react_to)
+  // and aggregates them into a map: {targetSeq: {emoji: Set(userId)}}.
+  // Reaction messages are ordered by seq, so add/remove operations resolve in order.
+  collectReactions(topic) {
+    const map = {};
+    topic.messages(msg => {
+      const head = msg.head;
+      if (!head || !head.react_to || !head.react) {
+        return;
+      }
+      const target = parseInt(head.react_to);
+      if (isNaN(target)) {
+        return;
+      }
+      const emoji = head.react;
+      const from = msg.from || '';
+      if (!map[target]) {
+        map[target] = {};
+      }
+      if (!map[target][emoji]) {
+        map[target][emoji] = new Set();
+      }
+      if (head.react_op == 'remove') {
+        map[target][emoji].delete(from);
+      } else {
+        map[target][emoji].add(from);
+      }
+    });
+    return map;
+  }
+
+  // reactionsForSeq turns the aggregated set-map for one message into a display array,
+  // sorted by descending count: [{emoji, count, mine}].
+  reactionsForSeq(bySeq) {
+    if (!bySeq) {
+      return null;
+    }
+    const list = [];
+    Object.keys(bySeq).forEach(emoji => {
+      const users = bySeq[emoji];
+      if (users && users.size > 0) {
+        list.push({emoji: emoji, count: users.size, mine: users.has(this.props.myUserId)});
+      }
+    });
+    if (list.length == 0) {
+      return null;
+    }
+    list.sort((a, b) => b.count - a.count);
+    return list;
+  }
+
+  // handleToggleReaction adds or removes the current user's reaction to a message.
+  // Reactions are sent as lightweight messages carrying a head marker; they are filtered
+  // out of the visible feed and aggregated onto their target message.
+  handleToggleReaction(seq, emoji) {
+    const bySeq = this.reactionData && this.reactionData[seq];
+    const mine = !!(bySeq && bySeq[emoji] && bySeq[emoji].has(this.props.myUserId));
+    const head = {react_to: '' + seq, react: emoji, react_op: mine ? 'remove' : 'add'};
+    // Send the emoji as content so clients that don't understand reactions still show something.
+    this.props.sendMessage(emoji, undefined, undefined, head);
+  }
+
   // handleAttachImageOrVideo method is called when [Attach image or video] button is clicked: launch image or video preview.
   handleAttachImageOrVideo(file) {
     const maxExternAttachmentSize = this.props.sunrise.getServerParam('maxFileUploadSize', MAX_EXTERN_ATTACHMENT_SIZE);
@@ -1692,11 +1765,18 @@ class MessagesView extends React.Component {
         const pinnedMessages = [];
         this.state.pins.forEach(seq => pinnedMessages.push(topic.latestMsgVersion(seq) || topic.findMessage(seq)));
 
+        // Aggregate emoji reactions once per render; keep the raw set-map for toggling.
+        this.reactionData = this.collectReactions(topic);
+
         const messageNodes = [];
         let previousFrom = null;
         let prevDate = null;
         let chatBoxClass = null;
         topic.messages((msg, prev, next, i) => {
+          // Reaction messages are metadata, not part of the visible feed.
+          if (msg.head && msg.head.react_to) {
+            return;
+          }
           let nextFrom = next ? (next.from || 'chan') : null;
 
           let sequence = 'single';
@@ -1771,6 +1851,9 @@ class MessagesView extends React.Component {
                 userIsWriter={this.state.isWriter}
                 userIsAdmin={this.state.isAdmin}
                 pinned={this.state.pins.includes(msg.seq)}
+                reactions={this.reactionsForSeq(this.reactionData[msg.seq])}
+                onToggleReaction={this.handleToggleReaction}
+                myUserId={this.props.myUserId}
                 viewportWidth={this.props.viewportWidth}  // Used by `formatter`.
                 showContextMenu={this.handleShowMessageContextMenu}
                 onExpandMedia={this.handleExpandMedia}

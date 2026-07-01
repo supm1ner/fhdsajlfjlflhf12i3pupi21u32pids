@@ -6,6 +6,7 @@ import { Drafty, Sunrise, TheCard } from 'sunrise-sdk';
 
 import Attachment from './attachment.jsx';
 import LetterTile from './letter-tile.jsx';
+import MessageReactions from './message-reactions.jsx';
 import ReceivedMarker from './received-marker.jsx'
 
 import { fullFormatter } from '../lib/formatters.js';
@@ -31,6 +32,7 @@ class BaseChatMessage extends React.PureComponent {
     this.handleContextClick = this.handleContextClick.bind(this);
     this.handleCancelUpload = this.handleCancelUpload.bind(this);
     this.handleDraftyClick = this.handleDraftyClick.bind(this);
+    this.handleToggleReaction = this.handleToggleReaction.bind(this);
 
     this.formatterContext = {
       formatMessage: props.intl.formatMessage.bind(props.intl),
@@ -171,6 +173,12 @@ class BaseChatMessage extends React.PureComponent {
     }, menuItems);
   }
 
+  handleToggleReaction(emoji) {
+    if (this.props.onToggleReaction && this.props.userIsWriter) {
+      this.props.onToggleReaction(this.props.seq, emoji);
+    }
+  }
+
   handleProgress(ratio) {
     this.setState({progress: ratio});
   }
@@ -265,6 +273,12 @@ class BaseChatMessage extends React.PureComponent {
                   <i className="material-icons">expand_more</i>
                 </a>
               </span> : null
+            }
+            {this.props.onToggleReaction ?
+              <MessageReactions
+                reactions={this.props.reactions}
+                canReact={this.props.userIsWriter}
+                onToggle={this.handleToggleReaction} /> : null
             }
           </div>
           {fullDisplay ?

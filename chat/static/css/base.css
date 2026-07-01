@@ -2394,6 +2394,7 @@ video {
 .bubble {
   position: relative;
   display: flex;
+  flex-wrap: wrap;
   max-width: 36rem;
   min-width: 9rem;
   height: auto;
@@ -2405,6 +2406,83 @@ video {
   transition: ease-out background-color 0.5s;
   transition-delay: 0.3s;
   filter: drop-shadow(0.5px 0.5px 0.7px var(--clr-shadow-bubble-drop));
+}
+
+/* Emoji reactions under a message. */
+.reactions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  flex-basis: 100%;
+  margin-top: 0.35rem;
+}
+.reaction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  line-height: 1.3rem;
+  background-color: var(--clr-audio-bg);
+  border: 1px solid var(--clr-border-light);
+  color: var(--clr-text-primary);
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+}
+.reaction .emoji {
+  font-size: 0.95rem;
+}
+.reaction .count {
+  font-variant-numeric: tabular-nums;
+}
+.reaction.mine {
+  background-color: var(--clr-primary-accent);
+  border-color: var(--clr-primary-accent);
+  color: #fff;
+}
+.reaction-add-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+.reaction-add {
+  display: inline-flex;
+  align-items: center;
+  color: var(--clr-text-secondary);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.reaction-add i {
+  font-size: 1.1rem;
+}
+li:hover .reaction-add,
+.reaction-add-wrapper:hover .reaction-add {
+  opacity: 0.7;
+}
+.reaction-picker {
+  position: absolute;
+  bottom: 1.7rem;
+  left: 0;
+  z-index: 10;
+  display: flex;
+  gap: 0.15rem;
+  padding: 0.3rem 0.4rem;
+  background-color: var(--clr-body-background);
+  border: 1px solid var(--clr-border-light);
+  border-radius: 1rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+.reaction-picker a {
+  font-size: 1.25rem;
+  padding: 0.1rem 0.25rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+.reaction-picker a:hover {
+  background-color: var(--clr-audio-bg);
 }
 
 .chat-box li.single {
