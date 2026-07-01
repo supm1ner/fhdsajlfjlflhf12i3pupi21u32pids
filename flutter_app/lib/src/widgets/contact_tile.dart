@@ -12,6 +12,24 @@ class ContactTile extends StatelessWidget {
   final bool active;
   final VoidCallback onTap;
 
+  /// Compact relative time for the conversation row: "12:30", "Mon", or "3/5".
+  static String _relativeTime(DateTime t) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final that = DateTime(t.year, t.month, t.day);
+    final days = today.difference(that).inDays;
+    if (days <= 0) {
+      final h = t.hour.toString().padLeft(2, '0');
+      final m = t.minute.toString().padLeft(2, '0');
+      return '$h:$m';
+    }
+    if (days < 7) {
+      const names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      return names[(t.weekday - 1) % 7];
+    }
+    return '${t.day}/${t.month}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -46,16 +64,28 @@ class ContactTile extends StatelessWidget {
                   ],
                 ),
               ),
-              if (contact.unread > 0)
-                Container(
-                  margin: const EdgeInsets.only(left: 8),
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  constraints: const BoxConstraints(minWidth: 18),
-                  decoration: BoxDecoration(color: Palette.accent, borderRadius: BorderRadius.circular(9)),
-                  child: Text(contact.unread > 99 ? '99+' : '${contact.unread}',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
-                ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  if (contact.touched != null)
+                    Text(_relativeTime(contact.touched!),
+                        style: TextStyle(
+                            color: contact.unread > 0 ? Palette.accent : Palette.textTertiary,
+                            fontSize: 11)),
+                  if (contact.unread > 0) ...[
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      constraints: const BoxConstraints(minWidth: 18),
+                      decoration: BoxDecoration(color: Palette.accent, borderRadius: BorderRadius.circular(9)),
+                      child: Text(contact.unread > 99 ? '99+' : '${contact.unread}',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
+                    ),
+                  ],
+                ],
+              ),
             ],
           ),
         ),

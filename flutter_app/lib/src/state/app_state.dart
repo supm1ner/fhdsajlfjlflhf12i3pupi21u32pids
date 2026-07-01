@@ -179,6 +179,16 @@ class AppState extends ChangeNotifier {
     return contacts.firstWhere((c) => c.topic == t, orElse: () => Contact(topic: t, name: t)).name;
   }
 
+  /// Whether the peer of the open conversation is currently online.
+  bool get peerOnline {
+    final t = currentTopic;
+    if (t == null) return false;
+    for (final c in contacts) {
+      if (c.topic == t) return c.online;
+    }
+    return false;
+  }
+
   // --- Calls -------------------------------------------------------------
 
   void startCall({required bool audioOnly}) {

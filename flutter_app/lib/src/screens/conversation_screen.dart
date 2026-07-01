@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -30,6 +31,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
   DateTime _lastTyping = DateTime.fromMillisecondsSinceEpoch(0);
   bool _recordingVoice = false;
   final _voiceWatch = Stopwatch();
+  Timer? _voiceTicker;
+  int _lastMsgCount = 0;
+  bool _didInitialScroll = false;
 
   void _send() {
     final text = _input.text;
@@ -99,6 +103,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
     if (_recordingVoice) {
       final path = await _recorder.stop();
       _voiceWatch.stop();
+      _voiceTicker?.cancel();
       setState(() => _recordingVoice = false);
       if (path != null) {
         final bytes = await File(path).readAsBytes();
@@ -113,7 +118,18 @@ class _ConversationScreenState extends State<ConversationScreen> {
     _voiceWatch
       ..reset()
       ..start();
+    // Refresh the elapsed-time label roughly twice a second while recording.
+    _voiceTicker?.cancel();
+    _voiceTicker = Timer.periodic(const Duration(milliseconds: 500), (_) {
+      if (mounted && _recordingVoice) setState(() {});
+    });
     setState(() => _recordingVoice = true);
+  }
+
+  static String _fmtElapsed(Duration d) {
+    final m = d.inMinutes.remainder(60).toString().padLeft(1, '0');
+    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$m:$s';
   }
 
   @override
@@ -121,24 +137,39 @@ class _ConversationScreenState extends State<ConversationScreen> {
     _input.dispose();
     _scroll.dispose();
     _recorder.dispose();
+    _voiceTicker?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final s = widget.state;
+    final msgs = s.visibleMessages;
+    // Auto-scroll to the newest message only when new messages arrived AND the user
+    // is already near the bottom — never yank the view while they're reading history.
+    final grew = msgs.length > _lastMsgCount;
+    // A shrinking list means the conversation was switched/cleared: re-anchor to bottom.
+    if (msgs.length < _lastMsgCount) _didInitialScroll = false;
+    _lastMsgCount = msgs.length;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scroll.hasClients) _scroll.jumpTo(_scroll.position.maxScrollExtent);
+      if (!_scroll.hasClients) return;
+      final pos = _scroll.position;
+      if (!_didInitialScroll && msgs.isNotEmpty) {
+        _scroll.jumpTo(pos.maxScrollExtent);
+        _didInitialScroll = true;
+        return;
+      }
+      final nearBottom = pos.maxScrollExtent - pos.pixels < 240;
+      if (grew && nearBottom) _scroll.jumpTo(pos.maxScrollExtent);
     });
 
     return Column(
       children: [
         _header(s),
         Expanded(
-          child: s.messages.isEmpty
+          child: msgs.isEmpty
               ? const Center(child: Text('No messages yet. Say hello!', style: TextStyle(color: Palette.textSecondary)))
               : Builder(builder: (ctx) {
-                  final msgs = s.visibleMessages;
                   return ListView.builder(
                     controller: _scroll,
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -180,8 +211,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   children: [
                     Text(widget.title,
                         style: const TextStyle(color: Palette.textPrimary, fontWeight: FontWeight.w600, fontSize: 15)),
-                    Text(s.peerTyping ? 'typing…' : 'online',
-                        style: const TextStyle(color: Palette.textTertiary, fontSize: 11)),
+                    Text(s.peerTyping ? 'typing…' : (s.peerOnline ? 'online' : 'offline'),
+                        style: TextStyle(
+                            color: s.peerOnline ? Palette.accent : Palette.textTertiary, fontSize: 11)),
                   ],
                 ),
               ),
@@ -209,7 +241,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   const SizedBox(width: 8),
                   const Icon(Icons.fiber_manual_record, color: Palette.danger, size: 14),
                   const SizedBox(width: 8),
-                  const Expanded(child: Text('Recording voice…', style: TextStyle(color: Palette.textSecondary))),
+                  Expanded(
+                      child: Text('Recording  ${_fmtElapsed(_voiceWatch.elapsed)}',
+                          style: const TextStyle(color: Palette.textSecondary))),
                   IconButton(onPressed: _toggleVoice, icon: const Icon(Icons.send_rounded, color: Palette.accent)),
                 ])
               : Row(

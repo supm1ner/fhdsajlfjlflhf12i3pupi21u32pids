@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../sunrise/drafty.dart';
 import '../sunrise/models.dart';
@@ -62,6 +63,8 @@ class MessageBubble extends StatelessWidget {
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(url, width: 240, fit: BoxFit.cover,
+                    loadingBuilder: (_, child, progress) =>
+                        progress == null ? child : _placeholder('🖼'),
                     errorBuilder: (_, __, ___) => _placeholder('🖼')),
               )
             : _placeholder('🖼 Photo');
@@ -124,9 +127,15 @@ class MessageBubble extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           GestureDetector(
-            onLongPress: onLongPress,
+            onLongPress: onLongPress == null
+                ? null
+                : () {
+                    HapticFeedback.selectionClick();
+                    onLongPress!();
+                  },
             child: Container(
-              constraints: const BoxConstraints(maxWidth: 360),
+              constraints: BoxConstraints(
+                  maxWidth: (MediaQuery.of(context).size.width * 0.72).clamp(220.0, 480.0)),
               margin: const EdgeInsets.symmetric(vertical: 2),
               padding: const EdgeInsets.fromLTRB(13, 9, 13, 7),
               decoration: BoxDecoration(
