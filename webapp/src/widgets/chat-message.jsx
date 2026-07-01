@@ -7,6 +7,7 @@ import { Drafty, Sunrise, TheCard } from 'sunrise-sdk';
 import Attachment from './attachment.jsx';
 import LetterTile from './letter-tile.jsx';
 import MessageReactions from './message-reactions.jsx';
+import PollMessage from './poll-message.jsx';
 import ReceivedMarker from './received-marker.jsx'
 
 import { fullFormatter, highlightText } from '../lib/formatters.js';
@@ -217,7 +218,10 @@ class BaseChatMessage extends React.PureComponent {
 
     let content = this.props.content;
     const attachments = [];
-    if (this.props.mimeType == Drafty.getContentType() && Drafty.isValid(content)) {
+    if (this.props.poll) {
+      // Poll message: render the interactive poll widget instead of Drafty content.
+      content = <PollMessage {...this.props.poll} onVote={idx => this.props.onVote(this.props.seq, idx)} />;
+    } else if (this.props.mimeType == Drafty.getContentType() && Drafty.isValid(content)) {
       Drafty.attachments(content, (att, i) => {
         if (Drafty.isFormResponseType(att.mime)) {
           // Don't show json drafty form response objects as attachments.

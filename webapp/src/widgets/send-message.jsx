@@ -51,6 +51,11 @@ const messages = defineMessages({
     defaultMessage: 'Emoji',
     description: 'Icon tool tip for the emoji picker'
   },
+  icon_title_poll: {
+    id: 'icon_title_poll',
+    defaultMessage: 'Create poll',
+    description: 'Icon tool tip for creating a poll'
+  },
   icon_title_record_video_note: {
     id: 'icon_title_record_video_note',
     defaultMessage: 'Record video note',
@@ -520,6 +525,10 @@ class SendMessage extends React.PureComponent {
                   <a href="#" onClick={e => {e.preventDefault(); this.attachFile.click();}} title={formatMessage(messages.icon_title_attach_file)}>
                     <i className="material-icons secondary">attach_file</i>
                   </a>
+                  {this.props.onCreatePoll ?
+                    <a href="#" onClick={e => {e.preventDefault(); this.props.onCreatePoll();}} title={formatMessage(messages.icon_title_poll)}>
+                      <i className="material-icons secondary">poll</i>
+                    </a> : null}
                 </>
                 :
                 null}

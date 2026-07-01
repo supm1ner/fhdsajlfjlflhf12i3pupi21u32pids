@@ -18,6 +18,7 @@ import LoadSpinner from '../widgets/load-spinner.jsx';
 import LogoView from './logo-view.jsx';
 import MetaMessage from '../widgets/meta-message.jsx';
 import PinnedMessages from '../widgets/pinned-messages.jsx';
+const PollComposer = React.lazy(_ => import('../widgets/poll-composer.jsx'));
 import SendMessage from '../widgets/send-message.jsx';
 const TheCardPreview = React.lazy(_ => import('../widgets/the-card-preview.jsx'));
 const VideoPreview = React.lazy(_ => import('../widgets/video-preview.jsx'));
@@ -161,7 +162,8 @@ class MessagesView extends React.Component {
       searchOpen: false,
       searchQuery: '',
       searchResults: [], // matching message seq ids, newest first
-      searchIndex: 0
+      searchIndex: 0,
+      pollComposer: false // whether the poll-creation dialog is open
     });
 
     this.toggleSearch = this.toggleSearch.bind(this);
@@ -178,6 +180,8 @@ class MessagesView extends React.Component {
     this.sendVideoAttachment = this.sendVideoAttachment.bind(this);
     this.sendVideoNote = this.sendVideoNote.bind(this);
     this.handleToggleReaction = this.handleToggleReaction.bind(this);
+    this.handleVote = this.handleVote.bind(this);
+    this.sendPoll = this.sendPoll.bind(this);
     this.sendFileAttachment = this.sendFileAttachment.bind(this);
     this.sendAudioAttachment = this.sendAudioAttachment.bind(this);
     this.sendTheCardAttachment = this.sendTheCardAttachment.bind(this);
@@ -853,9 +857,9 @@ class MessagesView extends React.Component {
       return;
     }
 
-    // Reaction messages are metadata: re-render to update reaction chips, but don't
-    // treat them as new feed messages (no scroll hijack). Acknowledge to avoid inflating unread.
-    if (msg.head && msg.head.react_to) {
+    // Reaction and vote messages are metadata: re-render to update chips/poll results,
+    // but don't treat them as new feed messages (no scroll hijack). Acknowledge to avoid unread.
+    if (msg.head && (msg.head.react_to || msg.head.vote_to != null)) {
       if (msg.from != this.props.myUserId) {
         this.postReadNotification(msg.seq);
       }
@@ -1453,6 +1457,87 @@ class MessagesView extends React.Component {
     this.props.sendMessage(emoji, undefined, undefined, head);
   }
 
+  // --- Polls ------------------------------------------------------------
+  // Polls reuse the reaction pattern: the poll is a message with head.poll (JSON),
+  // and each vote is a lightweight message with head.vote_to/head.vote, filtered from
+  // the feed and aggregated onto the poll. One vote per user (latest wins).
+
+  // collectVotes scans for vote messages and returns {pollSeq: {userId: optionIndex}}.
+  collectVotes(topic) {
+    const map = {};
+    topic.messages(msg => {
+      const head = msg.head;
+      if (!head || head.vote_to == null || head.vote == null) {
+        return;
+      }
+      const target = parseInt(head.vote_to);
+      const opt = parseInt(head.vote);
+      if (isNaN(target) || isNaN(opt)) {
+        return;
+      }
+      if (!map[target]) {
+        map[target] = {};
+      }
+      // Latest vote wins (messages iterate in seq order).
+      map[target][msg.from || ''] = opt;
+    });
+    return map;
+  }
+
+  // pollDataForMsg builds the props for PollMessage from a poll message and the vote map.
+  pollDataForMsg(msg) {
+    let parsed;
+    try {
+      parsed = JSON.parse(msg.head.poll);
+    } catch (e) {
+      return null;
+    }
+    if (!parsed || !Array.isArray(parsed.o)) {
+      return null;
+    }
+    const byUser = (this.voteData && this.voteData[msg.seq]) || {};
+    const counts = parsed.o.map(_ => 0);
+    let total = 0;
+    let myVote = null;
+    Object.keys(byUser).forEach(uid => {
+      const opt = byUser[uid];
+      if (opt >= 0 && opt < counts.length) {
+        counts[opt]++;
+        total++;
+        if (uid == this.props.myUserId) {
+          myVote = opt;
+        }
+      }
+    });
+    return {
+      question: parsed.q || '',
+      options: parsed.o,
+      counts: counts,
+      total: total,
+      myVote: myVote,
+      canVote: this.state.isWriter
+    };
+  }
+
+  // handleVote records the current user's choice on a poll.
+  handleVote(pollSeq, optIdx) {
+    const parsed = (() => {
+      const topic = this.props.sunrise.getTopic(this.state.topic);
+      const msg = topic && (topic.latestMsgVersion(pollSeq) || topic.findMessage(pollSeq));
+      try { return JSON.parse(msg.head.poll); } catch (e) { return null; }
+    })();
+    const label = (parsed && parsed.o && parsed.o[optIdx]) ? parsed.o[optIdx] : ('' + optIdx);
+    this.props.sendMessage(label, undefined, undefined, {vote_to: '' + pollSeq, vote: '' + optIdx});
+  }
+
+  // sendPoll publishes a new poll message.
+  sendPoll(question, options) {
+    this.setState({pollComposer: false});
+    const poll = JSON.stringify({q: question, o: options});
+    // Send the question as content so clients without poll support still show it.
+    this.props.sendMessage(question, undefined, undefined, {poll: poll});
+  }
+
   // handleAttachImageOrVideo method is called when [Attach image or video] button is clicked: launch image or video preview.
   handleAttachImageOrVideo(file) {
     const maxExternAttachmentSize = this.props.sunrise.getServerParam('maxFileUploadSize', MAX_EXTERN_ATTACHMENT_SIZE);
@@ -1881,16 +1966,17 @@ class MessagesView extends React.Component {
         const pinnedMessages = [];
         this.state.pins.forEach(seq => pinnedMessages.push(topic.latestMsgVersion(seq) || topic.findMessage(seq)));
 
-        // Aggregate emoji reactions once per render; keep the raw set-map for toggling.
+        // Aggregate emoji reactions and poll votes once per render.
         this.reactionData = this.collectReactions(topic);
+        this.voteData = this.collectVotes(topic);
 
         const messageNodes = [];
         let previousFrom = null;
         let prevDate = null;
         let chatBoxClass = null;
         topic.messages((msg, prev, next, i) => {
-          // Reaction messages are metadata, not part of the visible feed.
-          if (msg.head && msg.head.react_to) {
+          // Reaction and vote messages are metadata, not part of the visible feed.
+          if (msg.head && (msg.head.react_to || msg.head.vote_to != null)) {
             return;
           }
           let nextFrom = next ? (next.from || 'chan') : null;
@@ -1969,6 +2055,8 @@ class MessagesView extends React.Component {
                 pinned={this.state.pins.includes(msg.seq)}
                 reactions={this.reactionsForSeq(this.reactionData[msg.seq])}
                 onToggleReaction={this.handleToggleReaction}
+                poll={msg.head && msg.head.poll ? this.pollDataForMsg(msg) : null}
+                onVote={this.handleVote}
                 myUserId={this.props.myUserId}
                 highlightTerm={this.state.searchOpen ? this.state.searchQuery.trim() : ''}
                 viewportWidth={this.props.viewportWidth}  // Used by `formatter`.
@@ -2067,9 +2155,16 @@ class MessagesView extends React.Component {
                 onAttachImage={this.props.forwardMessage ? null : this.handleAttachImageOrVideo}
                 onAttachAudio={this.props.forwardMessage ? null : this.sendAudioAttachment}
                 onAttachVideoNote={this.props.forwardMessage ? null : this.sendVideoNote}
+                onCreatePoll={this.props.forwardMessage ? null : (_ => this.setState({pollComposer: true}))}
                 onError={this.props.onError}
                 onQuoteClick={this.handleQuoteClick}
                 onCancelReply={this.handleCancelReply} />}
+            {this.state.pollComposer ?
+              <Suspense fallback={null}>
+                <PollComposer
+                  onCreate={this.sendPoll}
+                  onCancel={_ => this.setState({pollComposer: false})} />
+              </Suspense> : null}
           </>
         );
 
