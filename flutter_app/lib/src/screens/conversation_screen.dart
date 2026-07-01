@@ -189,6 +189,43 @@ class _ConversationScreenState extends State<ConversationScreen> {
     setState(() => _recordingVoice = true);
   }
 
+  static bool _sameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
+
+  static const _months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+
+  // A centered date separator between messages of different days.
+  Widget _dateChip(DateTime ts) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final that = DateTime(ts.year, ts.month, ts.day);
+    final days = today.difference(that).inDays;
+    String label;
+    if (days == 0) {
+      label = 'Today';
+    } else if (days == 1) {
+      label = 'Yesterday';
+    } else if (ts.year == now.year) {
+      label = '${ts.day} ${_months[ts.month - 1]}';
+    } else {
+      label = '${ts.day} ${_months[ts.month - 1]} ${ts.year}';
+    }
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        decoration: BoxDecoration(
+          color: Palette.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Palette.border),
+        ),
+        child: Text(label, style: const TextStyle(color: Palette.textSecondary, fontSize: 11.5, fontWeight: FontWeight.w500)),
+      ),
+    );
+  }
+
   static String _fmtElapsed(Duration d) {
     final m = d.inMinutes.remainder(60).toString().padLeft(1, '0');
     final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
@@ -251,7 +288,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     itemCount: msgs.length,
                     itemBuilder: (ctx, i) {
                       final m = msgs[i];
-                      return MessageBubble(
+                      final prev = i > 0 ? msgs[i - 1] : null;
+                      final showDate = prev == null || !_sameDay(prev.ts, m.ts);
+                      final bubble = MessageBubble(
                         message: m,
                         isOwn: m.from == s.client.userId,
                         client: s.client,
@@ -261,6 +300,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
                         highlight: q.isEmpty ? null : _searchQuery.trim(),
                         onReact: (emoji) => s.toggleReaction(m.seq, emoji),
                         onLongPress: () => _showReactionPicker(s, m.seq),
+                      );
+                      if (!showDate) return bubble;
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [_dateChip(m.ts), bubble],
                       );
                     },
                   );
