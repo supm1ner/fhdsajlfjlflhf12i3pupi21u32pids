@@ -38,6 +38,39 @@ class _ConversationScreenState extends State<ConversationScreen> {
     widget.state.sendText(text);
   }
 
+  Future<void> _showReactionPicker(AppState s, int seq) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Palette.bg,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 8,
+            runSpacing: 8,
+            children: kQuickReactions.map((emoji) {
+              return InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  s.toggleReaction(seq, emoji);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Text(emoji, style: const TextStyle(fontSize: 30)),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ),
+    );
+  }
+
   void _onChanged(String _) {
     final now = DateTime.now();
     if (now.difference(_lastTyping).inSeconds >= 3) {
@@ -104,15 +137,26 @@ class _ConversationScreenState extends State<ConversationScreen> {
         Expanded(
           child: s.messages.isEmpty
               ? const Center(child: Text('No messages yet. Say hello!', style: TextStyle(color: Palette.textSecondary)))
-              : ListView.builder(
-                  controller: _scroll,
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  itemCount: s.messages.length,
-                  itemBuilder: (ctx, i) {
-                    final m = s.messages[i];
-                    return MessageBubble(message: m, isOwn: m.from == s.client.userId, client: s.client);
-                  },
-                ),
+              : Builder(builder: (ctx) {
+                  final msgs = s.visibleMessages;
+                  return ListView.builder(
+                    controller: _scroll,
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    itemCount: msgs.length,
+                    itemBuilder: (ctx, i) {
+                      final m = msgs[i];
+                      return MessageBubble(
+                        message: m,
+                        isOwn: m.from == s.client.userId,
+                        client: s.client,
+                        reactions: s.reactionsFor(m.seq),
+                        myUserId: s.client.userId,
+                        onReact: (emoji) => s.toggleReaction(m.seq, emoji),
+                        onLongPress: () => _showReactionPicker(s, m.seq),
+                      );
+                    },
+                  );
+                }),
         ),
         _composer(),
       ],

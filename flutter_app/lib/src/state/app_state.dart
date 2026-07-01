@@ -125,6 +125,54 @@ class AppState extends ChangeNotifier {
     if (topic != null) client.note(topic, 'kp');
   }
 
+  // --- Reactions ---------------------------------------------------------
+
+  /// A reaction message carries its target message's seq in head.react_to.
+  bool _isReaction(Message m) => m.head?['react_to'] != null;
+
+  /// Messages shown in the feed: everything except reaction metadata.
+  List<Message> get visibleMessages => messages.where((m) => !_isReaction(m)).toList();
+
+  /// Aggregated reactions for a target message: emoji -> set of reacting user ids.
+  /// Add/remove operations are applied in seq order (messages are kept sorted).
+  Map<String, Set<String>> reactionsFor(int seq) {
+    final result = <String, Set<String>>{};
+    for (final m in messages) {
+      final head = m.head;
+      if (head == null) continue;
+      final target = head['react_to'];
+      final emoji = head['react'] as String?;
+      if (target == null || emoji == null) continue;
+      final t = target is num ? target.toInt() : int.tryParse('$target');
+      if (t != seq) continue;
+      final users = result.putIfAbsent(emoji, () => <String>{});
+      if (head['react_op'] == 'remove') {
+        users.remove(m.from ?? '');
+      } else {
+        users.add(m.from ?? '');
+      }
+    }
+    result.removeWhere((_, users) => users.isEmpty);
+    return result;
+  }
+
+  /// Toggle the current user's [emoji] reaction on message [seq].
+  Future<void> toggleReaction(int seq, String emoji) async {
+    final topic = currentTopic;
+    if (topic == null) return;
+    final mine = (reactionsFor(seq)[emoji] ?? const <String>{}).contains(client.userId);
+    try {
+      await client.publish(topic, emoji, head: {
+        'react_to': '$seq',
+        'react': emoji,
+        'react_op': mine ? 'remove' : 'add',
+      });
+    } catch (e) {
+      error = e.toString();
+      notifyListeners();
+    }
+  }
+
   String _currentName() {
     final t = currentTopic;
     if (t == null) return 'Chat';
@@ -210,6 +258,8 @@ class AppState extends ChangeNotifier {
       }
       notifyListeners();
     }
+    // Reactions are metadata: don't surface them in the contact preview.
+    if (_isReaction(msg)) return;
     // Update the contact preview.
     final c = contacts.firstWhere((c) => c.topic == data['topic'], orElse: () => Contact(topic: '', name: ''));
     if (c.topic.isNotEmpty) {

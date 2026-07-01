@@ -5,13 +5,35 @@ import '../sunrise/models.dart';
 import '../sunrise/sunrise_client.dart';
 import '../theme/glass_theme.dart';
 
+/// Quick reactions offered in the picker (Telegram-style set), shared with the composer.
+const List<String> kQuickReactions = ['👍', '❤️', '😂', '😮', '😢', '🙏', '🔥', '🎉'];
+
 /// Renders one message: text, image, video note, voice, file or call entry.
 class MessageBubble extends StatelessWidget {
-  const MessageBubble({super.key, required this.message, required this.isOwn, required this.client});
+  const MessageBubble({
+    super.key,
+    required this.message,
+    required this.isOwn,
+    required this.client,
+    this.reactions = const {},
+    this.myUserId,
+    this.onReact,
+    this.onLongPress,
+  });
 
   final Message message;
   final bool isOwn;
   final SunriseClient client;
+
+  /// Aggregated reactions for this message: emoji -> set of reacting user ids.
+  final Map<String, Set<String>> reactions;
+  final String? myUserId;
+
+  /// Toggle the current user's [emoji] reaction on this message.
+  final void Function(String emoji)? onReact;
+
+  /// Long-press handler (opens the reaction picker).
+  final VoidCallback? onLongPress;
 
   String? _src(Map<String, dynamic>? data) {
     if (data == null) return null;
@@ -97,31 +119,79 @@ class MessageBubble extends StatelessWidget {
     );
     return Align(
       alignment: isOwn ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 360),
-        margin: const EdgeInsets.symmetric(vertical: 2),
-        padding: const EdgeInsets.fromLTRB(13, 9, 13, 7),
-        decoration: BoxDecoration(
-          color: bubbleColor,
-          borderRadius: radius,
-          border: isOwn ? null : Border.all(color: Palette.border),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            body,
-            if (text.isNotEmpty && tp != 'text' && tp != 'call') ...[
-              const SizedBox(height: 6),
-              Text(text, style: TextStyle(color: textColor, fontSize: 14)),
-            ],
-            const SizedBox(height: 3),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(time, style: TextStyle(color: metaColor, fontSize: 10.5, letterSpacing: 0.2)),
+      child: Column(
+        crossAxisAlignment: isOwn ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            onLongPress: onLongPress,
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 360),
+              margin: const EdgeInsets.symmetric(vertical: 2),
+              padding: const EdgeInsets.fromLTRB(13, 9, 13, 7),
+              decoration: BoxDecoration(
+                color: bubbleColor,
+                borderRadius: radius,
+                border: isOwn ? null : Border.all(color: Palette.border),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  body,
+                  if (text.isNotEmpty && tp != 'text' && tp != 'call') ...[
+                    const SizedBox(height: 6),
+                    Text(text, style: TextStyle(color: textColor, fontSize: 14)),
+                  ],
+                  const SizedBox(height: 3),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(time, style: TextStyle(color: metaColor, fontSize: 10.5, letterSpacing: 0.2)),
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
+          ),
+          if (reactions.isNotEmpty) _reactionChips(),
+        ],
+      ),
+    );
+  }
+
+  Widget _reactionChips() {
+    final entries = reactions.entries.where((e) => e.value.isNotEmpty).toList()
+      ..sort((a, b) => b.value.length.compareTo(a.value.length));
+    return Padding(
+      padding: const EdgeInsets.only(top: 3, bottom: 2),
+      child: Wrap(
+        spacing: 4,
+        runSpacing: 4,
+        children: entries.map((e) {
+          final mine = myUserId != null && e.value.contains(myUserId);
+          return GestureDetector(
+            onTap: onReact == null ? null : () => onReact!(e.key),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: mine ? Palette.accent : Palette.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: mine ? Palette.accent : Palette.border),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(e.key, style: const TextStyle(fontSize: 13)),
+                  const SizedBox(width: 4),
+                  Text('${e.value.length}',
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: mine ? Colors.white : Palette.textSecondary,
+                          fontWeight: FontWeight.w500)),
+                ],
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
