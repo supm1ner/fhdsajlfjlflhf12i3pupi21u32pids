@@ -2689,6 +2689,24 @@ img.image-preview::before {
   cursor: pointer;
 }
 
+/* Round video notes (кружки): render the square video in a circular frame. */
+.inline-video.video-note,
+.inline-image.video-note {
+  border-radius: 50%;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+}
+.inline-video.video-note > img.inline-image,
+.inline-image.video-note > img.inline-image {
+  border-radius: 50%;
+  object-fit: cover;
+}
+.inline-video.video-note .duration {
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0.5rem;
+}
+
 /* Attachment styles */
 .attachment {
   display: flex;
@@ -3436,6 +3454,55 @@ ul.tabbar li.active > a {
 
 .audio .duration {
   font-size: large;
+}
+
+/* Video note (кружок) recorder in the composer. */
+.video-note-recorder {
+  display: flex;
+  margin-left: auto;
+  align-items: center;
+  flex: none;
+  gap: 0.75rem;
+  background-color: var(--clr-audio-bg);
+  height: 3rem;
+  padding: 0 0.75rem;
+  border-radius: 1.5rem;
+}
+
+.video-note-recorder .video-note-preview {
+  position: relative;
+  width: 2.6rem;
+  height: 2.6rem;
+  flex: none;
+}
+
+.video-note-recorder .video-note-preview video {
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: var(--clr-border-light);
+}
+
+.video-note-recorder .rec-dot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background-color: #e0245e;
+  box-shadow: 0 0 0 2px var(--clr-audio-bg);
+  animation: video-note-blink 1.2s steps(1) infinite;
+}
+
+@keyframes video-note-blink {
+  50% { opacity: 0.2; }
+}
+
+.video-note-recorder .duration {
+  font-size: large;
+  min-width: 3rem;
 }
 
 .audio-player {

@@ -148,6 +148,7 @@ class MessagesView extends React.Component {
     this.retrySend = this.retrySend.bind(this);
     this.sendImageAttachment = this.sendImageAttachment.bind(this);
     this.sendVideoAttachment = this.sendVideoAttachment.bind(this);
+    this.sendVideoNote = this.sendVideoNote.bind(this);
     this.sendFileAttachment = this.sendFileAttachment.bind(this);
     this.sendAudioAttachment = this.sendAudioAttachment.bind(this);
     this.sendTheCardAttachment = this.sendTheCardAttachment.bind(this);
@@ -1325,6 +1326,27 @@ class MessagesView extends React.Component {
       .catch(err => this.props.onError(err.message, 'err'));
   }
 
+  // sendVideoNote sends a round video note (кружок): a short square video recorded in-app.
+  // The recorder hands over the video blob and a JPEG preview frame (as a data URL).
+  sendVideoNote(videoBlob, previewDataUrl, params) {
+    // Convert the preview data URL into a Blob; fall back to a blank square if it's missing.
+    const previewPromise = previewDataUrl ?
+      fetch(previewDataUrl).then(r => r.blob()) :
+      new Promise(resolve => {
+        const canvas = document.createElement('canvas');
+        canvas.width = params.width;
+        canvas.height = params.height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        canvas.toBlob(resolve, 'image/jpeg', 0.7);
+      });
+
+    previewPromise
+      .then(previewBlob => this.sendVideoAttachment(null, videoBlob, previewBlob, params))
+      .catch(err => this.props.onError(err.message || err, 'err'));
+  }
+
   // handleAttachImageOrVideo method is called when [Attach image or video] button is clicked: launch image or video preview.
   handleAttachImageOrVideo(file) {
     const maxExternAttachmentSize = this.props.sunrise.getServerParam('maxFileUploadSize', MAX_EXTERN_ATTACHMENT_SIZE);
@@ -1843,6 +1865,7 @@ class MessagesView extends React.Component {
                 onAttachFile={this.props.forwardMessage ? null : this.handleAttachFile}
                 onAttachImage={this.props.forwardMessage ? null : this.handleAttachImageOrVideo}
                 onAttachAudio={this.props.forwardMessage ? null : this.sendAudioAttachment}
+                onAttachVideoNote={this.props.forwardMessage ? null : this.sendVideoNote}
                 onError={this.props.onError}
                 onQuoteClick={this.handleQuoteClick}
                 onCancelReply={this.handleCancelReply} />}

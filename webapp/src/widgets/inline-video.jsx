@@ -23,7 +23,9 @@ export default class InlineVideo extends React.PureComponent {
 
   render() {
     const duration = secondsToTime(this.props['data-duration'] / 1000);
-    const className = 'inline-video' + (this.props.onClick ? ' image-clickable' : '');
+    const className = 'inline-video' +
+      (this.props.onClick ? ' image-clickable' : '') +
+      (this.props['data-round'] ? ' video-note' : '');
     return (
       <div className={className}>
         {React.createElement('img', this.props)}

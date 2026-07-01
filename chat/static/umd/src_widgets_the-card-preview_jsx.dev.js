@@ -18,7 +18,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var libphonenumber_js_mobile__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! libphonenumber-js/mobile */ "./node_modules/libphonenumber-js/mobile/exports/parsePhoneNumberWithError.js");
 /* harmony import */ var _send_message_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./send-message.jsx */ "./src/widgets/send-message.jsx");
 /* harmony import */ var _letter_tile_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./letter-tile.jsx */ "./src/widgets/letter-tile.jsx");
-/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! sunrise-sdk */ "sunrise-sdk");
 /* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var _lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../lib/blob-helpers.js */ "./src/lib/blob-helpers.js");
 

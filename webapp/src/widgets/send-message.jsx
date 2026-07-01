@@ -6,6 +6,8 @@ import { Drafty } from 'sunrise-sdk';
 // Lazy-loading AudioRecorder because it's quite large due to
 // a dependency on webm-duration-fix.
 const AudioRecorder = React.lazy(_ => import('./audio-recorder.jsx'));
+// Lazy-loading VideoNoteRecorder (кружок) for the same reason.
+const VideoNoteRecorder = React.lazy(_ => import('./video-note-recorder.jsx'));
 
 import { KEYPRESS_DELAY } from '../config.js';
 import { filePasted } from '../lib/blob-helpers.js';
@@ -42,6 +44,11 @@ const messages = defineMessages({
     defaultMessage: 'Record voice message',
     description: 'Icon tool tip for recording a voice message'
   },
+  icon_title_record_video_note: {
+    id: 'icon_title_record_video_note',
+    defaultMessage: 'Record video note',
+    description: 'Icon tool tip for recording a round video note (кружок)'
+  },
   icon_title_attach_file: {
     id: 'icon_title_attach_file',
     defaultMessage: 'Attach file',
@@ -67,6 +74,7 @@ class SendMessage extends React.PureComponent {
       quote: null,
       message: '',
       audioRec: false,
+      videoNoteRec: false,
       audioAvailable: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
     };
 
@@ -77,6 +85,7 @@ class SendMessage extends React.PureComponent {
     this.handleAttachImage = this.handleAttachImage.bind(this);
     this.handleAttachFile = this.handleAttachFile.bind(this);
     this.handleAttachAudio = this.handleAttachAudio.bind(this);
+    this.handleAttachVideoNote = this.handleAttachVideoNote.bind(this);
     this.handleSend = this.handleSend.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.handleMessageTyping = this.handleMessageTyping.bind(this);
@@ -118,7 +127,7 @@ class SendMessage extends React.PureComponent {
     }
 
     if (prevProps.topicName != this.props.topicName) {
-      this.setState({message: this.props.initMessage || '', audioRec: false, quote: null});
+      this.setState({message: this.props.initMessage || '', audioRec: false, videoNoteRec: false, quote: null});
     } else if (prevProps.initMessage != this.props.initMessage) {
       const msg = this.props.initMessage || '';
       this.setState({message: msg}, _ => {
@@ -182,6 +191,11 @@ class SendMessage extends React.PureComponent {
     this.props.onAttachAudio(url, preview, duration);
   }
 
+  handleAttachVideoNote(videoBlob, preview, params) {
+    this.setState({videoNoteRec: false});
+    this.props.onAttachVideoNote(videoBlob, preview, params);
+  }
+
   handleSend(e) {
     e.preventDefault();
     const message = this.state.message.trim();
@@ -193,8 +207,8 @@ class SendMessage extends React.PureComponent {
 
   /* Send on Enter key */
   handleKeyPress(e) {
-    if (this.state.audioRec) {
-      // Ignore key presses while audio is being recorded.
+    if (this.state.audioRec || this.state.videoNoteRec) {
+      // Ignore key presses while audio or video note is being recorded.
       e.preventDefault();
       e.stopPropagation();
       return;
@@ -260,13 +274,15 @@ class SendMessage extends React.PureComponent {
         {this.state.quote}
       </div>) : null;
     const audioEnabled = this.state.audioAvailable && this.props.onAttachAudio;
+    const videoNoteEnabled = this.state.audioAvailable && this.props.onAttachVideoNote;
+    const recording = this.state.audioRec || this.state.videoNoteRec;
     return (
       <div id="send-message-wrapper">
         {!this.props.noInput ? quote : null}
         <div id="send-message-panel">
           {!this.props.disabled ?
             <>
-              {this.props.onAttachFile && !this.state.audioRec ?
+              {this.props.onAttachFile && !recording ?
                 <>
                   <a href="#" onClick={e => {e.preventDefault(); this.attachImage.click();}} title={formatMessage(messages.icon_title_add_image)}>
                     <i className="material-icons secondary">photo</i>
@@ -285,20 +301,37 @@ class SendMessage extends React.PureComponent {
                     <AudioRecorder
                       onRecordingProgress={_ => this.props.onKeyPress(true)}
                       onDeleted={_ => this.setState({audioRec: false})}
+                      onError={err => {this.setState({audioRec: false}); this.props.onError(err, 'err');}}
                       onFinished={this.handleAttachAudio}/>
+                  </Suspense>) :
+                  this.state.videoNoteRec ?
+                  (<Suspense fallback={<div><FormattedMessage id="loading_note" defaultMessage="Loading..."
+                  description="Message shown when component is loading"/></div>}>
+                    <VideoNoteRecorder
+                      onRecordingProgress={_ => this.props.onKeyPress(true)}
+                      onDeleted={_ => this.setState({videoNoteRec: false})}
+                      onError={err => {this.setState({videoNoteRec: false}); this.props.onError(err, 'err');}}
+                      onFinished={this.handleAttachVideoNote}/>
                   </Suspense>) :
                   <textarea id="send-message-input" placeholder={prompt}
                     value={this.state.message} onChange={this.handleMessageTyping}
                     onKeyDown={this.handleKeyPress}
                     ref={ref => {this.messageEditArea = ref;}} />)}
-              {this.state.message || !audioEnabled ?
+              {this.state.message || (!audioEnabled && !videoNoteEnabled) ?
                 <a href="#" onClick={this.handleSend} title={formatMessage(messages.icon_title_send)}>
                   <i className="material-icons">{sendIcon}</i>
                 </a> :
-                !this.state.audioRec ?
-                  <a href="#" onClick={e => {e.preventDefault(); this.setState({audioRec: true})}} title={formatMessage(messages.icon_title_record_voice)}>
-                    <i className="material-icons">mic</i>
-                  </a> :
+                !recording ?
+                  <>
+                    {videoNoteEnabled ?
+                      <a href="#" onClick={e => {e.preventDefault(); this.setState({videoNoteRec: true})}} title={formatMessage(messages.icon_title_record_video_note)}>
+                        <i className="material-icons">videocam</i>
+                      </a> : null}
+                    {audioEnabled ?
+                      <a href="#" onClick={e => {e.preventDefault(); this.setState({audioRec: true})}} title={formatMessage(messages.icon_title_record_voice)}>
+                        <i className="material-icons">mic</i>
+                      </a> : null}
+                  </> :
                   null
               }
               <input type="file" ref={ref => {this.attachFile = ref}}

@@ -15,7 +15,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
 /* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "sunrise-sdk");
 /* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../config.js */ "./src/config.js");
 
@@ -63,7 +63,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
 /* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "sunrise-sdk");
 /* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _widgets_chat_message_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../widgets/chat-message.jsx */ "./src/widgets/chat-message.jsx");
 /* harmony import */ var _widgets_contact_badges_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../widgets/contact-badges.jsx */ "./src/widgets/contact-badges.jsx");
@@ -364,6 +364,7 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
     this.retrySend = this.retrySend.bind(this);
     this.sendImageAttachment = this.sendImageAttachment.bind(this);
     this.sendVideoAttachment = this.sendVideoAttachment.bind(this);
+    this.sendVideoNote = this.sendVideoNote.bind(this);
     this.sendFileAttachment = this.sendFileAttachment.bind(this);
     this.sendAudioAttachment = this.sendAudioAttachment.bind(this);
     this.sendTheCardAttachment = this.sendTheCardAttachment.bind(this);
@@ -1371,6 +1372,18 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
       this.sendMessage(msg, uploadCompletionPromise, uploader);
     }).catch(err => this.props.onError(err.message, 'err'));
   }
+  sendVideoNote(videoBlob, previewDataUrl, params) {
+    const previewPromise = previewDataUrl ? fetch(previewDataUrl).then(r => r.blob()) : new Promise(resolve => {
+      const canvas = document.createElement('canvas');
+      canvas.width = params.width;
+      canvas.height = params.height;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      canvas.toBlob(resolve, 'image/jpeg', 0.7);
+    });
+    previewPromise.then(previewBlob => this.sendVideoAttachment(null, videoBlob, previewBlob, params)).catch(err => this.props.onError(err.message || err, 'err'));
+  }
   handleAttachImageOrVideo(file) {
     const maxExternAttachmentSize = this.props.sunrise.getServerParam('maxFileUploadSize', _config_js__WEBPACK_IMPORTED_MODULE_14__.MAX_EXTERN_ATTACHMENT_SIZE);
     if (file.type.startsWith('video/')) {
@@ -1907,6 +1920,7 @@ class MessagesView extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
           onAttachFile: this.props.forwardMessage ? null : this.handleAttachFile,
           onAttachImage: this.props.forwardMessage ? null : this.handleAttachImageOrVideo,
           onAttachAudio: this.props.forwardMessage ? null : this.sendAudioAttachment,
+          onAttachVideoNote: this.props.forwardMessage ? null : this.sendVideoNote,
           onError: this.props.onError,
           onQuoteClick: this.handleQuoteClick,
           onCancelReply: this.handleCancelReply
@@ -2130,7 +2144,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
 /* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "sunrise-sdk");
 /* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _attachment_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./attachment.jsx */ "./src/widgets/attachment.jsx");
 /* harmony import */ var _letter_tile_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./letter-tile.jsx */ "./src/widgets/letter-tile.jsx");
@@ -2598,7 +2612,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
 /* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "sunrise-sdk");
 /* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _lib_formatters_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../lib/formatters.js */ "./src/lib/formatters.js");
 /* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../config.js */ "./src/config.js");
@@ -2778,7 +2792,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
 /* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "sunrise-sdk");
 /* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _lib_utils_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../lib/utils.js */ "./src/lib/utils.js");
 
@@ -2849,7 +2863,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-intl */ "react-intl");
 /* harmony import */ var react_intl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_intl__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "./node_modules/tinode-sdk/umd/tinode.prod.js");
+/* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sunrise-sdk */ "sunrise-sdk");
 /* harmony import */ var sunrise_sdk__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sunrise_sdk__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../config.js */ "./src/config.js");
 /* harmony import */ var _lib_blob_helpers_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../lib/blob-helpers.js */ "./src/lib/blob-helpers.js");
@@ -2858,6 +2872,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const AudioRecorder = react__WEBPACK_IMPORTED_MODULE_0___default().lazy(_ => Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_webm-duration-fix_lib_index_js"), __webpack_require__.e("src_widgets_audio-recorder_jsx")]).then(__webpack_require__.bind(__webpack_require__, /*! ./audio-recorder.jsx */ "./src/widgets/audio-recorder.jsx")));
+const VideoNoteRecorder = react__WEBPACK_IMPORTED_MODULE_0___default().lazy(_ => Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_webm-duration-fix_lib_index_js"), __webpack_require__.e("src_widgets_video-note-recorder_jsx")]).then(__webpack_require__.bind(__webpack_require__, /*! ./video-note-recorder.jsx */ "./src/widgets/video-note-recorder.jsx")));
 
 
 
@@ -2916,6 +2931,13 @@ const messages = (0,react_intl__WEBPACK_IMPORTED_MODULE_1__.defineMessages)({
       "value": "Record voice message"
     }]
   },
+  icon_title_record_video_note: {
+    id: "icon_title_record_video_note",
+    defaultMessage: [{
+      "type": 0,
+      "value": "Record video note"
+    }]
+  },
   icon_title_attach_file: {
     id: "icon_title_attach_file",
     defaultMessage: [{
@@ -2945,6 +2967,7 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
       quote: null,
       message: '',
       audioRec: false,
+      videoNoteRec: false,
       audioAvailable: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
     };
     this.keypressTimestamp = 0;
@@ -2952,6 +2975,7 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
     this.handleAttachImage = this.handleAttachImage.bind(this);
     this.handleAttachFile = this.handleAttachFile.bind(this);
     this.handleAttachAudio = this.handleAttachAudio.bind(this);
+    this.handleAttachVideoNote = this.handleAttachVideoNote.bind(this);
     this.handleSend = this.handleSend.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.handleMessageTyping = this.handleMessageTyping.bind(this);
@@ -2987,6 +3011,7 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
       this.setState({
         message: this.props.initMessage || '',
         audioRec: false,
+        videoNoteRec: false,
         quote: null
       });
     } else if (prevProps.initMessage != this.props.initMessage) {
@@ -3045,6 +3070,12 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
     });
     this.props.onAttachAudio(url, preview, duration);
   }
+  handleAttachVideoNote(videoBlob, preview, params) {
+    this.setState({
+      videoNoteRec: false
+    });
+    this.props.onAttachVideoNote(videoBlob, preview, params);
+  }
   handleSend(e) {
     e.preventDefault();
     const message = this.state.message.trim();
@@ -3056,7 +3087,7 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
     }
   }
   handleKeyPress(e) {
-    if (this.state.audioRec) {
+    if (this.state.audioRec || this.state.videoNoteRec) {
       e.preventDefault();
       e.stopPropagation();
       return;
@@ -3117,11 +3148,13 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
       className: "material-icons gray"
     }, "close"))), this.state.quote) : null;
     const audioEnabled = this.state.audioAvailable && this.props.onAttachAudio;
+    const videoNoteEnabled = this.state.audioAvailable && this.props.onAttachVideoNote;
+    const recording = this.state.audioRec || this.state.videoNoteRec;
     return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
       id: "send-message-wrapper"
     }, !this.props.noInput ? quote : null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
       id: "send-message-panel"
-    }, !this.props.disabled ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, this.props.onAttachFile && !this.state.audioRec ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+    }, !this.props.disabled ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, this.props.onAttachFile && !recording ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
       href: "#",
       onClick: e => {
         e.preventDefault();
@@ -3154,7 +3187,33 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
       onDeleted: _ => this.setState({
         audioRec: false
       }),
+      onError: err => {
+        this.setState({
+          audioRec: false
+        });
+        this.props.onError(err, 'err');
+      },
       onFinished: this.handleAttachAudio
+    })) : this.state.videoNoteRec ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react__WEBPACK_IMPORTED_MODULE_0__.Suspense, {
+      fallback: react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_intl__WEBPACK_IMPORTED_MODULE_1__.FormattedMessage, {
+        id: "loading_note",
+        defaultMessage: [{
+          "type": 0,
+          "value": "Loading..."
+        }]
+      }))
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(VideoNoteRecorder, {
+      onRecordingProgress: _ => this.props.onKeyPress(true),
+      onDeleted: _ => this.setState({
+        videoNoteRec: false
+      }),
+      onError: err => {
+        this.setState({
+          videoNoteRec: false
+        });
+        this.props.onError(err, 'err');
+      },
+      onFinished: this.handleAttachVideoNote
     })) : react__WEBPACK_IMPORTED_MODULE_0___default().createElement("textarea", {
       id: "send-message-input",
       placeholder: prompt,
@@ -3164,13 +3223,24 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
       ref: ref => {
         this.messageEditArea = ref;
       }
-    }), this.state.message || !audioEnabled ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+    }), this.state.message || !audioEnabled && !videoNoteEnabled ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
       href: "#",
       onClick: this.handleSend,
       title: formatMessage(messages.icon_title_send)
     }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
       className: "material-icons"
-    }, sendIcon)) : !this.state.audioRec ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+    }, sendIcon)) : !recording ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, videoNoteEnabled ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+      href: "#",
+      onClick: e => {
+        e.preventDefault();
+        this.setState({
+          videoNoteRec: true
+        });
+      },
+      title: formatMessage(messages.icon_title_record_video_note)
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
+      className: "material-icons"
+    }, "videocam")) : null, audioEnabled ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
       href: "#",
       onClick: e => {
         e.preventDefault();
@@ -3181,7 +3251,7 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
       title: formatMessage(messages.icon_title_record_voice)
     }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("i", {
       className: "material-icons"
-    }, "mic")) : null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+    }, "mic")) : null) : null, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
       type: "file",
       ref: ref => {
         this.attachFile = ref;

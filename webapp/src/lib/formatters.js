@@ -244,6 +244,10 @@ function handleVideoData(el, data, attr) {
     minWidth: dim.dstWidth + 'px',
     minHeight: dim.dstHeight + 'px'
   };
+  // Square videos are round video notes (кружки): render them in a circular frame.
+  if (data.width && data.height && data.width == data.height) {
+    attr['data-round'] = true;
+  }
   if (!Drafty.isProcessing(data)) {
     attr.src = this.authorizeURL(sanitizeUrlForMime(attr.src, 'image'));
     attr.alt = data.name;
