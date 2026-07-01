@@ -3601,6 +3601,7 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
       stickerOpen: false,
       mentionMatches: [],
       mentionActive: -1,
+      cmdMatches: [],
       audioAvailable: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
     };
     this.keypressTimestamp = 0;
@@ -3616,6 +3617,7 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
     this.toggleSticker = this.toggleSticker.bind(this);
     this.handleSendSticker = this.handleSendSticker.bind(this);
     this.selectMention = this.selectMention.bind(this);
+    this.selectCommand = this.selectCommand.bind(this);
     this.handleSend = this.handleSend.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.handleMessageTyping = this.handleMessageTyping.bind(this);
@@ -3629,13 +3631,14 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
     if (this.wrapperRef.current && this.wrapperRef.current.contains(e.target)) {
       return;
     }
-    if (this.state.emojiOpen || this.state.stickerOpen || this.state.mentionMatches.length) {
+    if (this.state.emojiOpen || this.state.stickerOpen || this.state.mentionMatches.length || this.state.cmdMatches.length) {
       this.mentionAnchor = -1;
       this.setState({
         emojiOpen: false,
         stickerOpen: false,
         mentionMatches: [],
-        mentionActive: -1
+        mentionActive: -1,
+        cmdMatches: []
       });
     }
   }
@@ -3676,6 +3679,7 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
         stickerOpen: false,
         mentionMatches: [],
         mentionActive: -1,
+        cmdMatches: [],
         quote: null
       });
     } else if (prevProps.initMessage != this.props.initMessage) {
@@ -3860,6 +3864,58 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
       }
     });
   }
+  getCommands() {
+    const topic = this.props.sunrise && this.props.topicName ? this.props.sunrise.getTopic(this.props.topicName) : null;
+    const pub = topic && topic.public;
+    const cmds = pub && pub.commands;
+    if (!Array.isArray(cmds)) {
+      return [];
+    }
+    return cmds.map(c => typeof c == 'string' ? {
+      name: c,
+      description: ''
+    } : {
+      name: c.name || c.cmd || '',
+      description: c.description || c.desc || ''
+    }).filter(c => c.name);
+  }
+  updateCommandContext(value, caret) {
+    const m = /^\/(\w*)$/.exec(value.slice(0, caret));
+    if (!m) {
+      if (this.state.cmdMatches.length) {
+        this.setState({
+          cmdMatches: []
+        });
+      }
+      return;
+    }
+    const commands = this.getCommands();
+    if (commands.length == 0) {
+      if (this.state.cmdMatches.length) {
+        this.setState({
+          cmdMatches: []
+        });
+      }
+      return;
+    }
+    const q = m[1].toLowerCase();
+    const matches = commands.filter(c => c.name.toLowerCase().startsWith(q)).slice(0, 8);
+    this.setState({
+      cmdMatches: matches
+    });
+  }
+  selectCommand(cmd) {
+    const insert = '/' + cmd.name + ' ';
+    this.setState({
+      message: insert,
+      cmdMatches: []
+    }, () => {
+      if (this.messageEditArea) {
+        this.messageEditArea.focus();
+        this.messageEditArea.setSelectionRange(insert.length, insert.length);
+      }
+    });
+  }
   buildOutgoing(text) {
     const toks = this.pendingMentions.filter(m => text.includes('@' + m.name)).map(m => ({
       tok: '@' + m.name,
@@ -3926,6 +3982,21 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
       e.stopPropagation();
       return;
     }
+    if (this.state.cmdMatches.length > 0) {
+      if (e.key === 'Enter' || e.key === 'Tab') {
+        e.preventDefault();
+        e.stopPropagation();
+        this.selectCommand(this.state.cmdMatches[0]);
+        return;
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        this.setState({
+          cmdMatches: []
+        });
+        return;
+      }
+    }
     const matches = this.state.mentionMatches;
     if (matches.length > 0) {
       if (e.key === 'ArrowDown') {
@@ -3982,6 +4053,7 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
       message: e.target.value
     });
     this.updateMentionContext(e.target.value, e.target.selectionStart);
+    this.updateCommandContext(e.target.value, e.target.selectionStart);
     if (this.props.onKeyPress) {
       const now = new Date().getTime();
       if (now - this.keypressTimestamp > _config_js__WEBPACK_IMPORTED_MODULE_3__.KEYPRESS_DELAY) {
@@ -4034,7 +4106,18 @@ class SendMessage extends (react__WEBPACK_IMPORTED_MODULE_0___default().PureComp
     }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement(StickerPicker, {
       onPick: this.handleSendSticker,
       authorizeURL: this.props.sunrise && this.props.sunrise.authorizeURL.bind(this.props.sunrise)
-    })) : null, this.state.mentionMatches.length > 0 ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    })) : null, this.state.cmdMatches.length > 0 ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      className: "mention-suggest",
+      onMouseDown: e => e.preventDefault()
+    }, this.state.cmdMatches.map(c => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+      key: c.name,
+      className: "mention-item command-item",
+      onClick: () => this.selectCommand(c)
+    }, react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      className: "mention-name"
+    }, "/", c.name), c.description ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+      className: "mention-id"
+    }, c.description) : null))) : null, this.state.mentionMatches.length > 0 ? react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
       className: "mention-suggest",
       onMouseDown: e => e.preventDefault()
     }, this.state.mentionMatches.map((m, i) => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {

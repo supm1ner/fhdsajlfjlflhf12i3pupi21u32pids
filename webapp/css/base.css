@@ -2214,6 +2214,14 @@ mark.search-hl {
   font-size: 0.8rem;
   color: var(--clr-text-tertiary);
 }
+.mention-suggest .command-item {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.05rem;
+}
+.mention-suggest .command-item .mention-name {
+  color: var(--clr-primary-accent);
+}
 
 #sendMessage {
   overflow: hidden;

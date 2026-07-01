@@ -98,6 +98,7 @@ class SendMessage extends React.PureComponent {
       stickerOpen: false,
       mentionMatches: [],
       mentionActive: -1,
+      cmdMatches: [],
       audioAvailable: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
     };
 
@@ -118,6 +119,7 @@ class SendMessage extends React.PureComponent {
     this.toggleSticker = this.toggleSticker.bind(this);
     this.handleSendSticker = this.handleSendSticker.bind(this);
     this.selectMention = this.selectMention.bind(this);
+    this.selectCommand = this.selectCommand.bind(this);
     this.handleSend = this.handleSend.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.handleMessageTyping = this.handleMessageTyping.bind(this);
@@ -135,9 +137,9 @@ class SendMessage extends React.PureComponent {
     if (this.wrapperRef.current && this.wrapperRef.current.contains(e.target)) {
       return;
     }
-    if (this.state.emojiOpen || this.state.stickerOpen || this.state.mentionMatches.length) {
+    if (this.state.emojiOpen || this.state.stickerOpen || this.state.mentionMatches.length || this.state.cmdMatches.length) {
       this.mentionAnchor = -1;
-      this.setState({emojiOpen: false, stickerOpen: false, mentionMatches: [], mentionActive: -1});
+      this.setState({emojiOpen: false, stickerOpen: false, mentionMatches: [], mentionActive: -1, cmdMatches: []});
     }
   }
 
@@ -177,7 +179,7 @@ class SendMessage extends React.PureComponent {
       this.mentionAnchor = -1;
       this.pendingMentions = [];
       this.setState({message: this.props.initMessage || '', audioRec: false, videoNoteRec: false,
-        emojiOpen: false, stickerOpen: false, mentionMatches: [], mentionActive: -1, quote: null});
+        emojiOpen: false, stickerOpen: false, mentionMatches: [], mentionActive: -1, cmdMatches: [], quote: null});
     } else if (prevProps.initMessage != this.props.initMessage) {
       const msg = this.props.initMessage || '';
       this.setState({message: msg}, _ => {
@@ -353,6 +355,55 @@ class SendMessage extends React.PureComponent {
     });
   }
 
+  // --- Bot slash-commands -----------------------------------------------
+
+  // Commands advertised by a bot via its topic public.commands: [{name, description}].
+  getCommands() {
+    const topic = (this.props.sunrise && this.props.topicName) ?
+      this.props.sunrise.getTopic(this.props.topicName) : null;
+    const pub = topic && topic.public;
+    const cmds = pub && pub.commands;
+    if (!Array.isArray(cmds)) {
+      return [];
+    }
+    return cmds
+      .map(c => typeof c == 'string' ?
+        {name: c, description: ''} :
+        {name: c.name || c.cmd || '', description: c.description || c.desc || ''})
+      .filter(c => c.name);
+  }
+
+  // Show a command dropdown while the message is a single "/token".
+  updateCommandContext(value, caret) {
+    const m = /^\/(\w*)$/.exec(value.slice(0, caret));
+    if (!m) {
+      if (this.state.cmdMatches.length) {
+        this.setState({cmdMatches: []});
+      }
+      return;
+    }
+    const commands = this.getCommands();
+    if (commands.length == 0) {
+      if (this.state.cmdMatches.length) {
+        this.setState({cmdMatches: []});
+      }
+      return;
+    }
+    const q = m[1].toLowerCase();
+    const matches = commands.filter(c => c.name.toLowerCase().startsWith(q)).slice(0, 8);
+    this.setState({cmdMatches: matches});
+  }
+
+  selectCommand(cmd) {
+    const insert = '/' + cmd.name + ' ';
+    this.setState({message: insert, cmdMatches: []}, () => {
+      if (this.messageEditArea) {
+        this.messageEditArea.focus();
+        this.messageEditArea.setSelectionRange(insert.length, insert.length);
+      }
+    });
+  }
+
   // Convert plain text with "@Name" tokens into Drafty with clickable MN entities.
   // Returns the original string when no recorded mention is present in the text.
   buildOutgoing(text) {
@@ -421,6 +472,21 @@ class SendMessage extends React.PureComponent {
       return;
     }
 
+    // When the bot-command dropdown is open, Enter/Tab picks the first match.
+    if (this.state.cmdMatches.length > 0) {
+      if (e.key === 'Enter' || e.key === 'Tab') {
+        e.preventDefault();
+        e.stopPropagation();
+        this.selectCommand(this.state.cmdMatches[0]);
+        return;
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        this.setState({cmdMatches: []});
+        return;
+      }
+    }
+
     // When the @-mention dropdown is open, navigate/select with the keyboard.
     const matches = this.state.mentionMatches;
     if (matches.length > 0) {
@@ -475,6 +541,7 @@ class SendMessage extends React.PureComponent {
   handleMessageTyping(e) {
     this.setState({message: e.target.value});
     this.updateMentionContext(e.target.value, e.target.selectionStart);
+    this.updateCommandContext(e.target.value, e.target.selectionStart);
     if (this.props.onKeyPress) {
       const now = new Date().getTime();
       if (now - this.keypressTimestamp > KEYPRESS_DELAY) {
@@ -527,6 +594,16 @@ class SendMessage extends React.PureComponent {
             <StickerPicker onPick={this.handleSendSticker}
               authorizeURL={this.props.sunrise && this.props.sunrise.authorizeURL.bind(this.props.sunrise)} />
           </Suspense> : null}
+        {this.state.cmdMatches.length > 0 ?
+          <div className="mention-suggest" onMouseDown={e => e.preventDefault()}>
+            {this.state.cmdMatches.map(c => (
+              <div key={c.name} className="mention-item command-item"
+                onClick={() => this.selectCommand(c)}>
+                <span className="mention-name">/{c.name}</span>
+                {c.description ? <span className="mention-id">{c.description}</span> : null}
+              </div>
+            ))}
+          </div> : null}
         {this.state.mentionMatches.length > 0 ?
           <div className="mention-suggest" onMouseDown={e => e.preventDefault()}>
             {this.state.mentionMatches.map((m, i) => (
